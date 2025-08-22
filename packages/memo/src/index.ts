@@ -1,6 +1,6 @@
 import React from "react";
 import { debugLog, ignorePropsList } from "./memoHelper";
-import type { MemoOptions } from "./types";
+import type { MemoOptions, MemoizedComponent } from "./types";
 
 /**
  * 创建记忆化组件
@@ -46,7 +46,7 @@ import type { MemoOptions } from "./types";
 function createMemoComponent<P extends object>(
 	Component: React.ComponentType<P>,
 	options?: MemoOptions<P>,
-) {
+): MemoizedComponent<P> {
 	// 如果提供了自定义比较函数，则使用它
 	if (options?.compare) {
 		return React.memo(Component, options.compare);

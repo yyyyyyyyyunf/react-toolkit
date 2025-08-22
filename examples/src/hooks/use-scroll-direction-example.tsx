@@ -1,8 +1,6 @@
-import React, { useRef } from "react";
-import {
-	type ScrollDirection,
-	useScrollDirection,
-} from "@fly4react/observer";
+import { type ScrollDirection, useScrollDirection } from "@fly4react/observer";
+import type React from "react";
+import { useRef } from "react";
 
 const UseScrollDirectionExample: React.FC = () => {
 	const targetRef = useRef<HTMLDivElement>(null);

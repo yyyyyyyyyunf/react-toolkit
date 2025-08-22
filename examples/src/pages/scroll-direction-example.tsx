@@ -1,9 +1,10 @@
-import React, { useRef, useState } from "react";
 import {
 	type ObserverCallbackParamType,
 	type ScrollDirection,
 	useIntersectionObserver,
 } from "@fly4react/observer";
+import type React from "react";
+import { useRef, useState } from "react";
 
 const ScrollDirectionExample: React.FC = () => {
 	const [scrollDirection, setScrollDirection] =

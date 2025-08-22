@@ -198,3 +198,16 @@ interface CustomRootScrollDirectionOptions extends BaseScrollDirectionOptions {
 export type UseScrollDirectionOptions =
 	| ViewportScrollDirectionOptions
 	| CustomRootScrollDirectionOptions;
+
+	export interface IntersectionLoadProps {
+		children: React.ReactNode;
+		placeholder?: React.ReactNode;
+		threshold?: number | "any" | "top" | "right" | "bottom" | "left";
+		offset?: number;
+		height: number;
+		lazy?: boolean;
+		style?: React.CSSProperties;
+		active?: boolean;
+		onChange?: (isVisible: boolean) => void;
+		root?: Element | null; // 根元素，默认为 viewport
+	}

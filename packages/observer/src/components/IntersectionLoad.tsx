@@ -1,22 +1,8 @@
 import createMemoComponent from "@fly4react/memo";
-import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { lazyloadManager } from "../base/IntersectionObserverManager";
-import type { ObserverCallbackParamType } from "../types";
+import type { IntersectionLoadProps, ObserverCallbackParamType } from "../types";
 import { checkVisibility, isSupportIntersectionObserver } from "../utils";
-
-interface LazyLoadProps {
-	children: React.ReactNode;
-	placeholder?: React.ReactNode;
-	threshold?: number | "any" | "top" | "right" | "bottom" | "left";
-	offset?: number;
-	height: number;
-	lazy?: boolean;
-	style?: React.CSSProperties;
-	active?: boolean;
-	onChange?: (isVisible: boolean) => void;
-	root?: Element | null; // 根元素，默认为 viewport
-}
 
 const IntersectionLoad = ({
 	children,
@@ -29,7 +15,7 @@ const IntersectionLoad = ({
 	active = true,
 	onChange,
 	root = null,
-}: LazyLoadProps) => {
+}: IntersectionLoadProps) => {
 	const [isVisible, setIsVisible] = useState(!lazy);
 	const containerRef = useRef<HTMLDivElement>(null);
 
@@ -103,4 +89,5 @@ const IntersectionLoad = ({
 	);
 };
 
-export default createMemoComponent(IntersectionLoad);
+const MemoizedIntersectionLoad: React.MemoExoticComponent<React.ComponentType<IntersectionLoadProps>> = createMemoComponent(IntersectionLoad);
+export default MemoizedIntersectionLoad;
