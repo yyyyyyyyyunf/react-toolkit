@@ -209,3 +209,21 @@ jobs:
             ${{ steps.version.outputs.IS_BETA == 'true' && '⚠️ **This is a beta version. Use with caution.**' || '' }}
           draft: false
           prerelease: ${{ steps.version.outputs.IS_BETA == 'true' }}
+      
+      - name: Merge to main branch
+        if: github.ref == 'refs/heads/release' && steps.version.outputs.IS_BETA == 'false'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # 确保我们有最新的 main 分支
+          git fetch origin main
+          
+          # 切换到 main 分支
+          git checkout main
+          
+          # 合并 release 分支到 main
+          git merge origin/release --no-edit
+          
+          # 推送更新到 main 分支
+          git push origin main
