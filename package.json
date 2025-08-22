@@ -1,7 +1,7 @@
 {
   "name": "@fly4react",
-  "version": "1.0.1",
-  "description": "React Toolkit 生态系统的 monorepo，包含 observer 和 memo 等工具库",
+  "version": "1.0.2",
+  "description": "React工具集合，包含 observer 和 memo 等工具库",
   "private": true,
   "packageManager": "pnpm@8.15.0",
   "repository": {
