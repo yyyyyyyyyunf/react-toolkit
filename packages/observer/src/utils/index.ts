@@ -173,16 +173,18 @@ export const calculateScrollDirection = (
 		// 垂直滚动
 		if (deltaY > threshold) {
 			return "down"; // 元素向下移动，说明向上滚动
-		} else if (deltaY < -threshold) {
+		}
+		if (deltaY < -threshold) {
 			return "up"; // 元素向上移动，说明向下滚动
 		}
-	} else {
-		// 水平滚动
-		if (deltaX > threshold) {
-			return "right"; // 元素向右移动，说明向左滚动
-		} else if (deltaX < -threshold) {
-			return "left"; // 元素向左移动，说明向右滚动
-		}
+	}
+
+	// 水平滚动
+	if (deltaX > threshold) {
+		return "right"; // 元素向右移动，说明向左滚动
+	}
+	if (deltaX < -threshold) {
+		return "left"; // 元素向左移动，说明向右滚动
 	}
 
 	return "none";

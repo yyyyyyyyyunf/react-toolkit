@@ -70,7 +70,7 @@ class IntersectionObserverManager {
 				...options,
 			} satisfies IntersectionObserverInit;
 			const observer = new IntersectionObserver((entries) => {
-				entries.forEach((entry) => {
+				for (const entry of entries) {
 					const elementUniqueId =
 						entry.target.getAttribute("data-intersection-unique-id") ||
 						"intersection_element_void";
@@ -100,7 +100,7 @@ class IntersectionObserverManager {
 					if (options.once && entry.isIntersecting) {
 						this.unobserve(entry.target, options);
 					}
-				});
+				}
 			}, mergedOptions);
 
 			this.observers.set(key, observer);
@@ -166,9 +166,9 @@ class IntersectionObserverManager {
 	 * 清理所有资源，包括观察器、回调和位置数据
 	 */
 	disconnect(): void {
-		this.observers.forEach((observer) => {
+		for (const observer of this.observers.values()) {
 			observer.disconnect();
-		});
+		}
 		this.observers.clear();
 		this.callbacks.clear();
 		this.previousRects.clear(); // 清理位置跟踪数据
