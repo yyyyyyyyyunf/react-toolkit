@@ -39,6 +39,7 @@
     "react-dom": ">=16.8.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.2.0",
     "@rsbuild/core": "^0.4.0",
     "@rsbuild/plugin-react": "^0.4.0",
     "@types/react": "^18.0.0",
@@ -50,10 +51,22 @@
   "scripts": {
     "build": "rslib build",
     "dev": "rslib build --watch",
-    "check": "tsc --noEmit",
+    "format": "biome format --write src/",
+    "format:check": "biome format src/",
+    "lint": "biome lint src/",
+    "lint:fix": "biome lint --write src/",
+    "check": "biome check src/",
+    "check:fix": "biome check --write src/",
     "clean": "rm -rf dist",
     "prepublishOnly": "pnpm check && pnpm build",
     "prepack": "pnpm build",
     "prepare": "[ -d .git ] && husky || true"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "biome format --write",
+      "biome lint --write",
+      "git add"
+    ]
   }
 }
