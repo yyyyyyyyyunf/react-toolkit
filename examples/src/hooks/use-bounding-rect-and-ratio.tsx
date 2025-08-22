@@ -103,9 +103,9 @@ export function UseBoundingRectAndRatioExample() {
 				}}
 			>
 				<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-					                                <button
-                                        type="button"
-                                        onClick={() => setShowCoordinates(!showCoordinates)}
+					<button
+						type="button"
+						onClick={() => setShowCoordinates(!showCoordinates)}
 						style={{
 							padding: "8px 16px",
 							background: showCoordinates ? "#28a745" : "#6c757d",
@@ -118,9 +118,9 @@ export function UseBoundingRectAndRatioExample() {
 						{showCoordinates ? "📐 隐藏坐标" : "📐 显示坐标"}
 					</button>
 
-					                                <button
-                                        type="button"
-                                        onClick={() => setShowAdvanced(!showAdvanced)}
+					<button
+						type="button"
+						onClick={() => setShowAdvanced(!showAdvanced)}
 						style={{
 							padding: "8px 16px",
 							background: showAdvanced ? "#17a2b8" : "#6c757d",
@@ -439,7 +439,7 @@ export function UseBoundingRectAndRatioExample() {
 							transform: "translateX(-50%)",
 						}}
 					>
-						      {[0, 0.2, 0.4, 0.6, 0.8, 1].map((threshold) => (
+						{[0, 0.2, 0.4, 0.6, 0.8, 1].map((threshold) => (
 							<div
 								key={threshold}
 								style={{

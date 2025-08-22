@@ -1,6 +1,5 @@
 import { IntersectionLoad } from "@fly4react/observer";
 
-
 /**
  * IntersectionLoad 基础使用示例
  * 展示懒加载的基本功能

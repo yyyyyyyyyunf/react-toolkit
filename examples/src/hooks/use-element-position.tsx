@@ -35,16 +35,17 @@ export function UseElementPositionExample() {
 		throttle: 50, // 20fps，降低频率
 	});
 
-	        const formatPosition = (position: any) => {
-		if (!position) return {
-			visible: "未检测到",
-			top: "0",
-			left: "0",
-			width: "0",
-			height: "0",
-			isIntersecting: false,
-			time: "未检测到",
-		};
+	const formatPosition = (position: any) => {
+		if (!position)
+			return {
+				visible: "未检测到",
+				top: "0",
+				left: "0",
+				width: "0",
+				height: "0",
+				isIntersecting: false,
+				time: "未检测到",
+			};
 
 		return {
 			visible: `${(position.intersectionRatio * 100).toFixed(1)}%`,
@@ -82,9 +83,9 @@ export function UseElementPositionExample() {
 						marginBottom: "15px",
 					}}
 				>
-					                                <button
-                                        type="button"
-                                        onClick={() => setIsTracking(!isTracking)}
+					<button
+						type="button"
+						onClick={() => setIsTracking(!isTracking)}
 						style={{
 							padding: "8px 16px",
 							background: isTracking ? "#e74c3c" : "#27ae60",
@@ -97,9 +98,9 @@ export function UseElementPositionExample() {
 						{isTracking ? "🛑 停止跟踪" : "▶️ 开始跟踪"}
 					</button>
 
-					                                <button
-                                        type="button"
-                                        onClick={() => setShowDetails(!showDetails)}
+					<button
+						type="button"
+						onClick={() => setShowDetails(!showDetails)}
 						style={{
 							padding: "8px 16px",
 							background: "#3498db",

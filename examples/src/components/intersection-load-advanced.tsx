@@ -31,9 +31,9 @@ export function AdvancedLazyLoadExample() {
 				}}
 			>
 				<h3>控制面板</h3>
-				                                <button
-                                        type="button"
-                                        onClick={() => setIsActive(!isActive)}
+				<button
+					type="button"
+					onClick={() => setIsActive(!isActive)}
 					style={{
 						padding: "8px 16px",
 						background: isActive ? "#ff6b6b" : "#4ecdc4",
@@ -47,9 +47,9 @@ export function AdvancedLazyLoadExample() {
 					{isActive ? "🛑 禁用懒加载" : "▶️ 启用懒加载"}
 				</button>
 
-				                                <button
-                                        type="button"
-                                        onClick={() => setVisibilityLog([])}
+				<button
+					type="button"
+					onClick={() => setVisibilityLog([])}
 					style={{
 						padding: "8px 16px",
 						background: "#95a5a6",
@@ -82,7 +82,9 @@ export function AdvancedLazyLoadExample() {
 				{visibilityLog.length === 0 ? (
 					<div style={{ color: "#95a5a6" }}>暂无日志...</div>
 				) : (
-					                                        visibilityLog.map((log, index) => <div key={`log-${index}-${log}`}>{log}</div>)
+					visibilityLog.map((log, index) => (
+						<div key={`log-${index}-${log}`}>{log}</div>
+					))
 				)}
 			</div>
 

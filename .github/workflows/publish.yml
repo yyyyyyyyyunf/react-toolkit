@@ -138,16 +138,30 @@ jobs:
           # 更新 observer 包版本（如果有 observer 变化）
           if [ "${{ steps.changes.outputs.OBSERVER_CHANGED }}" == "true" ]; then
             cd packages/observer
-            npm version $VERSION --no-git-tag-version || echo "Version already set to $VERSION"
-            echo "Updated @fly4react/observer to version $VERSION"
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+            MAJOR=${VERSION_PARTS[0]}
+            MINOR=${VERSION_PARTS[1]}
+            PATCH=${VERSION_PARTS[2]}
+            NEW_PATCH=$((PATCH + 1))
+            OBSERVER_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
+            npm version $OBSERVER_VERSION --no-git-tag-version
+            echo "Updated @fly4react/observer to version $OBSERVER_VERSION"
             cd ../..
           fi
           
           # 更新 memo 包版本（如果有 memo 变化）
           if [ "${{ steps.changes.outputs.MEMO_CHANGED }}" == "true" ]; then
             cd packages/memo
-            npm version $VERSION --no-git-tag-version || echo "Version already set to $VERSION"
-            echo "Updated @fly4react/memo to version $VERSION"
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+            MAJOR=${VERSION_PARTS[0]}
+            MINOR=${VERSION_PARTS[1]}
+            PATCH=${VERSION_PARTS[2]}
+            NEW_PATCH=$((PATCH + 1))
+            MEMO_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
+            npm version $MEMO_VERSION --no-git-tag-version
+            echo "Updated @fly4react/memo to version $MEMO_VERSION"
             cd ../..
           fi
       

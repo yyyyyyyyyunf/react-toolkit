@@ -258,7 +258,7 @@ export function ParallaxScrollExample() {
 					>
 						{[...Array(5)].map((_, i) => (
 							<div
-								                                        key={`star-${i}`}
+								key={`star-${i}`}
 								style={{
 									width: "20px",
 									height: "20px",

@@ -109,9 +109,9 @@ export function InfiniteScrollExample() {
 					</span>
 				</div>
 
-				                                <button
-                                        type="button"
-                                        onClick={resetList}
+				<button
+					type="button"
+					onClick={resetList}
 					style={{
 						padding: "8px 16px",
 						background: "#6c757d",
@@ -126,7 +126,7 @@ export function InfiniteScrollExample() {
 			</div>
 
 			{/* 项目列表 */}
-			    <div style={{ margin: "20px" }}>
+			<div style={{ margin: "20px" }}>
 				{items.map((item, index) => (
 					<div
 						key={item.id}
