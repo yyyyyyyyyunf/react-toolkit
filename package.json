@@ -54,7 +54,7 @@
     "clean": "pnpm -r clean",
     "prepublishOnly": "pnpm -r prepublishOnly",
     "prepack": "pnpm -r prepack",
-    "prepare": "husky || true",
+    "prepare": "[ -d .git ] && husky || true",
     "release": "./scripts/release.sh",
     "release:auto": "./scripts/release.sh --auto",
     "release:beta": "./scripts/release.sh --beta",
