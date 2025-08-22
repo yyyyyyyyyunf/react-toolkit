@@ -53,7 +53,14 @@ jobs:
       - name: Detect changes
         id: changes
         run: |
-          ./scripts/detect-changes.sh main
+          # 在 GitHub Actions 中，我们需要使用不同的比较基准
+          if git rev-parse --verify origin/main >/dev/null 2>&1; then
+            ./scripts/detect-changes.sh origin/main
+          else
+            # 如果没有 main 分支，使用 HEAD~1 作为比较基准
+            echo "⚠️  main 分支不存在，使用 HEAD~1 作为比较基准"
+            ./scripts/detect-changes.sh HEAD~1
+          fi
       
       - name: Determine version and tag
         id: version
