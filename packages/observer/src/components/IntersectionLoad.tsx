@@ -1,7 +1,10 @@
 import createMemoComponent from "@fly4react/memo";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { lazyloadManager } from "../base/IntersectionObserverManager";
-import type { IntersectionLoadProps, ObserverCallbackParamType } from "../types";
+import type {
+	IntersectionLoadProps,
+	ObserverCallbackParamType,
+} from "../types";
 import { checkVisibility, isSupportIntersectionObserver } from "../utils";
 
 const IntersectionLoad = ({
@@ -89,5 +92,7 @@ const IntersectionLoad = ({
 	);
 };
 
-const MemoizedIntersectionLoad: React.MemoExoticComponent<React.ComponentType<IntersectionLoadProps>> = createMemoComponent(IntersectionLoad);
+const MemoizedIntersectionLoad: React.MemoExoticComponent<
+	React.ComponentType<IntersectionLoadProps>
+> = createMemoComponent(IntersectionLoad);
 export default MemoizedIntersectionLoad;
