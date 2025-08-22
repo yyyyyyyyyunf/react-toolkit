@@ -29,8 +29,8 @@
     "typescript",
     "hooks",
     "component",
-	"visibility-detection",
-	"visibility-sensor"
+    "visibility-detection",
+    "visibility-sensor"
   ],
   "author": "yyyyyyyyyunf",
   "license": "MIT",

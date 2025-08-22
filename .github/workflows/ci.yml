@@ -19,10 +19,12 @@ jobs:
         with:
           node-version: '20'
       
-      - name: Enable pnpm
+      - name: Install pnpm
         run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
+          npm install -g pnpm@latest
+          echo "pnpm version: $(pnpm --version)"
+          echo "Node version: $(node --version)"
+          echo "npm version: $(npm --version)"
       
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

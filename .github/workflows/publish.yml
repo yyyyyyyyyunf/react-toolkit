@@ -28,10 +28,9 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
       
-      - name: Enable pnpm
+      - name: Install pnpm
         run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
+          npm install -g pnpm@latest
           echo "pnpm version: $(pnpm --version)"
           echo "Node version: $(node --version)"
           echo "npm version: $(npm --version)"
