@@ -138,16 +138,16 @@ jobs:
           # 更新 observer 包版本（如果有 observer 变化）
           if [ "${{ steps.changes.outputs.OBSERVER_CHANGED }}" == "true" ]; then
             cd packages/observer
-            npm version $VERSION --no-git-tag-version
-            echo "Updated @react-toolkit/observer to version $VERSION"
+            npm version $VERSION --no-git-tag-version || echo "Version already set to $VERSION"
+            echo "Updated @fly4react/observer to version $VERSION"
             cd ../..
           fi
           
           # 更新 memo 包版本（如果有 memo 变化）
           if [ "${{ steps.changes.outputs.MEMO_CHANGED }}" == "true" ]; then
             cd packages/memo
-            npm version $VERSION --no-git-tag-version
-            echo "Updated @react-toolkit/memo to version $VERSION"
+            npm version $VERSION --no-git-tag-version || echo "Version already set to $VERSION"
+            echo "Updated @fly4react/memo to version $VERSION"
             cd ../..
           fi
       
