@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 推送前检查..."
+
+# 运行代码检查
+npm run check
+
+# 运行构建检查
+npm run build
+
+echo "✅ 推送前检查完成！"

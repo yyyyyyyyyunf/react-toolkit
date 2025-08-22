@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# 简单的提交信息检查
+commit_msg=$(cat "$1")
+if [[ ! $commit_msg =~ ^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: ]]; then
+  echo "❌ 提交信息格式不正确！"
+  echo "✅ 正确格式: type(scope): description"
+  echo "📝 类型: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert"
+  echo "💡 示例: feat: add new intersection observer hook"
+  echo "💡 示例: fix(types): correct type definitions"
+  exit 1
+fi
