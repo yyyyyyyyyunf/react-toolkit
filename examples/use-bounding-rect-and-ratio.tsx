@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useBoundingClientRect, useIntersectionRatio } from '@react-toolkit/observer';
+import { useBoundingClientRect, useIntersectionRatio } from '@fly4react/observer';
 
 /**
  * useBoundingClientRect 和 useIntersectionRatio 使用示例

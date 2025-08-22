@@ -4,18 +4,18 @@
 
 ## 📦 包含的包
 
-### `@react-toolkit/observer`
+### `@fly4react/observer`
 一个基于 Intersection Observer API 的现代 React 工具库，提供懒加载、可见性检测、位置跟踪和滚动方向检测功能。
 
 ```bash
-npm install @react-toolkit/observer
+npm install @fly4react/observer
 ```
 
-### `@react-toolkit/memo`
+### `@fly4react/memo`
 一个高级的 React 记忆化组件工具，提供灵活的 props 比较策略。
 
 ```bash
-npm install @react-toolkit/memo
+npm install @fly4react/memo
 ```
 
 ## 🚀 开发
@@ -50,11 +50,11 @@ pnpm format
 ```
 react-intersection-tool/
 ├── packages/
-│   ├── observer/          # @react-toolkit/observer
+│   ├── observer/          # @fly4react/observer
 │   │   ├── src/
 │   │   ├── package.json
 │   │   └── rslib.config.ts
-│   └── memo/             # @react-toolkit/memo
+│   └── memo/             # @fly4react/memo
 │       ├── src/
 │       │   ├── index.ts   # createMemoComponent
 │       │   └── memoHelper.ts

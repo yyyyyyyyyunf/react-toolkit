@@ -141,7 +141,7 @@ jobs:
             cd ../..
           fi
       
-      - name: Publish @react-toolkit/observer
+      - name: Publish @fly4react/observer
         if: steps.changes.outputs.OBSERVER_CHANGED == 'true'
         run: |
           cd packages/observer
@@ -149,7 +149,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
-      - name: Publish @react-toolkit/memo
+      - name: Publish @fly4react/memo
         if: steps.changes.outputs.MEMO_CHANGED == 'true'
         run: |
           cd packages/memo
@@ -188,13 +188,13 @@ jobs:
             
             ### Installation
             ```bash
-            npm install @react-toolkit/observer@${{ steps.version.outputs.PUBLISH_TAG }}
-            npm install @react-toolkit/memo@${{ steps.version.outputs.PUBLISH_TAG }}
+            npm install @fly4react/observer@${{ steps.version.outputs.PUBLISH_TAG }}
+            npm install @fly4react/memo@${{ steps.version.outputs.PUBLISH_TAG }}
             ```
             
             ### Packages Updated
-            - @react-toolkit/observer@${{ steps.version.outputs.VERSION }}
-            - @react-toolkit/memo@${{ steps.version.outputs.VERSION }}
+            - @fly4react/observer@${{ steps.version.outputs.VERSION }}
+            - @fly4react/memo@${{ steps.version.outputs.VERSION }}
             
             ${{ steps.version.outputs.IS_BETA == 'true' && '⚠️ **This is a beta version. Use with caution.**' || '' }}
           draft: false

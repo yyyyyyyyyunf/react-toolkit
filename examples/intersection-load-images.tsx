@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IntersectionLoad } from '@react-toolkit/observer';
+import { IntersectionLoad } from '@fly4react/observer';
 
 /**
  * 图片懒加载示例

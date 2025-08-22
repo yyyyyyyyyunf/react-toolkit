@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { useElementPosition, useScrollDirection } from '@react-toolkit/observer';
+import { useElementPosition, useScrollDirection } from '@fly4react/observer';
 
 /**
  * 视差滚动示例

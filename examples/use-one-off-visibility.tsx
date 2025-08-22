@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useOneOffVisibility } from '@react-toolkit/observer';
+import { useOneOffVisibility } from '@fly4react/observer';
 
 /**
  * useOneOffVisibility 使用示例

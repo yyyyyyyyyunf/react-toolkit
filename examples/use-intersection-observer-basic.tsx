@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useIntersectionObserver, type ObserverCallbackParamType } from '@react-toolkit/observer';
+import { useIntersectionObserver, type ObserverCallbackParamType } from '@fly4react/observer';
 
 /**
  * useIntersectionObserver 基础使用示例

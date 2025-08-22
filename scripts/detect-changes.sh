@@ -33,24 +33,24 @@ if [ $OBSERVER_CHANGES -gt 0 ] || [ $ROOT_CHANGES -gt 0 ]; then
     if [ -n "${GITHUB_OUTPUT:-}" ]; then
         echo "OBSERVER_CHANGED=true" >> "$GITHUB_OUTPUT"
     fi
-    echo "✅ @react-toolkit/observer 需要更新版本"
+    echo "✅ @fly4react/observer 需要更新版本"
 else
     if [ -n "${GITHUB_OUTPUT:-}" ]; then
         echo "OBSERVER_CHANGED=false" >> "$GITHUB_OUTPUT"
     fi
-    echo "❌ @react-toolkit/observer 无需更新版本"
+    echo "❌ @fly4react/observer 无需更新版本"
 fi
 
 if [ $MEMO_CHANGES -gt 0 ] || [ $ROOT_CHANGES -gt 0 ]; then
     if [ -n "${GITHUB_OUTPUT:-}" ]; then
         echo "MEMO_CHANGED=true" >> "$GITHUB_OUTPUT"
     fi
-    echo "✅ @react-toolkit/memo 需要更新版本"
+    echo "✅ @fly4react/memo 需要更新版本"
 else
     if [ -n "${GITHUB_OUTPUT:-}" ]; then
         echo "MEMO_CHANGED=false" >> "$GITHUB_OUTPUT"
     fi
-    echo "❌ @react-toolkit/memo 无需更新版本"
+    echo "❌ @fly4react/memo 无需更新版本"
 fi
 
 # 如果有任何变化，根目录也需要更新
@@ -71,9 +71,9 @@ echo "🎯 发布策略:"
 if [ $OBSERVER_CHANGES -gt 0 ] && [ $MEMO_CHANGES -gt 0 ]; then
     echo "  📦 发布两个包的新版本"
 elif [ $OBSERVER_CHANGES -gt 0 ]; then
-    echo "  📦 只发布 @react-toolkit/observer"
+    echo "  📦 只发布 @fly4react/observer"
 elif [ $MEMO_CHANGES -gt 0 ]; then
-    echo "  📦 只发布 @react-toolkit/memo"
+    echo "  📦 只发布 @fly4react/memo"
 else
     echo "  📦 只发布根目录版本更新"
 fi

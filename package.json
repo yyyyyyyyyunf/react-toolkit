@@ -1,39 +1,9 @@
 {
-  "name": "@react-toolkit",
+  "name": "@fly4react",
   "version": "1.0.1",
-  "packageManager": "pnpm@8.15.0",
   "description": "React Toolkit 生态系统的 monorepo，包含 observer 和 memo 等工具库",
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "types": "./dist/index.d.ts",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
-  "keywords": [
-    "react",
-    "intersection-observer",
-    "lazy-loading",
-    "visibility",
-    "scroll",
-    "performance",
-    "typescript",
-    "hooks",
-    "component",
-    "visibility-detection",
-    "visibility-sensor"
-  ],
-  "author": "yyyyyyyyyunf",
-  "license": "MIT",
+  "private": true,
+  "packageManager": "pnpm@8.15.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/yyyyyyyyyunf/react-toolkit.git"
@@ -42,41 +12,31 @@
     "url": "https://github.com/yyyyyyyyyunf/react-toolkit/issues"
   },
   "homepage": "https://github.com/yyyyyyyyyunf/react-toolkit#readme",
+  "author": "yyyyyyyyyunf",
+  "license": "MIT",
   "scripts": {
-    "build": "pnpm -r build",
-    "dev": "pnpm -r dev",
-    "format": "pnpm -r format",
-    "format:check": "pnpm -r format:check",
-    "lint": "pnpm -r lint",
-    "lint:fix": "pnpm -r lint:fix",
     "check": "pnpm -r check",
-    "check:fix": "pnpm -r check:fix",
+    "build": "pnpm -r build",
+    "format": "pnpm -r format",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
     "clean": "pnpm -r clean",
-    "prepublishOnly": "pnpm -r prepublishOnly",
-    "prepack": "pnpm -r prepack",
-    "prepare": "[ -d .git ] && husky || true",
     "release": "./scripts/release.sh",
     "release:auto": "./scripts/release.sh --auto",
     "release:beta": "./scripts/release.sh --beta",
     "release:version": "./scripts/release.sh"
   },
+  "devDependencies": {
+    "@biomejs/biome": "^1.5.3",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "typescript": "^5.3.3"
+  },
   "lint-staged": {
-    "src/**/*.{ts,tsx}": [
+    "*.{js,jsx,ts,tsx}": [
       "biome format --write",
-      "biome lint --write",
-      "git add"
+      "biome lint --write"
     ]
   },
-  "devDependencies": {
-    "@biomejs/biome": "^2.2.0",
-    "@rsbuild/plugin-react": "^1.3.5",
-    "@rslib/core": "^0.12.2",
-    "@types/react": "^19.1.10",
-    "react": "^19.1.1",
-    "typescript": "^5.9.2"
-  },
-  "peerDependencies": {
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
-  }
+  "prepare": "[ -d .git ] && husky || true"
 }

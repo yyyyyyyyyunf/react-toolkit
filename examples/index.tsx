@@ -12,6 +12,7 @@ export { AdvancedLazyLoadExample } from './intersection-load-advanced';
 // 基础 Hook 示例
 export { UseIntersectionObserverExample } from './use-intersection-observer-basic';
 export { UseOneOffVisibilityExample } from './use-one-off-visibility';
+export { UseInViewportExample } from './use-in-viewport-example';
 
 // 位置跟踪 Hook 示例
 export { UseElementPositionExample } from './use-element-position';
@@ -65,6 +66,12 @@ export const exampleCategories = {
       title: 'useOneOffVisibility 一次性检测',
       description: '一次性可见性检测，适用于动画触发等场景',
       component: 'UseOneOffVisibilityExample'
+    },
+    {
+      name: 'UseInViewportExample',
+      title: 'useInViewport 视口可见性检测',
+      description: '简化的可见性检测 Hook，返回 boolean 值，适合简单场景',
+      component: 'UseInViewportExample'
     }
   ],
 
@@ -148,7 +155,7 @@ export const getExampleByName = (name: string) => {
  */
 export const exampleUsageInstructions = {
   setup: [
-    '1. 确保已安装 @react-toolkit/observer 库',
+    '1. 确保已安装 @fly4react/observer 库',
     '2. 导入需要的组件或 Hook',
     '3. 在 React 组件中使用，注意提供正确的 ref',
     '4. 根据需要配置选项参数'

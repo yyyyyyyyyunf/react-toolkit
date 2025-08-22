@@ -3,7 +3,7 @@ import {
 	type ObserverCallbackParamType,
 	type ScrollDirection,
 	useIntersectionObserver,
-} from "@react-toolkit/observer";
+} from "@fly4react/observer";
 
 const ScrollDirectionExample: React.FC = () => {
 	const [scrollDirection, setScrollDirection] =

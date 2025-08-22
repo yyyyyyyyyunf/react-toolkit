@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import {
 	type ScrollDirection,
 	useScrollDirection,
-} from "@react-toolkit/observer";
+} from "@fly4react/observer";
 
 const UseScrollDirectionExample: React.FC = () => {
 	const targetRef = useRef<HTMLDivElement>(null);
@@ -151,7 +151,7 @@ const UseScrollDirectionExample: React.FC = () => {
 						overflow: "auto",
 					}}
 				>
-					{`import { useScrollDirection } from '@react-toolkit/observer';
+					{`import { useScrollDirection } from '@fly4react/observer';
 
 const { scrollDirection, isScrolling } = useScrollDirection(ref, {
   threshold: [0, 0.25, 0.5, 0.75, 1],

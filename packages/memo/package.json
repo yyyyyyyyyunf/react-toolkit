@@ -1,10 +1,8 @@
 {
-  "name": "@react-toolkit/memo",
+  "name": "@fly4react/memo",
   "version": "1.0.0",
   "description": "一个高级的 React 记忆化组件工具，提供灵活的 props 比较策略",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -12,6 +10,9 @@
       "require": "./dist/index.cjs"
     }
   },
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "files": [
     "dist",
     "README.md",
@@ -22,7 +23,9 @@
     "memo",
     "performance",
     "optimization",
-    "react-toolkit"
+    "typescript",
+    "hooks",
+    "component"
   ],
   "author": "yyyyyyyyyunf",
   "license": "MIT",
@@ -34,26 +37,12 @@
     "url": "https://github.com/yyyyyyyyyunf/react-toolkit/issues"
   },
   "homepage": "https://github.com/yyyyyyyyyunf/react-toolkit#readme",
-  "peerDependencies": {
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.2.0",
-    "@rsbuild/core": "^0.4.0",
-    "@rsbuild/plugin-react": "^0.4.0",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "typescript": "^5.0.0"
-  },
   "scripts": {
     "build": "rslib build",
     "dev": "rslib build --watch",
     "format": "biome format --write src/",
-    "format:check": "biome format src/",
-    "lint": "biome lint src/",
+    "format:check": "biome format --check src/",
+    "lint": "biome lint --write src/",
     "lint:fix": "biome lint --write src/",
     "check": "biome check src/",
     "check:fix": "biome check --write src/",
@@ -61,6 +50,17 @@
     "prepublishOnly": "pnpm check && pnpm build",
     "prepack": "pnpm build",
     "prepare": "[ -d .git ] && husky || true"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.5.3",
+    "@rslib/core": "^0.12.2",
+    "@types/react": "^19.1.10",
+    "react": "^19.1.1",
+    "typescript": "^5.9.2"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
