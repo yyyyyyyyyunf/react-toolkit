@@ -13,7 +13,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write  # 需要写入权限来推送版本更新
       id-token: write  # 用于 npm 认证
     
     steps:
