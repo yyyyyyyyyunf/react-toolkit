@@ -2,8 +2,11 @@ name: Publish Packages
 
 on:
   push:
+    branches:
+      - 'release'
+      - 'dev/**'
     tags:
-      - 'v*'  # 当推送版本标签时触发
+      - 'v*'  # 保留标签触发，用于手动发布
   workflow_dispatch:  # 允许手动触发
 
 jobs:
@@ -46,46 +49,94 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
       
-      - name: Get version from tag
-        id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      - name: Determine version and tag
+        id: version
+        run: |
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            # 标签触发：使用标签版本
+            VERSION=${TAG_NAME#v}
+            IS_BETA=false
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            echo "IS_BETA=false" >> $GITHUB_OUTPUT
+            echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
+            echo "PUBLISH_TAG=latest" >> $GITHUB_OUTPUT
+          elif [[ "$BRANCH_NAME" == "release" ]]; then
+            # release 分支：发布正式版本
+            VERSION=$(node -p "require('./package.json').version")
+            IS_BETA=false
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            echo "IS_BETA=false" >> $GITHUB_OUTPUT
+            echo "TAG_NAME=v$VERSION" >> $GITHUB_OUTPUT
+            echo "PUBLISH_TAG=latest" >> $GITHUB_OUTPUT
+          elif [[ "$BRANCH_NAME" == dev/* ]]; then
+            # dev/ 分支：发布 beta 版本
+            BASE_VERSION=$(node -p "require('./package.json').version")
+            TIMESTAMP=$(date +%Y%m%d%H%M%S)
+            VERSION="${BASE_VERSION}-beta.${TIMESTAMP}"
+            IS_BETA=true
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            echo "IS_BETA=true" >> $GITHUB_OUTPUT
+            echo "TAG_NAME=v$VERSION" >> $GITHUB_OUTPUT
+            echo "PUBLISH_TAG=beta" >> $GITHUB_OUTPUT
+          else
+            echo "Unsupported branch: $BRANCH_NAME"
+            exit 1
+          fi
+          
+          echo "Branch: $BRANCH_NAME"
+          echo "Version: $VERSION"
+          echo "Is Beta: $IS_BETA"
+          echo "Publish Tag: $PUBLISH_TAG"
       
       - name: Publish @react-toolkit/observer
         run: |
           cd packages/observer
-          npm version ${{ steps.get_version.outputs.VERSION }} --no-git-tag-version
-          npm publish --access public
+          npm version ${{ steps.version.outputs.VERSION }} --no-git-tag-version
+          npm publish --access public --tag ${{ steps.version.outputs.PUBLISH_TAG }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
       - name: Publish @react-toolkit/memo
         run: |
           cd packages/memo
-          npm version ${{ steps.get_version.outputs.VERSION }} --no-git-tag-version
-          npm publish --access public
+          npm version ${{ steps.version.outputs.VERSION }} --no-git-tag-version
+          npm publish --access public --tag ${{ steps.version.outputs.PUBLISH_TAG }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Create Git tag
+        if: steps.version.outputs.IS_BETA == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a ${{ steps.version.outputs.TAG_NAME }} -m "Beta release ${{ steps.version.outputs.VERSION }}"
+          git push origin ${{ steps.version.outputs.TAG_NAME }}
       
       - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ steps.version.outputs.TAG_NAME }}
+          release_name: ${{ steps.version.outputs.IS_BETA == 'true' && format('Beta Release {0}', steps.version.outputs.VERSION) || format('Release {0}', steps.version.outputs.VERSION) }}
           body: |
-            ## Changes in ${{ github.ref }}
+            ## ${{ steps.version.outputs.IS_BETA == 'true' && 'Beta Release' || 'Release' }} ${{ steps.version.outputs.VERSION }}
             
-            This release includes updates to all @react-toolkit packages.
+            ${{ steps.version.outputs.IS_BETA == 'true' && 'This is a beta release for testing purposes.' || 'This release includes updates to all @react-toolkit packages.' }}
             
             ### Installation
             ```bash
-            npm install @react-toolkit/observer@${{ steps.get_version.outputs.VERSION }}
-            npm install @react-toolkit/memo@${{ steps.get_version.outputs.VERSION }}
+            npm install @react-toolkit/observer@${{ steps.version.outputs.PUBLISH_TAG }}
+            npm install @react-toolkit/memo@${{ steps.version.outputs.PUBLISH_TAG }}
             ```
             
             ### Packages Updated
-            - @react-toolkit/observer@${{ steps.get_version.outputs.VERSION }}
-            - @react-toolkit/memo@${{ steps.get_version.outputs.VERSION }}
+            - @react-toolkit/observer@${{ steps.version.outputs.VERSION }}
+            - @react-toolkit/memo@${{ steps.version.outputs.VERSION }}
+            
+            ${{ steps.version.outputs.IS_BETA == 'true' && '⚠️ **This is a beta version. Use with caution.**' || '' }}
           draft: false
-          prerelease: false
+          prerelease: ${{ steps.version.outputs.IS_BETA == 'true' }}
