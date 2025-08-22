@@ -41,4 +41,3 @@ export const useInViewport = (
 	// 如果交叉比例大于 0，说明元素在视口中可见
 	return intersectionRatio !== undefined && intersectionRatio > 0;
 };
-
