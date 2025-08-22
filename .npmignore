@@ -11,6 +11,8 @@ rslib.config.ts
 
 # Documentation for development
 DEVELOPMENT.md
+GIT_HOOKS.md
+MODULE_FORMATS.md
 
 # Dependencies
 node_modules/
@@ -48,6 +50,7 @@ coverage/
 # Git
 .git/
 .gitignore
+.husky/
 
 # Testing
 __tests__/

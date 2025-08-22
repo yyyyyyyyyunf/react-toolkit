@@ -13,6 +13,11 @@ export default defineConfig({
 			dts: true,
 			format: "esm",
 		},
+		{
+			bundle: false,
+			dts: false, // CommonJS 不需要重复生成类型文件
+			format: "cjs",
+		},
 	],
 	output: {
 		target: "web",

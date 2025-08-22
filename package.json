@@ -6,11 +6,13 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "types": "./dist/index.d.ts",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "files": [
     "dist",
     "README.md",
@@ -68,7 +70,7 @@
     "typescript": "^5.9.2"
   },
   "peerDependencies": {
-    "react": ">=16.9.0",
-    "react-dom": ">=16.9.0"
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
   }
 }
