@@ -31,16 +31,16 @@
 	"visibility-detection",
 	"visibility-sensor"
   ],
-  "author": "zongyf",
+  "author": "yyyyyyyyyunf",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/react-toolkit/observer.git"
+    "url": "https://github.com/yyyyyyyyyunf/react-toolkit.git"
   },
   "bugs": {
-    "url": "https://github.com/react-toolkit/observer/issues"
+    "url": "https://github.com/yyyyyyyyyunf/react-toolkit/issues"
   },
-  "homepage": "https://github.com/react-toolkit/observer#readme",
+  "homepage": "https://github.com/yyyyyyyyyunf/react-toolkit#readme",
   "scripts": {
     "build": "rslib build",
     "dev": "rslib build --watch",
