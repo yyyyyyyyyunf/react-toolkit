@@ -41,7 +41,7 @@ jobs:
           echo "Directory contents:"
           ls -la
           echo "Installing dependencies..."
-          pnpm install --frozen-lockfile
+          pnpm install --no-frozen-lockfile
           echo "Installation completed"
       
       - name: Run checks
