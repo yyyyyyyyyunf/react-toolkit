@@ -51,6 +51,8 @@
     "build": "rslib build",
     "dev": "rslib build --watch",
     "check": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm check && pnpm build",
+    "prepack": "pnpm build"
   }
 }

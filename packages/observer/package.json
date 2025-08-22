@@ -50,8 +50,8 @@
     "lint:fix": "biome lint --write src/",
     "check": "biome check src/",
     "check:fix": "biome check --write src/",
-    "prepublishOnly": "npm run check && npm run build",
-    "prepack": "npm run build",
+    "prepublishOnly": "pnpm check && pnpm build",
+    "prepack": "pnpm build",
     "prepare": "husky"
   },
   "lint-staged": {
