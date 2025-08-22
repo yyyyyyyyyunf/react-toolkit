@@ -112,6 +112,25 @@ echo "📦 运行测试和构建..."
 pnpm check
 pnpm build
 
+# 检测代码变化
+echo "🔍 检测代码变化..."
+if [ -f "./scripts/detect-changes.sh" ]; then
+    ./scripts/detect-changes.sh main
+    OBSERVER_CHANGED=$(echo "$(./scripts/detect-changes.sh main 2>&1)" | grep "OBSERVER_CHANGED=" | cut -d'=' -f2)
+    MEMO_CHANGED=$(echo "$(./scripts/detect-changes.sh main 2>&1)" | grep "MEMO_CHANGED=" | cut -d'=' -f2)
+    ROOT_CHANGED=$(echo "$(./scripts/detect-changes.sh main 2>&1)" | grep "ROOT_CHANGED=" | cut -d'=' -f2)
+else
+    # 如果没有检测脚本，默认所有包都有变化
+    OBSERVER_CHANGED=true
+    MEMO_CHANGED=true
+    ROOT_CHANGED=true
+fi
+
+echo "📊 变化检测结果:"
+echo "  Observer 变化: $OBSERVER_CHANGED"
+echo "  Memo 变化: $MEMO_CHANGED"
+echo "  根目录变化: $ROOT_CHANGED"
+
 # 创建发布分支
 echo "🌿 创建发布分支 $BRANCH_NAME..."
 git checkout -b "$BRANCH_NAME"

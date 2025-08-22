@@ -50,6 +50,11 @@ jobs:
       - name: Build packages
         run: pnpm build
       
+      - name: Detect changes
+        id: changes
+        run: |
+          ./scripts/detect-changes.sh main
+      
       - name: Determine version and tag
         id: version
         run: |
@@ -66,7 +71,7 @@ jobs:
             echo "PUBLISH_TAG=latest" >> $GITHUB_OUTPUT
             echo "AUTO_INCREMENT=false" >> $GITHUB_OUTPUT
           elif [[ "$BRANCH_NAME" == "release" ]]; then
-            # release 分支：自动升级补丁版本并发布正式版本
+            # release 分支：智能版本管理
             CURRENT_VERSION=$(node -p "require('./package.json').version")
             IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
             MAJOR=${VERSION_PARTS[0]}
@@ -102,24 +107,45 @@ jobs:
           echo "Publish Tag: $PUBLISH_TAG"
           echo "Auto Increment: $AUTO_INCREMENT"
       
-      - name: Update root package.json version
+      - name: Update package versions
         if: steps.version.outputs.AUTO_INCREMENT == 'true'
         run: |
-          npm version ${{ steps.version.outputs.VERSION }} --no-git-tag-version
-          echo "Updated root package.json to version ${{ steps.version.outputs.VERSION }}"
+          VERSION=${{ steps.version.outputs.VERSION }}
+          
+          # 更新根目录版本（如果有任何变化）
+          if [ "${{ steps.changes.outputs.ROOT_CHANGED }}" == "true" ]; then
+            npm version $VERSION --no-git-tag-version
+            echo "Updated root package.json to version $VERSION"
+          fi
+          
+          # 更新 observer 包版本（如果有 observer 变化）
+          if [ "${{ steps.changes.outputs.OBSERVER_CHANGED }}" == "true" ]; then
+            cd packages/observer
+            npm version $VERSION --no-git-tag-version
+            echo "Updated @react-toolkit/observer to version $VERSION"
+            cd ../..
+          fi
+          
+          # 更新 memo 包版本（如果有 memo 变化）
+          if [ "${{ steps.changes.outputs.MEMO_CHANGED }}" == "true" ]; then
+            cd packages/memo
+            npm version $VERSION --no-git-tag-version
+            echo "Updated @react-toolkit/memo to version $VERSION"
+            cd ../..
+          fi
       
       - name: Publish @react-toolkit/observer
+        if: steps.changes.outputs.OBSERVER_CHANGED == 'true'
         run: |
           cd packages/observer
-          npm version ${{ steps.version.outputs.VERSION }} --no-git-tag-version
           npm publish --access public --tag ${{ steps.version.outputs.PUBLISH_TAG }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
       - name: Publish @react-toolkit/memo
+        if: steps.changes.outputs.MEMO_CHANGED == 'true'
         run: |
           cd packages/memo
-          npm version ${{ steps.version.outputs.VERSION }} --no-git-tag-version
           npm publish --access public --tag ${{ steps.version.outputs.PUBLISH_TAG }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
