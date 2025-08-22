@@ -79,11 +79,11 @@ export function AnimationTriggersExample() {
 			{ name: "countUp", visible: countUpVisible },
 		];
 
-		animations.forEach(({ name, visible }) => {
-			if (visible) {
-				setPlayedAnimations((prev) => new Set([...prev, name]));
-			}
-		});
+		                                for (const { name, visible } of animations) {
+                        if (visible) {
+                                setPlayedAnimations((prev) => new Set([...prev, name]));
+                        }
+                }
 	}, [
 		fadeInVisible,
 		slideInVisible,
@@ -151,8 +151,9 @@ export function AnimationTriggersExample() {
 						</div>
 					</div>
 
-					<button
-						onClick={resetAnimations}
+					                                <button
+                                        type="button"
+                                        onClick={resetAnimations}
 						style={{
 							padding: "8px 16px",
 							background: "#6c757d",

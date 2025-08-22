@@ -109,8 +109,9 @@ export function InfiniteScrollExample() {
 					</span>
 				</div>
 
-				<button
-					onClick={resetList}
+				                                <button
+                                        type="button"
+                                        onClick={resetList}
 					style={{
 						padding: "8px 16px",
 						background: "#6c757d",

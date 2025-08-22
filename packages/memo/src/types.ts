@@ -5,7 +5,9 @@ import type React from "react";
  *
  * @template P 组件 props 的类型
  */
-export type MemoizedComponent<P> = React.MemoExoticComponent<React.ComponentType<P>>;
+export type MemoizedComponent<P> = React.MemoExoticComponent<
+	React.ComponentType<P>
+>;
 
 /**
  * 记忆化组件的配置选项
