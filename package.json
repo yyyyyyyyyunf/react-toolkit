@@ -1,6 +1,7 @@
 {
   "name": "@react-toolkit",
   "version": "1.0.0",
+  "packageManager": "pnpm@8.15.0",
   "description": "React Toolkit 生态系统的 monorepo，包含 observer 和 memo 等工具库",
   "type": "module",
   "exports": {

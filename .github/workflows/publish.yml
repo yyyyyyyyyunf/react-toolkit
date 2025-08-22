@@ -32,9 +32,18 @@ jobs:
         run: |
           corepack enable
           corepack prepare pnpm@latest --activate
+          echo "pnpm version: $(pnpm --version)"
+          echo "Node version: $(node --version)"
+          echo "npm version: $(npm --version)"
       
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Directory contents:"
+          ls -la
+          echo "Installing dependencies..."
+          pnpm install --frozen-lockfile
+          echo "Installation completed"
       
       - name: Run checks
         run: pnpm check
