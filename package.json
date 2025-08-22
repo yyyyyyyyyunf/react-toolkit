@@ -53,7 +53,11 @@
     "clean": "pnpm -r clean",
     "prepublishOnly": "pnpm -r prepublishOnly",
     "prepack": "pnpm -r prepack",
-    "prepare": "husky"
+    "prepare": "husky",
+    "release": "./scripts/release.sh",
+    "release:auto": "./scripts/release.sh --auto",
+    "release:beta": "./scripts/release.sh --beta",
+    "release:version": "./scripts/release.sh"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
