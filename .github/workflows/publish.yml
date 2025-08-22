@@ -8,6 +8,16 @@ on:
     tags:
       - 'v*'  # 保留标签触发，用于手动发布
   workflow_dispatch:  # 允许手动触发
+    inputs:
+      package:
+        description: 'Package to publish (memo, observer, or all)'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - memo
+          - observer
 
 jobs:
   publish:
@@ -142,7 +152,7 @@ jobs:
           fi
       
       - name: Publish @fly4react/observer
-        if: steps.changes.outputs.OBSERVER_CHANGED == 'true'
+        if: (steps.changes.outputs.OBSERVER_CHANGED == 'true' && github.event.inputs.package != 'memo') || github.event.inputs.package == 'observer'
         run: |
           cd packages/observer
           npm publish --access public --tag ${{ steps.version.outputs.PUBLISH_TAG }}
@@ -150,7 +160,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
       - name: Publish @fly4react/memo
-        if: steps.changes.outputs.MEMO_CHANGED == 'true'
+        if: (steps.changes.outputs.MEMO_CHANGED == 'true' && github.event.inputs.package != 'observer') || github.event.inputs.package == 'memo'
         run: |
           cd packages/memo
           npm publish --access public --tag ${{ steps.version.outputs.PUBLISH_TAG }}

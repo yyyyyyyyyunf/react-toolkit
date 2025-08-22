@@ -1,4 +1,4 @@
-import createMemoComponent from "@react-toolkit/memo";
+import createMemoComponent from "@fly4react/memo";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { lazyloadManager } from "../base/IntersectionObserverManager";
