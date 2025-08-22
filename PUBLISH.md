@@ -1,105 +1,162 @@
-# 发布检查清单
+# 发布指南
 
-## 发布前准备
+## 📦 Monorepo 发布
 
-### ✅ 代码质量检查
-- [x] 运行 `pnpm check` 确保代码规范
-- [x] 运行 `pnpm build` 确保构建成功
-- [x] 检查 TypeScript 类型定义完整性
-- [x] 确保所有示例可以正常运行
+这个项目是一个 monorepo，包含多个包：
 
-### ✅ 文档完整性
-- [x] README.md 内容完整且准确
-- [x] 所有 API 都有 JSDoc 注释
-- [x] 示例文档齐全（examples/ 目录）
-- [x] CHANGELOG.md 记录了所有变更
+- `@react-toolkit/observer`
+- `@react-toolkit/memo`
 
-### ✅ 包配置检查
-- [x] package.json 配置正确
-  - [x] 包名、版本、描述
-  - [x] 关键词和标签
-  - [x] 许可证信息
-  - [x] 仓库和主页链接
-  - [x] 正确的 exports 和 types 配置
-  - [x] files 字段包含必要文件
-- [x] LICENSE 文件存在
-- [x] .npmignore 配置正确
+## 🚀 发布步骤
 
-### ✅ 构建产物检查
-- [x] dist/ 目录包含完整的 JS 和 TypeScript 声明文件
-- [x] 包大小合理（当前 ~17.4KB）
-- [x] ES modules 格式正确
-- [x] 所有导出都可以正常访问
+### 1. 准备工作
 
-## 发布流程
-
-### 1. 最终检查
 ```bash
-# 清理并重新构建
-rm -rf dist/
-pnpm install
-pnpm check
+# 确保所有代码已提交
+git add .
+git commit -m "feat: prepare for release"
+
+# 构建所有包
 pnpm build
 
-# 检查包内容
+# 检查构建结果
+pnpm check
+```
+
+### 2. 发布单个包
+
+#### 发布 memo 包
+```bash
+cd packages/memo
+npm publish --access public
+```
+
+#### 发布 observer 包
+```bash
+cd packages/observer
+npm publish --access public
+```
+
+### 3. 批量发布
+
+```bash
+# 发布所有包
+pnpm -r publish --access public
+```
+
+## 📋 发布前检查清单
+
+### 通用检查
+- [ ] 所有测试通过
+- [ ] 代码已格式化 (`pnpm format`)
+- [ ] 代码检查通过 (`pnpm check`)
+- [ ] 构建成功 (`pnpm build`)
+- [ ] 版本号已更新
+- [ ] CHANGELOG.md 已更新
+- [ ] README.md 已更新
+
+### 包特定检查
+
+#### @react-toolkit/memo
+- [ ] 功能测试通过
+- [ ] TypeScript 类型正确
+- [ ] 导出正确
+
+#### @react-toolkit/observer
+- [ ] 所有 hooks 功能正常
+- [ ] 组件功能正常
+- [ ] 示例代码正常
+- [ ] 依赖关系正确
+
+## 🔄 版本管理
+
+### 更新版本号
+
+```bash
+# 更新所有包版本
+pnpm -r version patch  # 或 minor, major
+
+# 或者单独更新
+cd packages/memo && npm version patch
+cd packages/observer && npm version patch
+```
+
+### 同步版本
+
+```bash
+# 同步所有包版本
+pnpm -r version 1.0.0
+```
+
+## 🧪 测试发布
+
+### 1. 使用 npm pack 测试
+
+```bash
+# 测试 memo 包
+cd packages/memo
+npm pack --dry-run
+
+# 测试 observer 包
+cd packages/observer
 npm pack --dry-run
 ```
 
-### 2. 版本管理
-```bash
-# 确保版本号正确（当前 1.0.0）
-# 如需更新版本
-npm version patch|minor|major
-```
-
-### 3. 发布到 npm
-```bash
-# 发布到 npm
-npm publish
-
-# 或者先发布到测试版本
-npm publish --tag beta
-```
-
-### 4. 发布后验证
-```bash
-# 测试安装
-npm install react-intersection-tool
-
-# 验证导入
-node -e "console.log(require('react-intersection-tool'))"
-```
-
-### 5. 标记 Git 版本
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-## 发布后任务
-
-- [ ] 更新 GitHub Release 说明
-- [ ] 分享到相关社区
-- [ ] 收集用户反馈
-- [ ] 规划下一个版本
-
-## 回滚计划
-
-如果发布后发现问题：
+### 2. 本地安装测试
 
 ```bash
-# 撤销发布（24小时内）
-npm unpublish react-intersection-tool@1.0.0
-
-# 或者发布修复版本
-npm version patch
-npm publish
+# 在本地项目中测试
+npm install /path/to/packages/memo
+npm install /path/to/packages/observer
 ```
 
-## 注意事项
+## 🚨 发布后检查
 
-1. **确保 Git 仓库是最新的**
-2. **确保已经推送到 GitHub**
-3. **确保 npm 账户有发布权限**
-4. **首次发布建议使用 `npm publish --dry-run` 预览**
-5. **确保网络稳定，避免发布中断**
+### 1. 验证发布
+
+```bash
+# 检查包是否成功发布
+npm view @react-toolkit/memo
+npm view @react-toolkit/observer
+```
+
+### 2. 安装测试
+
+```bash
+# 创建测试项目
+mkdir test-install
+cd test-install
+npm init -y
+
+# 安装并测试
+npm install @react-toolkit/memo @react-toolkit/observer
+node -e "console.log(require('@react-toolkit/memo'))"
+node -e "console.log(require('@react-toolkit/observer'))"
+```
+
+## 🔧 故障排除
+
+### 发布失败
+
+1. **权限问题**: 确保有发布权限
+2. **包名冲突**: 检查包名是否已被占用
+3. **版本冲突**: 确保版本号唯一
+4. **构建失败**: 检查构建错误
+
+### 回滚发布
+
+```bash
+# 取消发布（24小时内）
+npm unpublish @react-toolkit/memo@1.0.0
+npm unpublish @react-toolkit/observer@1.0.0
+```
+
+## 📝 发布日志
+
+记录每次发布的重要信息：
+
+- 版本号
+- 发布时间
+- 主要变更
+- 已知问题
+- 后续计划

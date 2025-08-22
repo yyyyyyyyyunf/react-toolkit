@@ -1,7 +1,7 @@
 {
-  "name": "@react-toolkit",
+  "name": "@react-toolkit/observer",
   "version": "1.0.0",
-  "description": "React Toolkit 生态系统的 monorepo，包含 observer 和 memo 等工具库",
+  "description": "一个基于 Intersection Observer API 的现代 React 工具库，提供懒加载、可见性检测、位置跟踪和滚动方向检测功能",
   "type": "module",
   "exports": {
     ".": {
@@ -42,17 +42,16 @@
   },
   "homepage": "https://github.com/react-toolkit/observer#readme",
   "scripts": {
-    "build": "pnpm -r build",
-    "dev": "pnpm -r dev",
-    "format": "pnpm -r format",
-    "format:check": "pnpm -r format:check",
-    "lint": "pnpm -r lint",
-    "lint:fix": "pnpm -r lint:fix",
-    "check": "pnpm -r check",
-    "check:fix": "pnpm -r check:fix",
-    "clean": "pnpm -r clean",
-    "prepublishOnly": "pnpm -r prepublishOnly",
-    "prepack": "pnpm -r prepack",
+    "build": "rslib build",
+    "dev": "rslib build --watch",
+    "format": "biome format --write src/",
+    "format:check": "biome format src/",
+    "lint": "biome lint src/",
+    "lint:fix": "biome lint --write src/",
+    "check": "biome check src/",
+    "check:fix": "biome check --write src/",
+    "prepublishOnly": "npm run check && npm run build",
+    "prepack": "npm run build",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -73,5 +72,8 @@
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
+  },
+  "dependencies": {
+    "@react-toolkit/memo": "workspace:^1.0.0"
   }
 }

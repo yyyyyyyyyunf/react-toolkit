@@ -1,9 +1,9 @@
+import createMemoComponent from "@react-toolkit/memo";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { lazyloadManager } from "../base/IntersectionObserverManager";
 import type { ObserverCallbackParamType } from "../types";
 import { checkVisibility, isSupportIntersectionObserver } from "../utils";
-import createMemoComponent from "../utils/memo";
 
 interface LazyLoadProps {
 	children: React.ReactNode;

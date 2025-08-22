@@ -1,6 +1,6 @@
 # 模块格式支持说明
 
-`react-intersection-tool` 同时支持 ESM (ES Modules) 和 CommonJS 两种模块格式，确保在不同环境下都能正常使用。
+`@react-toolkit/observer` 和 `@react-toolkit/memo` 都同时支持 ESM (ES Modules) 和 CommonJS 两种模块格式，确保在不同环境下都能正常使用。
 
 ## 支持的模块格式
 
@@ -18,20 +18,38 @@
 
 ### ESM 导入（推荐）
 
+#### @react-toolkit/observer
+
 ```tsx
 // 完整导入
 import { 
   IntersectionLoad, 
   useElementPosition, 
   useOneOffVisibility 
-} from 'react-intersection-tool';
+} from '@react-toolkit/observer';
 
 // 按需导入
-import { IntersectionLoad } from 'react-intersection-tool';
-import { useElementPosition } from 'react-intersection-tool';
+import { IntersectionLoad } from '@react-toolkit/observer';
+import { useElementPosition } from '@react-toolkit/observer';
+```
+
+#### @react-toolkit/memo
+
+```tsx
+// 完整导入
+import { 
+  createMemoComponent,
+  debugComponentList,
+  ignorePropsList 
+} from '@react-toolkit/memo';
+
+// 按需导入
+import { createMemoComponent } from '@react-toolkit/memo';
 ```
 
 ### CommonJS 导入
+
+#### @react-toolkit/observer
 
 ```jsx
 // 完整导入
@@ -39,23 +57,50 @@ const {
   IntersectionLoad, 
   useElementPosition, 
   useOneOffVisibility 
-} = require('react-intersection-tool');
+} = require('@react-toolkit/observer');
 
 // 按需导入
-const { IntersectionLoad } = require('react-intersection-tool');
-const { useElementPosition } = require('react-intersection-tool');
+const { IntersectionLoad } = require('@react-toolkit/observer');
+const { useElementPosition } = require('@react-toolkit/observer');
+```
+
+#### @react-toolkit/memo
+
+```jsx
+// 完整导入
+const { 
+  createMemoComponent,
+  debugComponentList,
+  ignorePropsList 
+} = require('@react-toolkit/memo');
+
+// 按需导入
+const { createMemoComponent } = require('@react-toolkit/memo');
 ```
 
 ### TypeScript 使用
+
+#### @react-toolkit/observer
 
 ```tsx
 // TypeScript 会自动选择正确的模块格式
 import type { 
   ObserverCallbackParamType, 
   ScrollDirection 
-} from 'react-intersection-tool';
+} from '@react-toolkit/observer';
 
-import { useIntersectionObserver } from 'react-intersection-tool';
+import { useIntersectionObserver } from '@react-toolkit/observer';
+```
+
+#### @react-toolkit/memo
+
+```tsx
+// TypeScript 会自动选择正确的模块格式
+import type { 
+  MemoOptions 
+} from '@react-toolkit/memo';
+
+import { createMemoComponent } from '@react-toolkit/memo';
 ```
 
 ## 包配置说明
@@ -90,7 +135,7 @@ import { useIntersectionObserver } from 'react-intersection-tool';
 
 ```html
 <script type="module">
-  import { IntersectionLoad } from 'https://unpkg.com/react-intersection-tool@1.0.0/dist/index.js';
+  import { IntersectionLoad } from 'https://unpkg.com/@react-toolkit/observer@1.0.0/dist/index.js';
   
   // 使用组件
   const app = document.getElementById('app');
@@ -102,10 +147,10 @@ import { useIntersectionObserver } from 'react-intersection-tool';
 
 ```js
 // ESM 模式 (package.json 中 "type": "module")
-import { useElementPosition } from 'react-intersection-tool';
+import { useElementPosition } from '@react-toolkit/observer';
 
 // CommonJS 模式
-const { useElementPosition } = require('react-intersection-tool');
+const { useElementPosition } = require('@react-toolkit/observer');
 ```
 
 ### 打包工具
@@ -169,26 +214,26 @@ dist/
 ### 1. 优先使用 ESM
 ```tsx
 // ✅ 推荐
-import { IntersectionLoad } from 'react-intersection-tool';
+import { IntersectionLoad } from '@react-toolkit/observer';
 
 // ❌ 不推荐（除非必要）
-const { IntersectionLoad } = require('react-intersection-tool');
+const { IntersectionLoad } = require('@react-toolkit/observer');
 ```
 
 ### 2. 按需导入
 ```tsx
 // ✅ 推荐 - 只导入需要的功能
-import { useElementPosition } from 'react-intersection-tool';
+import { useElementPosition } from '@react-toolkit/observer';
 
 // ❌ 不推荐 - 导入所有功能
-import * as ReactIntersectionTool from 'react-intersection-tool';
+import * as ReactIntersectionTool from '@react-toolkit/observer';
 ```
 
 ### 3. TypeScript 类型导入
 ```tsx
 // ✅ 推荐 - 分离类型导入
-import type { ObserverCallbackParamType } from 'react-intersection-tool';
-import { useIntersectionObserver } from 'react-intersection-tool';
+import type { ObserverCallbackParamType } from '@react-toolkit/observer';
+import { useIntersectionObserver } from '@react-toolkit/observer';
 ```
 
 ## 故障排除
@@ -196,11 +241,11 @@ import { useIntersectionObserver } from 'react-intersection-tool';
 ### 模块找不到错误
 ```bash
 # 检查是否正确安装
-npm ls react-intersection-tool
+npm ls @react-toolkit/observer
 
 # 清除缓存重新安装
 npm cache clean --force
-npm install react-intersection-tool
+npm install @react-toolkit/observer
 ```
 
 ### 类型错误
@@ -221,7 +266,7 @@ npm install typescript@^4.5.0
 ### 打包工具兼容性
 ```js
 // 如果遇到模块解析问题，可以显式指定入口
-import { IntersectionLoad } from 'react-intersection-tool/dist/index.js';
+import { IntersectionLoad } from '@react-toolkit/observer/dist/index.js';
 ```
 
 ## 性能考虑

@@ -93,7 +93,7 @@ function createMemoComponent<P extends object>(
 		} else {
 			// 否则比较所有键，但忽略某些常见属性
 			const keys = Object.keys(prevProps).filter(
-				(key) => !ignorePropsList.includes(key),
+				(key) => ignorePropsList.indexOf(key) === -1,
 			) as Array<keyof P>;
 
 			for (const key of keys) {

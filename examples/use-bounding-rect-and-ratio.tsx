@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useBoundingClientRect, useIntersectionRatio } from 'react-intersection-tool';
+import { useBoundingClientRect, useIntersectionRatio } from '@react-toolkit/observer';
 
 /**
  * useBoundingClientRect 和 useIntersectionRatio 使用示例

@@ -1,6 +1,6 @@
 # React Intersection Tool 示例集合
 
-这个目录包含了 `react-intersection-tool` 库的完整示例集合，展示了各种使用场景和最佳实践。
+这个目录包含了 `@react-toolkit/observer` 库的完整示例集合，展示了各种使用场景和最佳实践。
 
 ## 📁 文件结构
 
@@ -115,7 +115,7 @@ examples/
 
 ```tsx
 import React, { useRef } from 'react';
-import { useOneOffVisibility } from 'react-intersection-tool';
+import { useOneOffVisibility } from '@react-toolkit/observer';
 
 function MyComponent() {
   const ref = useRef<HTMLDivElement>(null);
@@ -132,7 +132,7 @@ function MyComponent() {
 ### 2. 高级配置
 
 ```tsx
-import { useElementPosition } from 'react-intersection-tool';
+import { useElementPosition } from '@react-toolkit/observer';
 
 const position = useElementPosition(ref, {
   step: 0.1,           // 每 10% 触发一次

@@ -5,9 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 包版本
+
+- `@react-toolkit/observer` - Intersection Observer 工具库
+- `@react-toolkit/memo` - React 记忆化组件工具
+
 ## [1.0.0] - 2024-12-19
 
-### Added
+### @react-toolkit/observer
+
+#### Added
 
 #### Core Components
 - **IntersectionLoad**: 懒加载组件，支持占位符、自定义阈值和偏移量
@@ -51,6 +58,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive type definitions
 - Performance optimized with intelligent observer reuse
 
+### @react-toolkit/memo
+
+#### Added
+
+#### Core Features
+- **createMemoComponent**: 高级 React.memo 封装，提供灵活的 props 比较策略
+- **自定义比较函数**: 支持传入自定义的比较函数
+- **选择性属性比较**: 只比较指定的属性，忽略其他属性
+- **调试友好**: 内置调试日志功能，便于开发调试
+- **类型安全**: 完整的 TypeScript 类型支持
+
+#### 高级特性
+- **智能比较**: 自动忽略常见的非关键属性（如 children、style 等）
+- **调试模式**: 可配置的调试日志，追踪特定组件的 props 变化
+- **性能优化**: 基于 React.memo 的高性能记忆化
+- **灵活配置**: 支持多种比较策略和配置选项
+
+### Technical Details
+- Built with TypeScript 5.9+
+- React 16.9+ compatibility
+- Modern ES modules support
+- Zero external runtime dependencies
+- Comprehensive type definitions
+
 ### Breaking Changes
 None - this is the initial release.
 
@@ -64,3 +95,4 @@ Not applicable - this is the initial release.
 - More animation integration examples
 - Performance analytics tools
 - Additional semantic threshold values
+- More memo optimization strategies

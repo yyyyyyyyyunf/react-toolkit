@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useElementPosition } from 'react-intersection-tool';
+import { useElementPosition } from '@react-toolkit/observer';
 
 /**
  * useElementPosition 使用示例

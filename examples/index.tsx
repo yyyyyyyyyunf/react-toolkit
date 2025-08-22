@@ -148,7 +148,7 @@ export const getExampleByName = (name: string) => {
  */
 export const exampleUsageInstructions = {
   setup: [
-    '1. 确保已安装 react-intersection-tool 库',
+    '1. 确保已安装 @react-toolkit/observer 库',
     '2. 导入需要的组件或 Hook',
     '3. 在 React 组件中使用，注意提供正确的 ref',
     '4. 根据需要配置选项参数'

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useOneOffVisibility, useIntersectionRatio } from 'react-intersection-tool';
+import { useOneOffVisibility, useIntersectionRatio } from '@react-toolkit/observer';
 
 /**
  * 动画触发示例

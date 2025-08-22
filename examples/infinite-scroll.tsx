@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { useOneOffVisibility } from 'react-intersection-tool';
+import { useOneOffVisibility } from '@react-toolkit/observer';
 
 /**
  * 无限滚动示例

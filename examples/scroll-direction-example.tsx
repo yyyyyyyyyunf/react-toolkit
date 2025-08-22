@@ -3,7 +3,7 @@ import {
 	type ObserverCallbackParamType,
 	type ScrollDirection,
 	useIntersectionObserver,
-} from "react-intersection-tool";
+} from "@react-toolkit/observer";
 
 const ScrollDirectionExample: React.FC = () => {
 	const [scrollDirection, setScrollDirection] =

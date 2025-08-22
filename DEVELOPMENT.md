@@ -1,5 +1,12 @@
 # 开发指南
 
+## 项目结构
+
+这是一个 monorepo，包含以下包：
+
+- `@react-toolkit/observer` - Intersection Observer 工具库
+- `@react-toolkit/memo` - React 记忆化组件工具
+
 ## 代码格式化
 
 本项目使用 [Biome](https://biomejs.dev/) 进行代码格式化和 linting。
@@ -16,16 +23,22 @@
 ### 可用的脚本
 
 ```bash
-# 格式化代码
+# 构建所有包
+pnpm build
+
+# 开发模式（监听文件变化）
+pnpm dev
+
+# 格式化所有包的代码
 pnpm format
 
 # 检查代码格式（不修改）
 pnpm format:check
 
-# 运行 lint 检查
+# 运行所有包的 lint 检查
 pnpm lint
 
-# 自动修复 lint 问题
+# 自动修复所有包的 lint 问题
 pnpm lint:fix
 
 # 运行完整的代码检查（格式化 + lint）
@@ -33,6 +46,9 @@ pnpm check
 
 # 自动修复所有问题
 pnpm check:fix
+
+# 清理所有包的构建产物
+pnpm clean
 ```
 
 ### 编辑器集成
@@ -55,9 +71,37 @@ Biome 支持多种编辑器，请参考 [官方文档](https://biomejs.dev/guide
 ## 开发流程
 
 1. **编写代码**：按照项目的编码规范编写代码
-2. **格式化**：运行 `pnpm format` 确保代码格式正确
-3. **检查**：运行 `pnpm check` 确保没有 lint 错误
-4. **提交**：提交代码前确保所有检查都通过
+2. **构建**：运行 `pnpm build` 确保所有包构建成功
+3. **格式化**：运行 `pnpm format` 确保代码格式正确
+4. **检查**：运行 `pnpm check` 确保没有 lint 错误
+5. **提交**：提交代码前确保所有检查都通过
+
+## 包开发
+
+### 开发单个包
+
+```bash
+# 进入特定包目录
+cd packages/observer
+# 或
+cd packages/memo
+
+# 开发模式
+pnpm dev
+
+# 构建
+pnpm build
+
+# 检查
+pnpm check
+```
+
+### 添加新包
+
+1. 在 `packages/` 目录下创建新包目录
+2. 创建 `package.json`、`tsconfig.json`、`rslib.config.ts`
+3. 在根目录的 `package.json` 中添加相应的脚本
+4. 更新 `pnpm-workspace.yaml`（如果需要）
 
 ## 配置说明
 

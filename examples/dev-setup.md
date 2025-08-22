@@ -2,10 +2,10 @@
 
 ## 当前状态
 
-由于 `react-intersection-tool` 库还没有发布到 npm，示例文件目前使用包名导入：
+由于 `@react-toolkit/observer` 库还没有发布到 npm，示例文件目前使用包名导入：
 
 ```tsx
-import { IntersectionLoad } from 'react-intersection-tool';
+import { IntersectionLoad } from '@react-toolkit/observer';
 ```
 
 ## 开发阶段运行示例
@@ -19,7 +19,7 @@ npm link
 
 2. **在示例目录执行**：
 ```bash
-npm link react-intersection-tool
+npm link @react-toolkit/observer
 ```
 
 3. **运行示例**：
@@ -33,7 +33,7 @@ npm run dev
 
 ```tsx
 // 将
-import { IntersectionLoad } from 'react-intersection-tool';
+import { IntersectionLoad } from '@react-toolkit/observer';
 
 // 改为
 import { IntersectionLoad } from '../src';
@@ -53,7 +53,7 @@ npm publish
 
 3. **安装并使用**：
 ```bash
-npm install react-intersection-tool
+npm install @react-toolkit/observer
 ```
 
 ## 示例运行环境
@@ -83,7 +83,7 @@ npm install react-intersection-tool
 一旦库发布到 npm，示例文件就可以正常使用包名导入了：
 
 ```tsx
-import { IntersectionLoad } from 'react-intersection-tool';
-import { useElementPosition } from 'react-intersection-tool';
-import { useOneOffVisibility } from 'react-intersection-tool';
+import { IntersectionLoad } from '@react-toolkit/observer';
+import { useElementPosition } from '@react-toolkit/observer';
+import { useOneOffVisibility } from '@react-toolkit/observer';
 ```

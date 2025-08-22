@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { useElementPosition, useScrollDirection } from 'react-intersection-tool';
+import { useElementPosition, useScrollDirection } from '@react-toolkit/observer';
 
 /**
  * 视差滚动示例

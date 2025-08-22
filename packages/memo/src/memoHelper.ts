@@ -42,7 +42,7 @@ export const ignorePropsList: string[] = [];
  * ```
  */
 export const debugLog = (displayName: string, ...args: unknown[]) => {
-	if (debugComponentList.some((item) => displayName.includes(item))) {
+	if (debugComponentList.some((item) => displayName.indexOf(item) !== -1)) {
 		console.log(`[${displayName}]`, ...args);
 	}
 };
