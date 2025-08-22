@@ -1,6 +1,6 @@
 {
   "name": "@fly4react",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "React工具集合，包含 observer 和 memo 等工具库",
   "private": true,
   "packageManager": "pnpm@8.15.0",
