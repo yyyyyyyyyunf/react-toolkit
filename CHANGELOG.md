@@ -7,12 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 包版本
 
-- `@react-toolkit/observer` - Intersection Observer 工具库
-- `@react-toolkit/memo` - React 记忆化组件工具
+- `@fly4react/observer` - Intersection Observer 工具库
+- `@fly4react/memo` - React 记忆化组件工具
 
 ## [1.0.0] - 2024-12-19
 
-### @react-toolkit/observer
+### @fly4react/observer
 
 #### Added
 
@@ -58,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive type definitions
 - Performance optimized with intelligent observer reuse
 
-### @react-toolkit/memo
+### @fly4react/memo
 
 #### Added
 

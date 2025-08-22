@@ -1,6 +1,6 @@
 # 发布指南
 
-本文档介绍如何使用 GitHub Actions 自动发布 `@react-toolkit` 包到 npm。
+本文档介绍如何使用 GitHub Actions 自动发布 `@fly4react` 包到 npm。
 
 ## 🚀 自动发布流程
 
@@ -111,8 +111,8 @@ git push origin v1.0.0
 1. ✅ 运行代码检查 (`pnpm check`)
 2. ✅ 构建所有包 (`pnpm build`)
 3. ✅ **自动升级补丁版本** (1.0.0 → 1.0.1)
-4. ✅ 发布 `@react-toolkit/observer@latest` 到 npm
-5. ✅ 发布 `@react-toolkit/memo@latest` 到 npm
+4. ✅ 发布 `@fly4react/observer@latest` 到 npm
+5. ✅ 发布 `@fly4react/memo@latest` 到 npm
 6. ✅ 创建 GitHub Release
 7. ✅ 提交版本更新到仓库
 
@@ -122,8 +122,8 @@ git push origin v1.0.0
 
 1. ✅ 运行代码检查 (`pnpm check`)
 2. ✅ 构建所有包 (`pnpm build`)
-3. ✅ 发布 `@react-toolkit/observer@beta` 到 npm
-4. ✅ 发布 `@react-toolkit/memo@beta` 到 npm
+3. ✅ 发布 `@fly4react/observer@beta` 到 npm
+4. ✅ 发布 `@fly4react/memo@beta` 到 npm
 5. ✅ 创建带时间戳的版本号
 6. ✅ 创建 GitHub Release (标记为 prerelease)
 
@@ -132,8 +132,8 @@ git push origin v1.0.0
 - **查看 Actions**: https://github.com/yyyyyyyyyunf/react-toolkit/actions
 - **查看 Releases**: https://github.com/yyyyyyyyyunf/react-toolkit/releases
 - **npm 包页面**:
-  - https://www.npmjs.com/package/@react-toolkit/observer
-  - https://www.npmjs.com/package/@react-toolkit/memo
+  - https://www.npmjs.com/package/@fly4react/observer
+  - https://www.npmjs.com/package/@fly4react/memo
 
 ## 📋 版本管理
 

@@ -4,8 +4,8 @@
 
 这个项目是一个 monorepo，包含多个包：
 
-- `@react-toolkit/observer`
-- `@react-toolkit/memo`
+- `@fly4react/observer`
+- `@fly4react/memo`
 
 ## 🚀 发布步骤
 
@@ -57,12 +57,12 @@ pnpm -r publish --access public
 
 ### 包特定检查
 
-#### @react-toolkit/memo
+#### @fly4react/memo
 - [ ] 功能测试通过
 - [ ] TypeScript 类型正确
 - [ ] 导出正确
 
-#### @react-toolkit/observer
+#### @fly4react/observer
 - [ ] 所有 hooks 功能正常
 - [ ] 组件功能正常
 - [ ] 示例代码正常
@@ -116,8 +116,8 @@ npm install /path/to/packages/observer
 
 ```bash
 # 检查包是否成功发布
-npm view @react-toolkit/memo
-npm view @react-toolkit/observer
+npm view @fly4react/memo
+npm view @fly4react/observer
 ```
 
 ### 2. 安装测试
@@ -129,9 +129,9 @@ cd test-install
 npm init -y
 
 # 安装并测试
-npm install @react-toolkit/memo @react-toolkit/observer
-node -e "console.log(require('@react-toolkit/memo'))"
-node -e "console.log(require('@react-toolkit/observer'))"
+npm install @fly4react/memo @fly4react/observer
+node -e "console.log(require('@fly4react/memo'))"
+node -e "console.log(require('@fly4react/observer'))"
 ```
 
 ## 🔧 故障排除
@@ -147,8 +147,8 @@ node -e "console.log(require('@react-toolkit/observer'))"
 
 ```bash
 # 取消发布（24小时内）
-npm unpublish @react-toolkit/memo@1.0.0
-npm unpublish @react-toolkit/observer@1.0.0
+npm unpublish @fly4react/memo@1.0.0
+npm unpublish @fly4react/observer@1.0.0
 ```
 
 ## 📝 发布日志

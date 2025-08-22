@@ -1,4 +1,4 @@
-# @react-toolkit/memo
+# @fly4react/memo
 
 一个高级的 React 记忆化组件工具，提供灵活的 props 比较策略。
 
@@ -13,11 +13,11 @@
 ## 📦 安装
 
 ```bash
-npm install @react-toolkit/memo
+npm install @fly4react/memo
 # 或
-yarn add @react-toolkit/memo
+yarn add @fly4react/memo
 # 或
-pnpm add @react-toolkit/memo
+pnpm add @fly4react/memo
 ```
 
 ## 🚀 使用
@@ -25,7 +25,7 @@ pnpm add @react-toolkit/memo
 ### 基本用法
 
 ```tsx
-import { createMemoComponent } from '@react-toolkit/memo';
+import { createMemoComponent } from '@fly4react/memo';
 
 const MyComponent = createMemoComponent(({ name, age }) => (
   <div>{name}: {age}</div>
@@ -76,7 +76,7 @@ const MyComponent = createMemoComponent(
 ### 调试模式
 
 ```tsx
-import { debugComponentList } from '@react-toolkit/memo';
+import { debugComponentList } from '@fly4react/memo';
 
 // 启用特定组件的调试日志
 debugComponentList.push('MyComponent');
@@ -85,7 +85,7 @@ debugComponentList.push('MyComponent');
 ### 忽略属性
 
 ```tsx
-import { ignorePropsList } from '@react-toolkit/memo';
+import { ignorePropsList } from '@fly4react/memo';
 
 // 添加要忽略的属性
 ignorePropsList.push('onClick');

@@ -1,4 +1,4 @@
-# @react-toolkit/observer
+# @fly4react/observer
 
 一个基于 Intersection Observer API 的现代 React 工具库，提供懒加载、可见性检测、位置跟踪和滚动方向检测功能。
 
@@ -19,11 +19,11 @@
 ## 📦 安装
 
 ```bash
-npm install @react-toolkit/observer
+npm install @fly4react/observer
 # 或
-yarn add @react-toolkit/observer
+yarn add @fly4react/observer
 # 或
-pnpm add @react-toolkit/observer
+pnpm add @fly4react/observer
 ```
 
 ## 🚀 使用方法
@@ -33,7 +33,7 @@ pnpm add @react-toolkit/observer
 #### 数值阈值
 
 ```tsx
-import { IntersectionLoad } from '@react-toolkit/observer';
+import { IntersectionLoad } from '@fly4react/observer';
 
 function App() {
   return (
@@ -54,7 +54,7 @@ function App() {
 #### 语义化阈值
 
 ```tsx
-import { IntersectionLoad } from '@react-toolkit/observer';
+import { IntersectionLoad } from '@fly4react/observer';
 
 function App() {
   return (
@@ -84,7 +84,7 @@ function App() {
 #### 动态控制监听
 
 ```tsx
-import { IntersectionLoad } from '@react-toolkit/observer';
+import { IntersectionLoad } from '@fly4react/observer';
 import { useState } from 'react';
 
 function App() {
@@ -112,7 +112,7 @@ function App() {
 #### 使用 onChange 回调
 
 ```tsx
-import { IntersectionLoad } from '@react-toolkit/observer';
+import { IntersectionLoad } from '@fly4react/observer';
 import { useState } from 'react';
 
 function App() {
@@ -142,7 +142,7 @@ function App() {
 #### 自定义根容器
 
 ```tsx
-import { IntersectionLoad } from '@react-toolkit/observer';
+import { IntersectionLoad } from '@fly4react/observer';
 import { useRef } from 'react';
 
 function App() {
@@ -175,7 +175,7 @@ function App() {
 #### useIntersectionObserver
 
 ```tsx
-import { useIntersectionObserver, ObserverCallbackParamType } from '@react-toolkit/observer';
+import { useIntersectionObserver, ObserverCallbackParamType } from '@fly4react/observer';
 import { useRef } from 'react';
 
 function MyComponent() {
@@ -197,7 +197,7 @@ function MyComponent() {
 #### useOneOffVisibility
 
 ```tsx
-import { useOneOffVisibility } from '@react-toolkit/observer';
+import { useOneOffVisibility } from '@fly4react/observer';
 import { useRef } from 'react';
 
 function MyComponent() {
@@ -215,7 +215,7 @@ function MyComponent() {
 #### useScrollDirection
 
 ```tsx
-import { useScrollDirection } from '@react-toolkit/observer';
+import { useScrollDirection } from '@fly4react/observer';
 import { useRef } from 'react';
 
 function MyComponent() {
@@ -233,7 +233,7 @@ function MyComponent() {
 #### useElementPosition
 
 ```tsx
-import { useElementPosition } from '@react-toolkit/observer';
+import { useElementPosition } from '@fly4react/observer';
 import { useRef } from 'react';
 
 function MyComponent() {
@@ -262,7 +262,7 @@ function MyComponent() {
 #### useBoundingClientRect
 
 ```tsx
-import { useBoundingClientRect } from '@react-toolkit/observer';
+import { useBoundingClientRect } from '@fly4react/observer';
 import { useRef } from 'react';
 
 function MyComponent() {
@@ -292,7 +292,7 @@ function MyComponent() {
 #### useIntersectionRatio
 
 ```tsx
-import { useIntersectionRatio } from '@react-toolkit/observer';
+import { useIntersectionRatio } from '@fly4react/observer';
 import { useRef } from 'react';
 
 function MyComponent() {
@@ -419,7 +419,7 @@ interface UseScrollDirectionOptions {
 
 ## 🎯 与 react-visibility-sensor 的对比
 
-| 功能 | react-visibility-sensor | @react-toolkit/observer |
+| 功能 | react-visibility-sensor | @fly4react/observer |
 |------|------------------------|------------------------|
 | 部分可见性检测 | ✅ | ✅ |
 | 数值阈值 | ✅ | ✅ |
