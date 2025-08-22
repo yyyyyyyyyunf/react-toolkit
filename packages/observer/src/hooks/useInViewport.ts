@@ -38,5 +38,6 @@ export const useInViewport = (
 	options: ElementPositionOptions = {},
 ): boolean => {
 	const intersectionRatio = useIntersectionRatio(ref, options);
+	// 如果交叉比例大于 0，说明元素在视口中可见
 	return intersectionRatio !== undefined && intersectionRatio > 0;
 };
