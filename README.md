@@ -1,6 +1,6 @@
-# React Toolkit Monorepo
+# React Toolkit
 
-这是一个 React Toolkit 生态系统的 monorepo，包含多个高性能的 React 工具库。
+这是一个 React Toolkit 的 monorepo，包含多个高性能的 React 工具库。
 
 ## 📦 包含的包
 

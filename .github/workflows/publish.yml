@@ -152,7 +152,9 @@ jobs:
           fi
       
       - name: Publish @fly4react/observer
-        if: (steps.changes.outputs.OBSERVER_CHANGED == 'true' && github.event.inputs.package != 'memo') || github.event.inputs.package == 'observer'
+        if: |
+          (steps.changes.outputs.OBSERVER_CHANGED == 'true' && github.event.inputs.package != 'memo') || 
+          github.event.inputs.package == 'observer'
         run: |
           cd packages/observer
           npm publish --access public --tag ${{ steps.version.outputs.PUBLISH_TAG }}
@@ -160,7 +162,9 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
       - name: Publish @fly4react/memo
-        if: (steps.changes.outputs.MEMO_CHANGED == 'true' && github.event.inputs.package != 'observer') || github.event.inputs.package == 'memo'
+        if: |
+          (steps.changes.outputs.MEMO_CHANGED == 'true' && github.event.inputs.package != 'observer') || 
+          github.event.inputs.package == 'memo'
         run: |
           cd packages/memo
           npm publish --access public --tag ${{ steps.version.outputs.PUBLISH_TAG }}

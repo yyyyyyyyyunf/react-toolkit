@@ -13,14 +13,14 @@ echo "🔍 检测代码变化..."
 echo "基础分支: $BASE_BRANCH"
 echo "当前分支: $CURRENT_BRANCH"
 
-# 检测 packages/observer 的变化
-OBSERVER_CHANGES=$(git diff --name-only $BASE_BRANCH...$CURRENT_BRANCH | grep -E "^packages/observer/" | wc -l)
+# 检测 packages/observer 的变化（排除 package.json 版本变化）
+OBSERVER_CHANGES=$(git diff --name-only $BASE_BRANCH...$CURRENT_BRANCH | grep -E "^packages/observer/" | grep -v "package.json" | wc -l)
 
-# 检测 packages/memo 的变化
-MEMO_CHANGES=$(git diff --name-only $BASE_BRANCH...$CURRENT_BRANCH | grep -E "^packages/memo/" | wc -l)
+# 检测 packages/memo 的变化（排除 package.json 版本变化）
+MEMO_CHANGES=$(git diff --name-only $BASE_BRANCH...$CURRENT_BRANCH | grep -E "^packages/memo/" | grep -v "package.json" | wc -l)
 
-# 检测根目录配置文件的变化
-ROOT_CHANGES=$(git diff --name-only $BASE_BRANCH...$CURRENT_BRANCH | grep -E "^(package\.json|pnpm-workspace\.yaml|tsconfig\.json|biome\.config\.ts)" | wc -l)
+# 检测根目录配置文件的变化（排除 package.json 版本变化）
+ROOT_CHANGES=$(git diff --name-only $BASE_BRANCH...$CURRENT_BRANCH | grep -E "^(package\.json|pnpm-workspace\.yaml|tsconfig\.json|biome\.config\.ts)" | grep -v "package.json" | wc -l)
 
 echo ""
 echo "📊 变化统计:"
@@ -29,7 +29,7 @@ echo "  packages/memo: $MEMO_CHANGES 个文件变化"
 echo "  根目录配置: $ROOT_CHANGES 个文件变化"
 
 # 设置输出变量
-if [ $OBSERVER_CHANGES -gt 0 ] || [ $ROOT_CHANGES -gt 0 ]; then
+if [ $OBSERVER_CHANGES -gt 0 ]; then
     if [ -n "${GITHUB_OUTPUT:-}" ]; then
         echo "OBSERVER_CHANGED=true" >> "$GITHUB_OUTPUT"
     fi
@@ -41,7 +41,7 @@ else
     echo "❌ @fly4react/observer 无需更新版本"
 fi
 
-if [ $MEMO_CHANGES -gt 0 ] || [ $ROOT_CHANGES -gt 0 ]; then
+if [ $MEMO_CHANGES -gt 0 ]; then
     if [ -n "${GITHUB_OUTPUT:-}" ]; then
         echo "MEMO_CHANGED=true" >> "$GITHUB_OUTPUT"
     fi
@@ -74,6 +74,8 @@ elif [ $OBSERVER_CHANGES -gt 0 ]; then
     echo "  📦 只发布 @fly4react/observer"
 elif [ $MEMO_CHANGES -gt 0 ]; then
     echo "  📦 只发布 @fly4react/memo"
-else
+elif [ $ROOT_CHANGES -gt 0 ]; then
     echo "  📦 只发布根目录版本更新"
+else
+    echo "  📦 无需发布任何包"
 fi
