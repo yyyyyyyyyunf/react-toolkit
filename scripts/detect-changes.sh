@@ -30,27 +30,39 @@ echo "  根目录配置: $ROOT_CHANGES 个文件变化"
 
 # 设置输出变量
 if [ $OBSERVER_CHANGES -gt 0 ] || [ $ROOT_CHANGES -gt 0 ]; then
-    echo "OBSERVER_CHANGED=true" >> $GITHUB_OUTPUT
+    if [ -n "${GITHUB_OUTPUT:-}" ]; then
+        echo "OBSERVER_CHANGED=true" >> "$GITHUB_OUTPUT"
+    fi
     echo "✅ @react-toolkit/observer 需要更新版本"
 else
-    echo "OBSERVER_CHANGED=false" >> $GITHUB_OUTPUT
+    if [ -n "${GITHUB_OUTPUT:-}" ]; then
+        echo "OBSERVER_CHANGED=false" >> "$GITHUB_OUTPUT"
+    fi
     echo "❌ @react-toolkit/observer 无需更新版本"
 fi
 
 if [ $MEMO_CHANGES -gt 0 ] || [ $ROOT_CHANGES -gt 0 ]; then
-    echo "MEMO_CHANGED=true" >> $GITHUB_OUTPUT
+    if [ -n "${GITHUB_OUTPUT:-}" ]; then
+        echo "MEMO_CHANGED=true" >> "$GITHUB_OUTPUT"
+    fi
     echo "✅ @react-toolkit/memo 需要更新版本"
 else
-    echo "MEMO_CHANGED=false" >> $GITHUB_OUTPUT
+    if [ -n "${GITHUB_OUTPUT:-}" ]; then
+        echo "MEMO_CHANGED=false" >> "$GITHUB_OUTPUT"
+    fi
     echo "❌ @react-toolkit/memo 无需更新版本"
 fi
 
 # 如果有任何变化，根目录也需要更新
 if [ $OBSERVER_CHANGES -gt 0 ] || [ $MEMO_CHANGES -gt 0 ] || [ $ROOT_CHANGES -gt 0 ]; then
-    echo "ROOT_CHANGED=true" >> $GITHUB_OUTPUT
+    if [ -n "${GITHUB_OUTPUT:-}" ]; then
+        echo "ROOT_CHANGED=true" >> "$GITHUB_OUTPUT"
+    fi
     echo "✅ 根目录需要更新版本"
 else
-    echo "ROOT_CHANGED=false" >> $GITHUB_OUTPUT
+    if [ -n "${GITHUB_OUTPUT:-}" ]; then
+        echo "ROOT_CHANGED=false" >> "$GITHUB_OUTPUT"
+    fi
     echo "❌ 根目录无需更新版本"
 fi
 
