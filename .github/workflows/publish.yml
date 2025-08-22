@@ -63,16 +63,24 @@ jobs:
             echo "IS_BETA=false" >> $GITHUB_OUTPUT
             echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
             echo "PUBLISH_TAG=latest" >> $GITHUB_OUTPUT
+            echo "AUTO_INCREMENT=false" >> $GITHUB_OUTPUT
           elif [[ "$BRANCH_NAME" == "release" ]]; then
-            # release 分支：发布正式版本
-            VERSION=$(node -p "require('./package.json').version")
+            # release 分支：自动升级补丁版本并发布正式版本
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+            MAJOR=${VERSION_PARTS[0]}
+            MINOR=${VERSION_PARTS[1]}
+            PATCH=${VERSION_PARTS[2]}
+            NEW_PATCH=$((PATCH + 1))
+            VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
             IS_BETA=false
             echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
             echo "IS_BETA=false" >> $GITHUB_OUTPUT
             echo "TAG_NAME=v$VERSION" >> $GITHUB_OUTPUT
             echo "PUBLISH_TAG=latest" >> $GITHUB_OUTPUT
+            echo "AUTO_INCREMENT=true" >> $GITHUB_OUTPUT
           elif [[ "$BRANCH_NAME" == dev/* ]]; then
-            # dev/ 分支：发布 beta 版本
+            # dev/ 分支：发布 beta 版本（不升级基础版本）
             BASE_VERSION=$(node -p "require('./package.json').version")
             TIMESTAMP=$(date +%Y%m%d%H%M%S)
             VERSION="${BASE_VERSION}-beta.${TIMESTAMP}"
@@ -81,6 +89,7 @@ jobs:
             echo "IS_BETA=true" >> $GITHUB_OUTPUT
             echo "TAG_NAME=v$VERSION" >> $GITHUB_OUTPUT
             echo "PUBLISH_TAG=beta" >> $GITHUB_OUTPUT
+            echo "AUTO_INCREMENT=false" >> $GITHUB_OUTPUT
           else
             echo "Unsupported branch: $BRANCH_NAME"
             exit 1
@@ -90,6 +99,13 @@ jobs:
           echo "Version: $VERSION"
           echo "Is Beta: $IS_BETA"
           echo "Publish Tag: $PUBLISH_TAG"
+          echo "Auto Increment: $AUTO_INCREMENT"
+      
+      - name: Update root package.json version
+        if: steps.version.outputs.AUTO_INCREMENT == 'true'
+        run: |
+          npm version ${{ steps.version.outputs.VERSION }} --no-git-tag-version
+          echo "Updated root package.json to version ${{ steps.version.outputs.VERSION }}"
       
       - name: Publish @react-toolkit/observer
         run: |
@@ -106,6 +122,15 @@ jobs:
           npm publish --access public --tag ${{ steps.version.outputs.PUBLISH_TAG }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Commit version updates
+        if: steps.version.outputs.AUTO_INCREMENT == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "chore: bump version to ${{ steps.version.outputs.VERSION }}"
+          git push origin ${{ github.ref }}
       
       - name: Create Git tag
         if: steps.version.outputs.IS_BETA == 'true'

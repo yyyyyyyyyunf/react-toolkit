@@ -4,40 +4,50 @@
 # 用法: 
 #   ./scripts/release.sh <version> [--beta]  # 发布指定版本
 #   ./scripts/release.sh --beta               # 发布 beta 版本
+#   ./scripts/release.sh --auto               # 自动升级版本并发布
 # 例如: 
 #   ./scripts/release.sh 1.0.0               # 发布正式版本 1.0.0
 #   ./scripts/release.sh 1.0.0 --beta        # 发布 beta 版本 1.0.0-beta.20241201120000
 #   ./scripts/release.sh --beta               # 发布当前版本的 beta
+#   ./scripts/release.sh --auto               # 自动升级补丁版本并发布
 
 set -e
 
 VERSION=$1
 BETA_FLAG=$2
+AUTO_FLAG=$1
 
 # 检查参数
 if [ "$1" = "--beta" ]; then
     BETA_FLAG="--beta"
     VERSION=""
+    AUTO_FLAG=""
+elif [ "$1" = "--auto" ]; then
+    AUTO_FLAG="--auto"
+    VERSION=""
+    BETA_FLAG=""
 elif [ "$2" = "--beta" ]; then
     BETA_FLAG="--beta"
 fi
 
-if [ -z "$VERSION" ] && [ "$BETA_FLAG" != "--beta" ]; then
-    echo "请提供版本号或使用 --beta 标志"
+if [ -z "$VERSION" ] && [ "$BETA_FLAG" != "--beta" ] && [ "$AUTO_FLAG" != "--auto" ]; then
+    echo "请提供版本号或使用 --beta/--auto 标志"
     echo "用法:"
-    echo "  ./scripts/release.sh <version>        # 发布正式版本"
+    echo "  ./scripts/release.sh <version>        # 发布指定版本"
     echo "  ./scripts/release.sh <version> --beta # 发布 beta 版本"
     echo "  ./scripts/release.sh --beta           # 发布当前版本的 beta"
+    echo "  ./scripts/release.sh --auto           # 自动升级版本并发布"
     echo ""
     echo "例如:"
     echo "  ./scripts/release.sh 1.0.0"
     echo "  ./scripts/release.sh 1.0.0 --beta"
     echo "  ./scripts/release.sh --beta"
+    echo "  ./scripts/release.sh --auto"
     exit 1
 fi
 
-# 验证版本号格式（如果不是 beta）
-if [ -n "$VERSION" ] && [ "$BETA_FLAG" != "--beta" ]; then
+# 验证版本号格式（如果不是 beta 或 auto）
+if [ -n "$VERSION" ] && [ "$BETA_FLAG" != "--beta" ] && [ "$AUTO_FLAG" != "--auto" ]; then
     if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
         echo "错误: 版本号格式不正确，请使用语义化版本号 (例如: 1.0.0)"
         exit 1
@@ -45,7 +55,18 @@ if [ -n "$VERSION" ] && [ "$BETA_FLAG" != "--beta" ]; then
 fi
 
 # 确定版本和分支策略
-if [ "$BETA_FLAG" = "--beta" ]; then
+if [ "$AUTO_FLAG" = "--auto" ]; then
+    # 自动升级版本
+    CURRENT_VERSION=$(node -p "require('./package.json').version")
+    IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+    MAJOR=${VERSION_PARTS[0]}
+    MINOR=${VERSION_PARTS[1]}
+    PATCH=${VERSION_PARTS[2]}
+    NEW_PATCH=$((PATCH + 1))
+    FULL_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
+    BRANCH_NAME="release"
+    echo "🚀 开始自动发布版本 $FULL_VERSION (从 $CURRENT_VERSION 升级)"
+elif [ "$BETA_FLAG" = "--beta" ]; then
     if [ -n "$VERSION" ]; then
         # 指定版本的 beta
         BASE_VERSION=$VERSION
@@ -95,6 +116,14 @@ pnpm build
 echo "🌿 创建发布分支 $BRANCH_NAME..."
 git checkout -b "$BRANCH_NAME"
 
+# 如果是自动升级，先更新版本号
+if [ "$AUTO_FLAG" = "--auto" ]; then
+    echo "📝 更新版本号到 $FULL_VERSION..."
+    npm version $FULL_VERSION --no-git-tag-version
+    git add .
+    git commit -m "chore: bump version to $FULL_VERSION"
+fi
+
 # 提交更改
 echo "📝 提交更改..."
 git add .
@@ -112,6 +141,7 @@ echo "📦 发布信息:"
 echo "  版本: $FULL_VERSION"
 echo "  分支: $BRANCH_NAME"
 echo "  类型: $([ "$BETA_FLAG" = "--beta" ] && echo "Beta" || echo "正式版本")"
+echo "  自动升级: $([ "$AUTO_FLAG" = "--auto" ] && echo "是" || echo "否")"
 echo ""
 if [ "$BETA_FLAG" = "--beta" ]; then
     echo "⚠️  Beta 版本安装命令:"
