@@ -41,7 +41,16 @@ jobs:
         run: |
           echo "📦 从 npm 安装 memo 包..."
           cd packages/observer
+          echo "🔍 当前目录: $(pwd)"
+          echo "📦 安装前检查 node_modules..."
+          ls -la node_modules/ || echo "node_modules 不存在"
           pnpm install @fly4react/memo@1.0.6 --no-workspace
+          echo "📦 安装后检查 memo 包..."
+          ls -la node_modules/@fly4react/memo/ || echo "❌ memo 包不存在"
+          echo "📦 检查 memo 包的 package.json..."
+          cat node_modules/@fly4react/memo/package.json | head -20
+          echo "📦 检查 memo 包的 exports..."
+          cat node_modules/@fly4react/memo/package.json | grep -A 10 '"exports"'
           cd ../..
           echo "✅ memo 包安装完成"
       
@@ -62,6 +71,11 @@ jobs:
           ls -la node_modules/@fly4react/memo/ || echo "❌ memo 包不存在"
           echo "📦 检查 memo 包的 dist 文件..."
           ls -la node_modules/@fly4react/memo/dist/ || echo "❌ memo dist 不存在"
+          echo "📦 检查 memo 包的 exports 配置..."
+          cat node_modules/@fly4react/memo/package.json | grep -A 10 '"exports"'
+          echo "🔍 尝试直接导入 memo 包..."
+          node -e "try { console.log('✅ memo 包导入成功:', require('@fly4react/memo')); } catch(e) { console.log('❌ memo 包导入失败:', e.message); }" || echo "导入测试失败"
+          echo "🔨 开始构建..."
           npx rslib build
           cd ../..
           echo "✅ observer 包构建完成"
