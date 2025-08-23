@@ -8,6 +8,11 @@ import type { ObserverCallbackType, ObserverOptions } from "../types";
  *
  * 提供 Intersection Observer API 的 React 封装，支持元素可见性检测。
  * 这是库中最底层的 Hook，其他高级 Hook 都基于此构建。
+ * 
+ * 浏览器兼容性：
+ * - 支持 IntersectionObserver 的浏览器：使用原生 API，性能最佳
+ * - 不支持 IntersectionObserver 的浏览器：自动降级到 scroll 事件 + getBoundingClientRect
+ * - 降级策略提供相同的 API 接口，确保功能一致性
  *
  * 特性：
  * - 支持所有 Intersection Observer 原生配置
@@ -15,6 +20,7 @@ import type { ObserverCallbackType, ObserverOptions } from "../types";
  * - 支持扩展的 entry 对象，包含滚动方向信息
  * - 使用 useLayoutEffect 确保在浏览器绘制前开始观察
  * - 类型安全：支持 null 值处理
+ * - 浏览器兼容性：自动降级支持旧版浏览器
  *
  * @param ref 要观察的元素的 ref
  * @param callback 回调函数，接收扩展的 entry 对象

@@ -1,30 +1,41 @@
 # @fly4react/observer
 
-[![npm version](https://img.shields.io/npm/v/@fly4react/observer.svg?label=@fly4react/observer)](https://www.npmjs.com/package/@fly4react/observer)
-[![npm downloads](https://img.shields.io/npm/dm/@fly4react/observer.svg?label=@fly4react/observer%20downloads)](https://www.npmjs.com/package/@fly4react/observer)
-[![bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/observer.svg?label=@fly4react/observer%20size)](https://bundlephobia.com/package/@fly4react/observer)
+[![npm version](https://img.shields.io/npm/v/@fly4react/observer.svg)](https://www.npmjs.com/package/@fly4react/observer)
+[![npm downloads](https://img.shields.io/npm/dm/@fly4react/observer.svg)](https://www.npmjs.com/package/@fly4react/observer)
+[![bundle size](https://img.shields.io/bundlephobia/min/@fly4react/observer.svg)](https://bundlephobia.com/result?p=@fly4react/observer)
 
-一个基于 Intersection Observer API 的现代 React 工具库，提供懒加载、可见性检测、位置跟踪和滚动方向检测功能。
+## 功能特性
 
-## ✨ 功能特性
+- 🎯 **精确的位置跟踪**：实时监控元素在视口中的位置变化
+- ⚡ **性能优化**：内置节流机制，避免频繁更新
+- 🔄 **滚动方向检测**：智能识别滚动方向变化
+- 🎨 **动画触发器**：支持基于位置的动画触发
+- 📱 **响应式支持**：适配各种屏幕尺寸和设备
+- 🚀 **懒加载优化**：高效的图片和内容懒加载
+- 🎭 **视口检测**：精确的元素可见性检测
+- 🏗️ **贴顶检测**：检测元素是否达到指定位置
+- 🌐 **浏览器兼容性**：自动降级支持旧版浏览器
 
-- 🚀 基于 Intersection Observer API，性能优异
-- 🎯 支持数值和语义化的阈值设置
-- 🔧 简洁的配置选项
-- 📦 轻量级，无额外依赖
-- 🎨 支持自定义占位符
-- 🔄 支持方向性可见性检测
-- 📊 支持可见性变化回调
-- 📍 支持滚动过程中的位置跟踪
-- 🎯 支持基于自定义容器的可见性检测
-- 🧭 支持滚动方向检测
-- 🎯 提供专门的 useScrollDirection Hook
-- 📌 支持元素贴顶检测（useIsCeiling）
-- ⚡ 智能初始状态：元素一开始就在视口中时立即触发回调
-- 🛡️ 自动内存泄漏防护：组件卸载时自动清理
-- 🔄 类型安全的互斥选项：once 和 active 不能同时使用
+## 浏览器兼容性
 
-## 📦 安装
+| 浏览器 | 版本要求 | 支持状态 |
+|--------|----------|----------|
+| Chrome | 51+ | ✅ 原生支持 |
+| Firefox | 55+ | ✅ 原生支持 |
+| Safari | 12.1+ | ✅ 原生支持 |
+| Edge | 79+ | ✅ 原生支持 |
+| IE | 11 | ✅ 降级支持 |
+| 旧版浏览器 | - | ✅ 降级支持 |
+
+### 降级策略
+
+对于不支持 `IntersectionObserver` 的浏览器（如 IE 11），库会自动降级到使用 `scroll` 事件 + `getBoundingClientRect()` 的方案：
+
+- **原生支持**：使用 `IntersectionObserver` API，性能最佳
+- **降级支持**：使用 `scroll` 事件监听，提供相同的 API 接口
+- **功能一致性**：无论使用哪种方案，都提供相同的功能和 API
+
+## 安装
 
 ```bash
 npm install @fly4react/observer

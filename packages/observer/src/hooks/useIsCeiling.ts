@@ -8,6 +8,11 @@ import type { ObserverCallbackParamType } from "../types";
  *
  * 检测元素的顶部是否达到或超过指定的位置，用于实现贴顶效果。
  * 当元素顶部达到指定位置后，状态会保持为 true，直到元素重新回到指定位置以下。
+ * 
+ * 浏览器兼容性：
+ * - 支持 IntersectionObserver 的浏览器：使用原生 API，性能最佳
+ * - 不支持 IntersectionObserver 的浏览器：自动降级到 scroll 事件 + getBoundingClientRect
+ * - 降级策略提供相同的 API 接口，确保功能一致性
  *
  * 特性：
  * - 精确的位置检测：基于元素顶部位置进行判断
@@ -15,6 +20,7 @@ import type { ObserverCallbackParamType } from "../types";
  * - 性能优化：使用 IntersectionObserver + 动态 rootMargin
  * - 类型安全：完整的 TypeScript 支持
  * - 自动清理：组件卸载时自动清理资源
+ * - 浏览器兼容性：自动降级支持旧版浏览器
  *
  * @param ref 要检测贴顶状态的元素的 ref
  * @param position 位置阈值（像素），默认为 0

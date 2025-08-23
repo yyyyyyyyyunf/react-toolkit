@@ -30,7 +30,11 @@ export type ObserverCallbackType = (entry: ObserverCallbackParamType) => void;
 export type ObserverOptions = IntersectionObserverInit & {
 	/** 是否只触发一次，触发后自动取消观察 */
 	once?: boolean;
+	/** 节流时间间隔（毫秒），用于控制检查频率，仅在降级策略中使用 */
+	throttle?: number;
 };
+
+
 
 /**
  * 可序列化的观察器选项

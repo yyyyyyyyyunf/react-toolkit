@@ -25,12 +25,13 @@
 - 📚 **详细文档**: 丰富的示例和文档
 - 🌐 **浏览器兼容**: 支持现代浏览器，自动降级处理
 - ⚡ **SSR 友好**: 完全支持服务端渲染
+- 🔄 **自动降级**: 为不支持 IntersectionObserver 的浏览器提供 polyfill
 
 ## 📊 性能对比
 
 | 特性 | @fly4react/observer | react-intersection-observer | react-use-intersection-observer |
 |------|-------------------|---------------------------|--------------------------------|
-| 包大小 | ~2.2kB (gzipped) | ~3.1kB (gzipped) | ~2.8kB (gzipped) |
+| 包大小 | ~5.0kB (gzipped) | ~3.1kB (gzipped) | ~2.8kB (gzipped) |
 | 依赖 | 零依赖 | 1 个依赖 | 1 个依赖 |
 | 位置跟踪 | ✅ | ❌ | ❌ |
 | 滚动方向检测 | ✅ | ❌ | ❌ |
@@ -38,11 +39,12 @@
 | 自定义根元素 | ✅ | ✅ | ✅ |
 | TypeScript | ✅ | ✅ | ✅ |
 | SSR 支持 | ✅ | ✅ | ✅ |
+| 浏览器兼容性 | ✅ (IE 11+) | ❌ | ❌ |
 
 ## 📦 包含的包
 
 ### `@fly4react/observer`
-一个基于 Intersection Observer API 的现代 React 工具库，提供懒加载、可见性检测、位置跟踪和滚动方向检测功能。
+一个基于 Intersection Observer API 的现代 React 工具库，提供懒加载、可见性检测、位置跟踪和滚动方向检测功能。支持 IE 11+ 等旧版浏览器，自动降级处理。
 
 **特性:**
 - 🔍 元素可见性检测 (`useInViewport`)
@@ -53,10 +55,23 @@
 - 🎮 滚动方向检测 (`useScrollDirection`)
 - 📌 元素贴顶检测 (`useIsCeiling`)
 - 🖼️ 懒加载组件 (`IntersectionLoad`)
+- 🌐 浏览器兼容性 (IE 11+)
+- 🔄 自动降级策略
 
 ```bash
 npm install @fly4react/observer
 ```
+
+#### 浏览器兼容性
+
+| 浏览器 | 版本要求 | 支持状态 |
+|--------|----------|----------|
+| Chrome | 51+ | ✅ 原生支持 |
+| Firefox | 55+ | ✅ 原生支持 |
+| Safari | 12.1+ | ✅ 原生支持 |
+| Edge | 79+ | ✅ 原生支持 |
+| IE | 11 | ✅ 降级支持 |
+| 旧版浏览器 | - | ✅ 降级支持 |
 
 ### `@fly4react/memo`
 一个高级的 React 记忆化组件工具，提供灵活的 props 比较策略。
@@ -82,6 +97,8 @@ npm install @fly4react/memo
 - **性能监控**: 跟踪用户浏览行为
 - **广告展示**: 广告可见性统计
 - **表单验证**: 实时表单验证反馈
+- **企业应用**: 支持 IE 11+ 的企业级应用
+- **兼容性要求**: 需要支持旧版浏览器的项目
 
 ### Memo 包适用场景
 - **列表渲染**: 大型列表的性能优化

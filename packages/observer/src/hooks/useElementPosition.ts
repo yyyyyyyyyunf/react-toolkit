@@ -20,7 +20,12 @@ import { generateThresholdArray, getDefaultThresholdArray } from "../utils";
  *
  * 实时跟踪元素在视口中的位置变化，支持节流、自定义根元素和相对位置计算。
  * 适用于滚动动画、位置监控、性能分析等场景。
- *
+ * 
+ * 浏览器兼容性：
+ * - 支持 IntersectionObserver 的浏览器：使用原生 API，性能最佳
+ * - 不支持 IntersectionObserver 的浏览器：自动降级到 scroll 事件 + getBoundingClientRect
+ * - 降级策略提供相同的 API 接口，确保功能一致性
+
  * 特性：
  * - 支持基于 viewport 和自定义 root 的位置跟踪
  * - 内置节流机制，可控制更新频率
@@ -29,6 +34,7 @@ import { generateThresholdArray, getDefaultThresholdArray } from "../utils";
  * - 性能优化：元素完全不可见时跳过更新
  * - 自动处理组件挂载状态，防止内存泄漏
  * - 类型安全：支持 null 值处理
+ * - 浏览器兼容性：自动降级支持旧版浏览器
  *
  * @param ref 要跟踪的元素的 ref
  * @param options 配置选项

@@ -8,6 +8,11 @@ import { useIntersectionObserver } from "./useIntersectionObserver";
  *
  * 专门用于检测元素在滚动过程中的移动方向。
  * 提供实时的滚动方向信息和滚动状态，支持节流控制和自定义配置。
+ * 
+ * 浏览器兼容性：
+ * - 支持 IntersectionObserver 的浏览器：使用原生 API，性能最佳
+ * - 不支持 IntersectionObserver 的浏览器：自动降级到 scroll 事件 + getBoundingClientRect
+ * - 降级策略提供相同的 API 接口，确保功能一致性
  *
  * 特性：
  * - 实时检测滚动方向（上、下、左、右、无）
@@ -16,6 +21,7 @@ import { useIntersectionObserver } from "./useIntersectionObserver";
  * - 提供滚动状态指示器
  * - 支持 step 和 threshold 两种配置方式
  * - 类型安全：支持 null 值处理
+ * - 浏览器兼容性：自动降级支持旧版浏览器
  *
  * @param ref 要检测滚动方向的元素的 ref
  * @param options 配置选项

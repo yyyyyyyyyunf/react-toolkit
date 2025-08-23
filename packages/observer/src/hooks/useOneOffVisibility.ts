@@ -11,6 +11,11 @@ import { useIntersectionObserver } from "./useIntersectionObserver";
  *
  * 检测元素是否曾经可见过，一旦可见就保持为 true。
  * 适用于懒加载、一次性动画触发等场景。
+ * 
+ * 浏览器兼容性：
+ * - 支持 IntersectionObserver 的浏览器：使用原生 API，性能最佳
+ * - 不支持 IntersectionObserver 的浏览器：自动降级到 scroll 事件 + getBoundingClientRect
+ * - 降级策略提供相同的 API 接口，确保功能一致性
  *
  * 特性：
  * - 一旦元素可见，状态永久保持为 true
@@ -19,6 +24,7 @@ import { useIntersectionObserver } from "./useIntersectionObserver";
  * - 简单易用，无需手动管理状态
  * - 类型安全：支持 null 值处理
  * - 使用 threshold 参数设置触发阈值
+ * - 浏览器兼容性：自动降级支持旧版浏览器
  *
  * @param ref 要检测可见性的元素的 ref
  * @param options 配置参数，包含可选的 threshold 和 offset
