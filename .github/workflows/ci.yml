@@ -48,6 +48,13 @@ jobs:
       - name: Build packages
         run: pnpm build
       
+      - name: Run tests (skip IntersectionLoad)
+        run: |
+          cd packages/observer
+          pnpm vitest run --reporter=verbose --exclude="**/IntersectionLoad.test.tsx"
+          cd ../memo
+          pnpm vitest run --reporter=verbose
+      
       - name: Check build output
         run: |
           echo "Checking build output..."

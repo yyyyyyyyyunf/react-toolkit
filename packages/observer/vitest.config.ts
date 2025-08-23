@@ -6,9 +6,4 @@ export default defineConfig({
     setupFiles: ['./__tests__/setup.ts'],
     globals: true,
   },
-  resolve: {
-    alias: {
-      '@fly4react/memo': '@fly4react/memo/dist/index.js',
-    },
-  },
 });
