@@ -1,4 +1,5 @@
-import { IntersectionObserverPolyfill } from '../base/polyfill/IntersectionObserverPolyfill';
+import { IntersectionObserverPolyfill } from "../base/polyfill/IntersectionObserverPolyfill";
+import type { ObserverOptions } from "../types";
 
 /**
  * 检查浏览器是否支持 Intersection Observer API
@@ -17,10 +18,12 @@ import { IntersectionObserverPolyfill } from '../base/polyfill/IntersectionObser
  * ```
  */
 export const isSupportIntersectionObserver = () => {
-	return typeof window !== 'undefined' && 
-         'IntersectionObserver' in window &&
-         'IntersectionObserverEntry' in window &&
-         'intersectionRatio' in window.IntersectionObserverEntry.prototype;
+	return (
+		typeof window !== "undefined" &&
+		"IntersectionObserver" in window &&
+		"IntersectionObserverEntry" in window &&
+		"intersectionRatio" in window.IntersectionObserverEntry.prototype
+	);
 };
 
 /**
@@ -197,7 +200,7 @@ export const calculateScrollDirection = (
 
 /**
  * 创建 IntersectionObserver 实例的工厂函数
- * 
+ *
  * 根据浏览器支持情况自动选择原生 API 或 polyfill 实现。
  * 为不支持 IntersectionObserver 的浏览器提供降级方案。
  *
@@ -215,20 +218,22 @@ export const calculateScrollDirection = (
  *   threshold: [0, 0.5, 1],
  *   throttle: 16 // 仅在降级模式下生效
  * });
- * 
+ *
  * observer.observe(element);
  * ```
  */
 export const createIntersectionObserver = (
 	callback: IntersectionObserverCallback,
-	options?: any
+	options?: ObserverOptions,
 ): IntersectionObserver => {
 	if (isSupportIntersectionObserver()) {
 		// 原生支持时，忽略 throttle 参数
 		const { throttle, ...nativeOptions } = options || {};
 		return new IntersectionObserver(callback, nativeOptions);
-	} else {
-		// 降级时，使用 polyfill
-		return new IntersectionObserverPolyfill(callback, options) as any;
 	}
+	// 降级时，使用 polyfill
+	return new IntersectionObserverPolyfill(
+		callback,
+		options,
+	) as unknown as IntersectionObserver;
 };

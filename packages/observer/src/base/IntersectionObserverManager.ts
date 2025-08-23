@@ -104,7 +104,7 @@ class IntersectionObserverManager {
 				...this.defaultOptions,
 				...options,
 			} satisfies IntersectionObserverInit;
-			
+
 			const observer = createIntersectionObserver((entries) => {
 				for (const entry of entries) {
 					const elementUniqueId =
@@ -172,7 +172,7 @@ class IntersectionObserverManager {
 				uniqueId("intersection_element");
 			target.setAttribute("data-intersection-unique-id", elementUniqueId);
 			this.callbacks.set(elementUniqueId, callback);
-			
+
 			const tracker = new FallbackPositionTracker((entry) => {
 				const elementUniqueId =
 					target.getAttribute("data-intersection-unique-id") ||
@@ -197,10 +197,10 @@ class IntersectionObserverManager {
 				this.previousRects.set(elementUniqueId, currentRect);
 				callback(extendedEntry);
 			}, 16);
-			
+
 			tracker.observe(target);
 			this.fallbackTrackers.set(elementUniqueId, tracker);
-			
+
 			return () => {
 				this.unobserve(target, options);
 			};

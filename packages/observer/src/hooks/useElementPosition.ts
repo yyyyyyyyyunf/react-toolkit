@@ -10,8 +10,8 @@ import {
 import { lazyloadManager } from "../base/IntersectionObserverManager";
 import type {
 	ElementPosition,
-	Options,
 	ObserverCallbackParamType,
+	Options,
 } from "../types";
 import { generateThresholdArray, getDefaultThresholdArray } from "../utils";
 

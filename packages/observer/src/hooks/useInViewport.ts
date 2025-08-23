@@ -8,7 +8,7 @@ import type { ObserverCallbackParamType } from "../types";
  *
  * 检测元素是否在视口中可见，基于 IntersectionObserver 实现。
  * 专门用于需要简单可见性检测的场景，性能更优。
- * 
+ *
  * 浏览器兼容性：
  * - 支持 IntersectionObserver 的浏览器：使用原生 API，性能最佳
  * - 不支持 IntersectionObserver 的浏览器：自动降级到 scroll 事件 + getBoundingClientRect

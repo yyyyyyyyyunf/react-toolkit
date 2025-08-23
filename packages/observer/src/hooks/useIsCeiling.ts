@@ -8,7 +8,7 @@ import type { ObserverCallbackParamType } from "../types";
  *
  * 检测元素的顶部是否达到或超过指定的位置，用于实现贴顶效果。
  * 当元素顶部达到指定位置后，状态会保持为 true，直到元素重新回到指定位置以下。
- * 
+ *
  * 浏览器兼容性：
  * - 支持 IntersectionObserver 的浏览器：使用原生 API，性能最佳
  * - 不支持 IntersectionObserver 的浏览器：自动降级到 scroll 事件 + getBoundingClientRect
@@ -32,20 +32,20 @@ import type { ObserverCallbackParamType } from "../types";
  * @example
  * ```tsx
  * const ref = useRef<HTMLDivElement>(null);
- * 
+ *
  * // 检测是否贴顶（默认）
  * const isCeiling = useIsCeiling(ref);
- * 
+ *
  * // 检测是否达到距离顶部 100px 的位置
  * const isAtPosition = useIsCeiling(ref, 100);
- * 
+ *
  * // 检测是否超出视口顶部 50px
  * const isOverTop = useIsCeiling(ref, -50);
- * 
+ *
  * if (isCeiling) {
  *   console.log('元素已贴顶');
  * }
- * 
+ *
  * if (isAtPosition) {
  *   console.log('元素已达到指定位置');
  * }
@@ -53,7 +53,7 @@ import type { ObserverCallbackParamType } from "../types";
  */
 export const useIsCeiling = (
 	ref: React.RefObject<HTMLElement | null>,
-	position: number = 0,
+	position = 0,
 ): boolean => {
 	const [isCeiling, setIsCeiling] = useState(false);
 	const isMountedRef = useRef(true);
@@ -87,10 +87,11 @@ export const useIsCeiling = (
 
 		// 根据 position 动态设置 rootMargin 来调整观察区域
 		// 这样可以精确控制触发时机
-		const rootMargin = position >= 0 
-			? `${-position}px 0px 0px 0px`  // 缩小观察区域，让元素在指定位置触发
-			: `${Math.abs(position)}px 0px 0px 0px`; // 扩展观察区域，让元素在指定位置触发
-		
+		const rootMargin =
+			position >= 0
+				? `${-position}px 0px 0px 0px` // 缩小观察区域，让元素在指定位置触发
+				: `${Math.abs(position)}px 0px 0px 0px`; // 扩展观察区域，让元素在指定位置触发
+
 		const unSubscribe = lazyloadManager.observe(ref.current, callback, {
 			threshold: [0, 1], // 在元素进入/离开观察区域时触发
 			rootMargin, // 动态调整的观察区域
