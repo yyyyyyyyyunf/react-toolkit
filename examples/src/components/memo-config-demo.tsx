@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import createMemoComponent, {
 	registerDebugComponent,
 	registerIgnoreProp,
@@ -11,13 +11,15 @@ const TestComponent = createMemoComponent<{
 	name: string;
 	count: number;
 	timestamp: number;
-}>(({ name, count, timestamp }) => (
-	<div style={{ padding: "10px", border: "1px solid #ccc", margin: "10px" }}>
-		<h3>{name}</h3>
-		<p>Count: {count}</p>
-		<p>Timestamp: {timestamp}</p>
-	</div>
-));
+}>(({ name, count, timestamp }) => {
+	return (
+		<div style={{ padding: "10px", border: "1px solid #ccc", margin: "10px" }}>
+			<h3>{name}</h3>
+			<p>Count: {count}</p>
+			<p>Timestamp: {timestamp}</p>
+		</div>
+	);
+});
 
 // 配置管理组件
 const MemoConfigDemo = () => {
