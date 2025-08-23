@@ -1,5 +1,5 @@
 import { useOneOffVisibility } from "@fly4react/observer";
-import React, { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 /**
  * 无限滚动示例
@@ -21,15 +21,24 @@ export function InfiniteScrollExample() {
 	const [loadCount, setLoadCount] = useState(1);
 
 	const triggerRef = useRef<HTMLDivElement>(null);
+	const isMountedRef = useRef(true);
+
+	// 组件卸载时设置标记
+	useEffect(() => {
+		return () => {
+			isMountedRef.current = false;
+		};
+	}, []);
 
 	// 检测触发器是否可见
 	const shouldLoadMore = useOneOffVisibility(triggerRef, {
-		rootMargin: "100px", // 提前 100px 触发
+		threshold: 0.1,
+		offset: 100, // 提前 100px 触发
 	});
 
 	// 模拟加载更多数据
 	const loadMore = useCallback(async () => {
-		if (isLoading || !hasMore) return;
+		if (isLoading || !hasMore || !isMountedRef.current) return;
 
 		setIsLoading(true);
 
@@ -37,6 +46,9 @@ export function InfiniteScrollExample() {
 		await new Promise((resolve) =>
 			setTimeout(resolve, 1000 + Math.random() * 1000),
 		);
+
+		// 检查组件是否仍然挂载
+		if (!isMountedRef.current) return;
 
 		const newItems = Array.from({ length: 10 }, (_, i) => ({
 			id: items.length + i + 1,
@@ -55,7 +67,7 @@ export function InfiniteScrollExample() {
 	}, [items.length, isLoading, hasMore, loadCount]);
 
 	// 当触发器可见时加载更多
-	React.useEffect(() => {
+	useEffect(() => {
 		if (shouldLoadMore && hasMore && !isLoading) {
 			loadMore();
 		}

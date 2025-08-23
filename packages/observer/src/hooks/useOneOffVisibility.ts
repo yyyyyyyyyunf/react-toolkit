@@ -1,5 +1,9 @@
-import { useState } from "react";
-import type { ObserverCallbackParamType, ObserverOptions } from "../types";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import type {
+	ObserverCallbackParamType,
+	ObserverOptions,
+	OneOffVisibilityOptions,
+} from "../types";
 import { useIntersectionObserver } from "./useIntersectionObserver";
 
 /**
@@ -11,20 +15,25 @@ import { useIntersectionObserver } from "./useIntersectionObserver";
  * 特性：
  * - 一旦元素可见，状态永久保持为 true
  * - 自动设置 once: true，避免重复触发
+ * - 自动处理组件挂载状态，防止内存泄漏
  * - 简单易用，无需手动管理状态
  * - 类型安全：支持 null 值处理
+ * - 使用 threshold 参数设置触发阈值
  *
  * @param ref 要检测可见性的元素的 ref
- * @param options 配置选项
+ * @param options 配置参数，包含可选的 threshold 和 offset
+ *
  * @returns 元素是否曾经可见过
  *
  * @example
  * ```tsx
  * const ref = useRef<HTMLDivElement>(null);
- * const isVisible = useOneOffVisibility(ref, {
- *   threshold: 0.5, // 50% 可见时触发
- *   rootMargin: '100px' // 提前 100px 触发
- * });
+ *
+ * // 使用自定义 threshold
+ * const isVisible1 = useOneOffVisibility(ref, { threshold: 0.5, offset: 100 });
+ *
+ * // 使用默认配置
+ * const isVisible2 = useOneOffVisibility(ref); // 默认 { threshold: 0.1, offset: 100 }
  *
  * if (isVisible) {
  *   // 元素已经可见过，执行一次性逻辑
@@ -35,24 +44,43 @@ import { useIntersectionObserver } from "./useIntersectionObserver";
  */
 export const useOneOffVisibility = (
 	ref: React.RefObject<HTMLElement | null>,
-	options: ObserverOptions = {},
+	options: OneOffVisibilityOptions = {},
 ) => {
 	/** 元素是否曾经可见过 */
 	const [isVisible, setIsVisible] = useState(false);
 
-	// 使用 Intersection Observer 检测可见性
-	useIntersectionObserver(
-		ref,
-		(entry: ObserverCallbackParamType) => {
-			if (entry.isIntersecting) {
-				setIsVisible(true);
-			}
-		},
-		{
-			...options,
+	/** 组件挂载状态跟踪 */
+	const isMountedRef = useRef(true);
+
+	// 解构 options 以避免对象引用问题
+	const { threshold = 0.1, offset = 100 } = options;
+
+	// 组件卸载时设置标记
+	useEffect(() => {
+		return () => {
+			isMountedRef.current = false;
+		};
+	}, []);
+
+	// 构建稳定的 observer options 对象
+	const observerOptions: ObserverOptions = useMemo(() => {
+		return {
+			threshold,
+			rootMargin: offset > 0 ? `${offset}px` : "0px",
 			once: true, // 确保只触发一次
-		} satisfies ObserverOptions,
-	);
+		};
+	}, [threshold, offset]);
+
+	// 使用 useCallback 稳定回调函数，内部处理挂载状态
+	const callback = useCallback((entry: ObserverCallbackParamType) => {
+		// 只有在组件仍然挂载时才更新状态
+		if (entry.isIntersecting && isMountedRef.current) {
+			setIsVisible(true);
+		}
+	}, []);
+
+	// 使用 Intersection Observer 检测可见性
+	useIntersectionObserver(ref, callback, observerOptions);
 
 	return isVisible;
 };

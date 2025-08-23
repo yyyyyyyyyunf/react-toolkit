@@ -15,6 +15,9 @@
 - 🎯 支持基于自定义容器的可见性检测
 - 🧭 支持滚动方向检测
 - 🎯 提供专门的 useScrollDirection Hook
+- ⚡ 智能初始状态：元素一开始就在视口中时立即触发回调
+- 🛡️ 自动内存泄漏防护：组件卸载时自动清理
+- 🔄 类型安全的互斥选项：once 和 active 不能同时使用
 
 ## 📦 安装
 
@@ -30,7 +33,7 @@ pnpm add @fly4react/observer
 
 ### IntersectionLoad 组件
 
-#### 数值阈值
+#### 基础使用
 
 ```tsx
 import { IntersectionLoad } from '@fly4react/observer';
@@ -39,7 +42,7 @@ function App() {
   return (
     <div>
       <IntersectionLoad 
-        height={200}
+        style={{ height: 200 }}
         placeholder={<div>Loading...</div>}
         threshold={0.5} // 50% 可见时触发
         offset={100}
@@ -61,7 +64,7 @@ function App() {
     <div>
       {/* 任何部分可见时触发 */}
       <IntersectionLoad 
-        height={200}
+        style={{ height: 200 }}
         placeholder={<div>Loading...</div>}
         threshold="any"
       >
@@ -70,11 +73,37 @@ function App() {
 
       {/* 顶部可见时触发 */}
       <IntersectionLoad 
-        height={200}
+        style={{ height: 200 }}
         placeholder={<div>Loading...</div>}
         threshold="top"
       >
         <img src="image2.jpg" alt="Image 2" />
+      </IntersectionLoad>
+    </div>
+  );
+}
+```
+
+#### 一次性触发
+
+```tsx
+import { IntersectionLoad } from '@fly4react/observer';
+
+function App() {
+  return (
+    <div>
+      <IntersectionLoad 
+        style={{ height: 200 }}
+        placeholder={<div>Loading...</div>}
+        threshold="any"
+        once={true} // 只触发一次
+        onChange={(isVisible) => {
+          if (isVisible) {
+            console.log('元素可见，只会触发一次');
+          }
+        }}
+      >
+        <img src="image.jpg" alt="Image" />
       </IntersectionLoad>
     </div>
   );
@@ -97,7 +126,7 @@ function App() {
       </button>
       
       <IntersectionLoad 
-        height={200}
+        style={{ height: 200 }}
         placeholder={<div>Loading...</div>}
         threshold="any"
         active={isActive}
@@ -123,7 +152,7 @@ function App() {
       <p>可见性变化次数: {visibilityCount}</p>
       
       <IntersectionLoad 
-        height={200}
+        style={{ height: 200 }}
         placeholder={<div>Loading...</div>}
         threshold="any"
         onChange={(isVisible) => {
@@ -156,10 +185,10 @@ function App() {
       >
         <div style={{ height: '800px' }}>
           <IntersectionLoad 
-            height={200}
+            style={{ height: 200 }}
             placeholder={<div>Loading...</div>}
             threshold="any"
-            root={containerRef}
+            root={containerRef.current}
           >
             <img src="image.jpg" alt="Image" />
           </IntersectionLoad>
@@ -175,20 +204,29 @@ function App() {
 #### useIntersectionObserver
 
 ```tsx
-import { useIntersectionObserver, ObserverCallbackParamType } from '@fly4react/observer';
-import { useRef } from 'react';
+import { useIntersectionObserver } from '@fly4react/observer';
+import { useRef, useState } from 'react';
 
 function MyComponent() {
   const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
   
-  const [entry] = useIntersectionObserver(ref, {
-    threshold: 0.5,
-    rootMargin: '0px 0px -100px 0px'
-  });
+  useIntersectionObserver(
+    ref,
+    (entry) => {
+      setIsVisible(entry.isIntersecting);
+      console.log('滚动方向:', entry.scrollDirection);
+      console.log('交叉比例:', entry.intersectionRatio);
+    },
+    {
+      threshold: 0.5,
+      rootMargin: '0px 0px -100px 0px'
+    }
+  );
 
   return (
     <div ref={ref} style={{ height: '200px', background: 'lightblue' }}>
-      {entry?.isIntersecting ? '可见' : '不可见'}
+      {isVisible ? '可见' : '不可见'}
     </div>
   );
 }
@@ -220,11 +258,15 @@ import { useRef } from 'react';
 
 function MyComponent() {
   const ref = useRef<HTMLDivElement>(null);
-  const scrollDirection = useScrollDirection(ref);
+  const { scrollDirection, isScrolling } = useScrollDirection(ref, {
+    step: 0.1,
+    throttle: 100
+  });
 
   return (
     <div ref={ref} style={{ height: '200px', background: 'lightblue' }}>
-      滚动方向: {scrollDirection}
+      <div>滚动方向: {scrollDirection}</div>
+      <div>是否滚动中: {isScrolling ? '是' : '否'}</div>
     </div>
   );
 }
@@ -250,8 +292,10 @@ function MyComponent() {
       </div>
       {position && (
         <div>
-          <p>位置: ({position.x.toFixed(2)}, {position.y.toFixed(2)})</p>
-          <p>尺寸: {position.width.toFixed(2)} × {position.height.toFixed(2)}</p>
+          <p>交叉比例: {(position.intersectionRatio * 100).toFixed(1)}%</p>
+          <p>是否相交: {position.isIntersecting ? '是' : '否'}</p>
+          <p>位置: ({position.boundingClientRect.x.toFixed(2)}, {position.boundingClientRect.y.toFixed(2)})</p>
+          <p>尺寸: {position.boundingClientRect.width.toFixed(2)} × {position.boundingClientRect.height.toFixed(2)}</p>
         </div>
       )}
     </div>
@@ -322,13 +366,16 @@ function MyComponent() {
 | 属性 | 类型 | 默认值 | 描述 |
 |------|------|--------|------|
 | `children` | `ReactNode` | - | 要懒加载的内容 |
-| `height` | `number \| string` | - | 占位符高度 |
 | `placeholder` | `ReactNode` | - | 占位符内容 |
-| `threshold` | `number \| ThresholdType` | `0` | 触发阈值 |
-| `offset` | `number` | `300` | 偏移量 |
-| `active` | `boolean` | `true` | 是否激活监听 |
+| `threshold` | `number \| ThresholdType` | `0.1` | 触发阈值 |
+| `offset` | `number` | `300` | 偏移量（像素） |
+| `style` | `CSSProperties` | - | 容器样式 |
 | `onChange` | `(isVisible: boolean) => void` | - | 可见性变化回调 |
-| `root` | `RefObject<Element>` | - | 自定义根容器 |
+| `root` | `Element \| null` | `null` | 自定义根容器 |
+| `once` | `boolean` | - | 是否只触发一次（与 active 互斥） |
+| `active` | `boolean` | - | 是否激活监听（与 once 互斥） |
+
+**注意**：`once` 和 `active` 属性不能同时使用。如果都不传，默认为持续监听模式。
 
 #### ThresholdType
 
@@ -342,17 +389,18 @@ type ThresholdType = 'any' | 'top' | 'bottom' | 'center';
 
 ```tsx
 function useIntersectionObserver(
-  ref: RefObject<Element>,
-  options?: IntersectionObserverInit
-): [IntersectionObserverEntry | undefined, () => void]
+  ref: RefObject<HTMLElement | null>,
+  callback: (entry: ObserverCallbackParamType) => void,
+  options: ObserverOptions
+): void
 ```
 
 #### useOneOffVisibility
 
 ```tsx
 function useOneOffVisibility(
-  ref: RefObject<Element>,
-  options?: IntersectionObserverInit
+  ref: RefObject<HTMLElement | null>,
+  options?: OneOffVisibilityOptions
 ): boolean
 ```
 
@@ -360,25 +408,34 @@ function useOneOffVisibility(
 
 ```tsx
 function useScrollDirection(
-  ref: RefObject<Element>,
+  ref: RefObject<HTMLElement | null>,
   options?: UseScrollDirectionOptions
-): ScrollDirection | undefined
+): { scrollDirection: ScrollDirection; isScrolling: boolean }
+```
+
+#### useInViewport
+
+```tsx
+function useInViewport(
+  ref: RefObject<HTMLElement | null>,
+  options?: ViewportElementPositionOptions
+): boolean
 ```
 
 #### useElementPosition
 
 ```tsx
 function useElementPosition(
-  ref: RefObject<Element>,
+  ref: RefObject<HTMLElement | null>,
   options?: ElementPositionOptions
-): ElementPosition | undefined
+): ElementPosition | null
 ```
 
 #### useBoundingClientRect
 
 ```tsx
 function useBoundingClientRect(
-  ref: RefObject<Element>,
+  ref: RefObject<HTMLElement | null>,
   options?: ElementPositionOptions
 ): DOMRect | null
 ```
@@ -387,10 +444,37 @@ function useBoundingClientRect(
 
 ```tsx
 function useIntersectionRatio(
-  ref: RefObject<Element>,
+  ref: RefObject<HTMLElement | null>,
   options?: ElementPositionOptions
 ): number | undefined
 ```
+
+## ⚡ 重要行为说明
+
+### 初始 Viewport 状态
+
+当组件一开始就在视口中时，所有基于 Intersection Observer 的 hooks 和组件会**立即触发回调**，而不需要等待滚动事件。这是 Intersection Observer API 的标准行为。
+
+```tsx
+// 如果这个元素一开始就在视口中
+const position = useElementPosition(ref);
+// position 会立即有值，而不是 null
+
+const isVisible = useInViewport(ref);
+// isVisible 会立即为 true
+
+const hasBeenVisible = useOneOffVisibility(ref);
+// hasBeenVisible 会立即为 true
+```
+
+这个特性对以下场景特别有用：
+- 首屏内容的初始状态检测
+- 页面加载时的性能优化
+- 避免不必要的等待和重新渲染
+
+### 内存泄漏防护
+
+所有 hooks 都内置了组件挂载状态跟踪，在组件卸载后自动停止状态更新，防止内存泄漏。
 
 ## 🔧 配置选项
 

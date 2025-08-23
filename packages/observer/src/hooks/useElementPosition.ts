@@ -1,5 +1,12 @@
 import type React from "react";
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+	useCallback,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+	useEffect,
+} from "react";
 import { lazyloadManager } from "../base/IntersectionObserverManager";
 import type {
 	ElementPosition,
@@ -20,11 +27,12 @@ import { generateThresholdArray, getDefaultThresholdArray } from "../utils";
  * - 支持 step 和 threshold 两种配置方式
  * - 提供相对位置计算功能
  * - 性能优化：元素完全不可见时跳过更新
+ * - 自动处理组件挂载状态，防止内存泄漏
  * - 类型安全：支持 null 值处理
  *
  * @param ref 要跟踪的元素的 ref
  * @param options 配置选项
- * @returns 元素位置信息，初始为 null
+ * @returns 元素位置信息，如果元素一开始就在视口中会立即有值，否则为 null
  *
  * @example
  * ```tsx
@@ -55,18 +63,29 @@ export const useElementPosition = (
 	const lastPositionRef = useRef<ElementPosition | null>(null);
 	/** 节流定时器引用 */
 	const timeoutRef = useRef<number | null>(null);
+	/** 组件挂载状态跟踪 */
+	const isMountedRef = useRef(true);
 
-	// 解构配置选项，设置默认值
-	const {
-		offset = 0,
-		throttle = 16, // 默认 60fps
-		skipWhenOffscreen = true, // 元素完全不可见时跳过更新
-	} = options;
+	// 解构配置选项，设置默认值，避免对象引用问题
+	const offset = options.offset ?? 0;
+	const throttle = options.throttle ?? 16; // 默认 60fps
+	const skipWhenOffscreen = options.skipWhenOffscreen ?? true; // 元素完全不可见时跳过更新
+
+	// 组件卸载时设置标记
+	useEffect(() => {
+		return () => {
+			isMountedRef.current = false;
+		};
+	}, []);
 
 	// 处理 root 和 relativeToRoot 选项
 	const root = "root" in options ? options.root : null;
 	const relativeToRoot =
 		root && "relativeToRoot" in options ? options.relativeToRoot : false;
+
+	// 解构 step 和 threshold 以避免对象引用问题
+	const step = "step" in options ? options.step : undefined;
+	const threshold = "threshold" in options ? options.threshold : undefined;
 
 	/**
 	 * 计算最终的 threshold 数组
@@ -74,30 +93,25 @@ export const useElementPosition = (
 	 */
 	const finalThreshold = useMemo(() => {
 		// 运行时检查：确保 step 和 threshold 不同时设置
-		if (
-			"step" in options &&
-			"threshold" in options &&
-			options.step !== undefined &&
-			options.threshold !== undefined
-		) {
+		if (step !== undefined && threshold !== undefined) {
 			console.warn(
 				"useElementPosition: step 和 threshold 不能同时设置，将使用 threshold",
 			);
 		}
 
 		// 如果明确指定了 threshold，优先使用
-		if ("threshold" in options && options.threshold) {
-			return options.threshold;
+		if (threshold !== undefined) {
+			return threshold;
 		}
 
 		// 如果指定了 step，根据 step 生成 threshold 数组
-		if ("step" in options && options.step) {
-			return generateThresholdArray(options.step);
+		if (step !== undefined) {
+			return generateThresholdArray(step);
 		}
 
 		// 否则使用默认的 threshold 数组
 		return getDefaultThresholdArray();
-	}, [options]);
+	}, [step, threshold]);
 
 	/**
 	 * 节流更新位置信息
@@ -107,6 +121,9 @@ export const useElementPosition = (
 	 */
 	const throttledSetPosition = useCallback(
 		(newPosition: ElementPosition) => {
+			// 检查组件是否仍然挂载
+			if (!isMountedRef.current) return;
+
 			const now = Date.now();
 			lastPositionRef.current = newPosition; // 总是缓存最新值
 
@@ -127,7 +144,8 @@ export const useElementPosition = (
 				}
 				timeoutRef.current = setTimeout(
 					() => {
-						if (lastPositionRef.current) {
+						// 再次检查组件是否仍然挂载
+						if (isMountedRef.current && lastPositionRef.current) {
 							setPosition(lastPositionRef.current);
 							lastUpdateTimeRef.current = Date.now();
 						}
@@ -139,6 +157,12 @@ export const useElementPosition = (
 		},
 		[throttle],
 	);
+
+	/** 存储 throttledSetPosition 的 ref，避免依赖问题 */
+	const throttledSetPositionRef = useRef(throttledSetPosition);
+
+	// 更新 ref 中的值
+	throttledSetPositionRef.current = throttledSetPosition;
 
 	// 设置 Intersection Observer
 	useLayoutEffect(() => {
@@ -180,7 +204,7 @@ export const useElementPosition = (
 			};
 
 			// 使用节流更新位置
-			throttledSetPosition(newPosition);
+			throttledSetPositionRef.current(newPosition);
 		};
 
 		// 开始观察元素
@@ -201,15 +225,7 @@ export const useElementPosition = (
 				timeoutRef.current = null;
 			}
 		};
-	}, [
-		ref,
-		finalThreshold,
-		offset,
-		root,
-		relativeToRoot,
-		throttledSetPosition,
-		skipWhenOffscreen,
-	]);
+	}, [ref, finalThreshold, offset, root, relativeToRoot, skipWhenOffscreen]);
 
 	return position;
 };

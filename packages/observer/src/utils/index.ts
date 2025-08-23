@@ -115,11 +115,12 @@ export const checkVisibility = (
 	threshold: number | "any" | "top" | "right" | "bottom" | "left",
 ): boolean => {
 	if (typeof threshold === "number") {
-		return entry.isIntersecting;
+		// 对于数值阈值，检查交叉比例是否达到要求
+		return entry.isIntersecting && entry.intersectionRatio >= threshold;
 	}
 
 	if (threshold === "any") {
-		return entry.intersectionRatio > 0;
+		return entry.isIntersecting && entry.intersectionRatio > 0;
 	}
 
 	// 方向性检测

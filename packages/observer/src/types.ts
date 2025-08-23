@@ -1,3 +1,5 @@
+import type React from "react";
+
 /**
  * 滚动方向枚举
  * 表示元素相对于视口的移动方向
@@ -29,6 +31,26 @@ export type ObserverOptions = IntersectionObserverInit & {
 	/** 是否只触发一次，触发后自动取消观察 */
 	once?: boolean;
 };
+
+/**
+ * 可序列化的观察器选项
+ * 用于生成观察器的唯一键值，排除循环引用的属性
+ * 基于 ObserverOptions，但用 rootId 替代 root 属性
+ */
+export type SerializableObserverOptions = Omit<ObserverOptions, "root"> & {
+	/** 根元素的唯一标识符，用于替代不可序列化的 root 属性 */
+	rootId?: string;
+};
+
+/**
+ * useOneOffVisibility 选项配置
+ */
+export interface OneOffVisibilityOptions {
+	/** 可见性阈值（0-1之间），元素达到此比例时触发，默认 0.1 */
+	threshold?: number;
+	/** 提前触发的偏移量（像素），默认 0 */
+	offset?: number;
+}
 
 /**
  * 基础元素位置选项
@@ -80,7 +102,7 @@ interface DefaultOptions extends BaseElementPositionOptions {
  * 基于 viewport 的选项
  * 使用浏览器视口作为根元素
  */
-type ViewportElementPositionOptions =
+export type ViewportElementPositionOptions =
 	| StepOptions
 	| ThresholdOptions
 	| DefaultOptions;
@@ -199,15 +221,57 @@ export type UseScrollDirectionOptions =
 	| ViewportScrollDirectionOptions
 	| CustomRootScrollDirectionOptions;
 
-export interface IntersectionLoadProps {
+/**
+ * 基础 IntersectionLoad 属性
+ */
+interface BaseIntersectionLoadProps {
 	children: React.ReactNode;
 	placeholder?: React.ReactNode;
 	threshold?: number | "any" | "top" | "right" | "bottom" | "left";
 	offset?: number;
-	height: number;
-	lazy?: boolean;
 	style?: React.CSSProperties;
-	active?: boolean;
 	onChange?: (isVisible: boolean) => void;
 	root?: Element | null; // 根元素，默认为 viewport
 }
+
+/**
+ * 使用 once 控制的 IntersectionLoad 属性
+ */
+interface IntersectionLoadOnceProps extends BaseIntersectionLoadProps {
+	/** 是否只触发一次，触发后自动停止监听 */
+	once: boolean;
+	/** 不能同时使用 active */
+	active?: never;
+}
+
+/**
+ * 使用 active 控制的 IntersectionLoad 属性
+ */
+interface IntersectionLoadActiveProps extends BaseIntersectionLoadProps {
+	/** 是否启用监听 */
+	active: boolean;
+	/** 不能同时使用 once */
+	once?: never;
+}
+
+/**
+ * 使用默认配置的 IntersectionLoad 属性
+ */
+interface IntersectionLoadDefaultProps extends BaseIntersectionLoadProps {
+	/** 不能使用 once */
+	once?: never;
+	/** 不能使用 active */
+	active?: never;
+}
+
+/**
+ * IntersectionLoad 组件属性类型
+ * 支持三种控制模式：
+ * 1. 使用 once 控制是否只触发一次
+ * 2. 使用 active 手动控制是否监听
+ * 3. 使用默认配置（once: false, active: true）
+ */
+export type IntersectionLoadProps =
+	| IntersectionLoadOnceProps
+	| IntersectionLoadActiveProps
+	| IntersectionLoadDefaultProps;

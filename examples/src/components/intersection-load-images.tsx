@@ -37,7 +37,7 @@ export function ImageLazyLoadExample() {
 					<h3>图片 {index + 1}</h3>
 
 					<IntersectionLoad
-						height={300}
+						style={{ height: 300 }}
 						placeholder={
 							<div
 								style={{

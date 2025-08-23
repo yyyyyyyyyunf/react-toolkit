@@ -1,5 +1,5 @@
 import { useInViewport } from "@fly4react/observer";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 /**
  * useInViewport Hook 示例
@@ -29,9 +29,71 @@ export function UseInViewportExample() {
 		throttle: 8,
 	});
 
+	// 添加 console 输出
+	console.log("useInViewport 状态变化:", {
+		示例1: isInViewport1,
+		示例2: isInViewport2,
+		示例3: isInViewport3,
+	});
+
+	// 添加更详细的调试信息
+	useEffect(() => {
+		if (ref1.current) {
+			const rect = ref1.current.getBoundingClientRect();
+			console.log("示例1 元素位置:", {
+				top: rect.top,
+				bottom: rect.bottom,
+				height: rect.height,
+				isInViewport: isInViewport1,
+			});
+		}
+	}, [isInViewport1]);
+
+	useEffect(() => {
+		if (ref2.current) {
+			const rect = ref2.current.getBoundingClientRect();
+			console.log("示例2 元素位置:", {
+				top: rect.top,
+				bottom: rect.bottom,
+				height: rect.height,
+				isInViewport: isInViewport2,
+			});
+		}
+	}, [isInViewport2]);
+
+	useEffect(() => {
+		if (ref3.current) {
+			const rect = ref3.current.getBoundingClientRect();
+			console.log("示例3 元素位置:", {
+				top: rect.top,
+				bottom: rect.bottom,
+				height: rect.height,
+				isInViewport: isInViewport3,
+			});
+		}
+	}, [isInViewport3]);
+
 	return (
 		<div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
 			<h1>useInViewport Hook 示例</h1>
+
+			{/* 顶部占位区域，确保示例元素初始在视口外 */}
+			<div
+				style={{
+					height: "100vh",
+					background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					color: "white",
+					fontSize: "24px",
+					fontWeight: "bold",
+					marginBottom: "40px",
+					borderRadius: "12px",
+				}}
+			>
+				👆 向下滚动查看 useInViewport 效果
+			</div>
 
 			<div style={{ marginBottom: "20px" }}>
 				<h2>功能说明</h2>
@@ -54,82 +116,106 @@ export function UseInViewportExample() {
 			</div>
 
 			{/* 示例 1：默认配置 */}
-			<div style={{ marginBottom: "40px" }}>
+			<div style={{ marginBottom: "60px" }}>
 				<h3>示例 1：默认配置</h3>
+				<p style={{ color: "#666", marginBottom: "20px" }}>
+					向下滚动查看元素状态变化
+				</p>
 				<div
 					ref={ref1}
 					style={{
-						height: "200px",
+						height: "300px",
 						backgroundColor: isInViewport1 ? "#4CAF50" : "#f44336",
 						color: "white",
 						display: "flex",
 						alignItems: "center",
 						justifyContent: "center",
-						fontSize: "18px",
+						fontSize: "24px",
 						fontWeight: "bold",
-						transition: "background-color 0.3s ease",
+						transition: "all 0.5s ease",
 						marginBottom: "20px",
+						borderRadius: "12px",
+						boxShadow: isInViewport1
+							? "0 8px 25px rgba(76, 175, 80, 0.3)"
+							: "0 4px 15px rgba(244, 67, 54, 0.3)",
+						transform: isInViewport1 ? "scale(1.02)" : "scale(1)",
 					}}
 				>
 					{isInViewport1 ? "✅ 元素在视口中可见" : "❌ 元素不在视口中"}
 				</div>
-				<p>
-					<strong>状态</strong>：{isInViewport1 ? "可见" : "不可见"}
+				<p style={{ fontSize: "16px", fontWeight: "bold" }}>
+					<strong>状态</strong>：{isInViewport1 ? "🟢 可见" : "🔴 不可见"}
 				</p>
 			</div>
 
 			{/* 示例 2：自定义配置 */}
-			<div style={{ marginBottom: "40px" }}>
+			<div style={{ marginBottom: "60px" }}>
 				<h3>示例 2：自定义配置 (step: 0.1, throttle: 16)</h3>
+				<p style={{ color: "#666", marginBottom: "20px" }}>
+					继续向下滚动查看元素状态变化
+				</p>
 				<div
 					ref={ref2}
 					style={{
-						height: "200px",
+						height: "300px",
 						backgroundColor: isInViewport2 ? "#2196F3" : "#FF9800",
 						color: "white",
 						display: "flex",
 						alignItems: "center",
 						justifyContent: "center",
-						fontSize: "18px",
+						fontSize: "24px",
 						fontWeight: "bold",
-						transition: "background-color 0.3s ease",
+						transition: "all 0.5s ease",
 						marginBottom: "20px",
+						borderRadius: "12px",
+						boxShadow: isInViewport2
+							? "0 8px 25px rgba(33, 150, 243, 0.3)"
+							: "0 4px 15px rgba(255, 152, 0, 0.3)",
+						transform: isInViewport2 ? "scale(1.02)" : "scale(1)",
 					}}
 				>
 					{isInViewport2 ? "✅ 元素在视口中可见" : "❌ 元素不在视口中"}
 				</div>
-				<p>
-					<strong>状态</strong>：{isInViewport2 ? "可见" : "不可见"}
+				<p style={{ fontSize: "16px", fontWeight: "bold" }}>
+					<strong>状态</strong>：{isInViewport2 ? "🟢 可见" : "🔴 不可见"}
 				</p>
-				<p>
+				<p style={{ color: "#666" }}>
 					<strong>配置</strong>：每 10% 触发一次，60fps 节流
 				</p>
 			</div>
 
 			{/* 示例 3：更敏感的配置 */}
-			<div style={{ marginBottom: "40px" }}>
+			<div style={{ marginBottom: "60px" }}>
 				<h3>示例 3：更敏感的配置 (step: 0.05, throttle: 8)</h3>
+				<p style={{ color: "#666", marginBottom: "20px" }}>
+					继续向下滚动查看元素状态变化
+				</p>
 				<div
 					ref={ref3}
 					style={{
-						height: "200px",
+						height: "300px",
 						backgroundColor: isInViewport3 ? "#9C27B0" : "#607D8B",
 						color: "white",
 						display: "flex",
 						alignItems: "center",
 						justifyContent: "center",
-						fontSize: "18px",
+						fontSize: "24px",
 						fontWeight: "bold",
-						transition: "background-color 0.3s ease",
+						transition: "all 0.5s ease",
 						marginBottom: "20px",
+						borderRadius: "12px",
+						boxShadow: isInViewport3
+							? "0 8px 25px rgba(156, 39, 176, 0.3)"
+							: "0 4px 15px rgba(96, 125, 139, 0.3)",
+						transform: isInViewport3 ? "scale(1.02)" : "scale(1)",
 					}}
 				>
 					{isInViewport3 ? "✅ 元素在视口中可见" : "❌ 元素不在视口中"}
 				</div>
-				<p>
-					<strong>状态</strong>：{isInViewport3 ? "可见" : "不可见"}
+				<p style={{ fontSize: "16px", fontWeight: "bold" }}>
+					<strong>状态</strong>：{isInViewport3 ? "🟢 可见" : "🔴 不可见"}
 				</p>
-				<p>
+				<p style={{ color: "#666" }}>
 					<strong>配置</strong>：每 5% 触发一次，120fps 节流（更敏感）
 				</p>
 			</div>
@@ -137,21 +223,32 @@ export function UseInViewportExample() {
 			{/* 使用说明 */}
 			<div
 				style={{
-					backgroundColor: "#f5f5f5",
-					padding: "20px",
-					borderRadius: "8px",
+					background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+					padding: "30px",
+					borderRadius: "12px",
 					marginTop: "40px",
+					color: "white",
+					boxShadow: "0 8px 25px rgba(102, 126, 234, 0.3)",
 				}}
 			>
-				<h3>使用说明</h3>
-				<div style={{ marginBottom: "15px" }}>
-					<h4>基本用法：</h4>
+				<h3 style={{ color: "white", marginBottom: "20px", fontSize: "24px" }}>
+					📚 使用说明
+				</h3>
+				<div style={{ marginBottom: "25px" }}>
+					<h4
+						style={{ color: "white", marginBottom: "10px", fontSize: "18px" }}
+					>
+						🔧 基本用法：
+					</h4>
 					<pre
 						style={{
-							backgroundColor: "#fff",
-							padding: "10px",
-							borderRadius: "4px",
+							backgroundColor: "rgba(255, 255, 255, 0.1)",
+							color: "white",
+							padding: "15px",
+							borderRadius: "8px",
 							overflow: "auto",
+							border: "1px solid rgba(255, 255, 255, 0.2)",
+							fontSize: "14px",
 						}}
 					>
 						{`import { useInViewport } from '@fly4react/observer';
@@ -169,14 +266,21 @@ const MyComponent = () => {
 					</pre>
 				</div>
 
-				<div style={{ marginBottom: "15px" }}>
-					<h4>带配置的用法：</h4>
+				<div style={{ marginBottom: "25px" }}>
+					<h4
+						style={{ color: "white", marginBottom: "10px", fontSize: "18px" }}
+					>
+						⚙️ 带配置的用法：
+					</h4>
 					<pre
 						style={{
-							backgroundColor: "#fff",
-							padding: "10px",
-							borderRadius: "4px",
+							backgroundColor: "rgba(255, 255, 255, 0.1)",
+							color: "white",
+							padding: "15px",
+							borderRadius: "8px",
 							overflow: "auto",
+							border: "1px solid rgba(255, 255, 255, 0.2)",
+							fontSize: "14px",
 						}}
 					>
 						{`const isInViewport = useInViewport(ref, {
@@ -188,19 +292,59 @@ const MyComponent = () => {
 				</div>
 
 				<div>
-					<h4>配置选项：</h4>
-					<ul>
-						<li>
-							<code>step</code>：触发阈值步长（0-1）
+					<h4
+						style={{ color: "white", marginBottom: "10px", fontSize: "18px" }}
+					>
+						📋 配置选项：
+					</h4>
+					<ul style={{ color: "white", fontSize: "16px", lineHeight: "1.6" }}>
+						<li style={{ marginBottom: "8px" }}>
+							<code
+								style={{
+									backgroundColor: "rgba(255, 255, 255, 0.2)",
+									padding: "2px 6px",
+									borderRadius: "4px",
+								}}
+							>
+								step
+							</code>
+							：触发阈值步长（0-1）
 						</li>
-						<li>
-							<code>throttle</code>：节流时间（毫秒）
+						<li style={{ marginBottom: "8px" }}>
+							<code
+								style={{
+									backgroundColor: "rgba(255, 255, 255, 0.2)",
+									padding: "2px 6px",
+									borderRadius: "4px",
+								}}
+							>
+								throttle
+							</code>
+							：节流时间（毫秒）
 						</li>
-						<li>
-							<code>rootMargin</code>：根元素边距
+						<li style={{ marginBottom: "8px" }}>
+							<code
+								style={{
+									backgroundColor: "rgba(255, 255, 255, 0.2)",
+									padding: "2px 6px",
+									borderRadius: "4px",
+								}}
+							>
+								rootMargin
+							</code>
+							：根元素边距
 						</li>
-						<li>
-							<code>threshold</code>：自定义阈值数组
+						<li style={{ marginBottom: "8px" }}>
+							<code
+								style={{
+									backgroundColor: "rgba(255, 255, 255, 0.2)",
+									padding: "2px 6px",
+									borderRadius: "4px",
+								}}
+							>
+								threshold
+							</code>
+							：自定义阈值数组
 						</li>
 					</ul>
 				</div>

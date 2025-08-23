@@ -2,6 +2,7 @@ import type {
 	ObserverCallbackParamType,
 	ObserverCallbackType,
 	ObserverOptions,
+	SerializableObserverOptions,
 } from "../types";
 import {
 	calculateScrollDirection,
@@ -52,7 +53,31 @@ class IntersectionObserverManager {
 	 * @returns 唯一的键值
 	 */
 	private getObserverKey(options: ObserverOptions): string {
-		return JSON.stringify(options);
+		// 创建一个安全的选项对象，只包含可序列化的属性
+		const safeOptions: SerializableObserverOptions = {
+			rootMargin: options.rootMargin,
+			threshold: options.threshold,
+			once: options.once,
+		};
+
+		// 如果 root 存在，使用其唯一标识符
+		if (options.root) {
+			if (options.root instanceof Element) {
+				// 为 root 元素设置唯一标识符
+				const rootId = options.root.getAttribute("data-intersection-root-id");
+				if (!rootId) {
+					const uniqueRootId = `root_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+					options.root.setAttribute("data-intersection-root-id", uniqueRootId);
+					safeOptions.rootId = uniqueRootId;
+				} else {
+					safeOptions.rootId = rootId;
+				}
+			} else {
+				safeOptions.rootId = "document";
+			}
+		}
+
+		return JSON.stringify(safeOptions);
 	}
 
 	/**
@@ -86,7 +111,15 @@ class IntersectionObserverManager {
 
 						// 创建扩展的 entry 对象
 						const extendedEntry: ObserverCallbackParamType = {
-							...entry,
+							// 手动复制 IntersectionObserverEntry 的属性
+							target: entry.target,
+							rootBounds: entry.rootBounds,
+							boundingClientRect: entry.boundingClientRect,
+							intersectionRect: entry.intersectionRect,
+							intersectionRatio: entry.intersectionRatio,
+							isIntersecting: entry.isIntersecting,
+							time: entry.time,
+							// 添加扩展属性
 							scrollDirection,
 							previousRect,
 						};

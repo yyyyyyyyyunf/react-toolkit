@@ -28,7 +28,7 @@ export function UseOneOffVisibilityExample() {
 	});
 
 	const isVisible4 = useOneOffVisibility(trigger4Ref, {
-		rootMargin: "100px", // 提前 100px 触发
+		offset: 100, // 提前 100px 触发
 	});
 
 	// 模拟动画效果

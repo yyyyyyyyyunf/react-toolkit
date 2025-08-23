@@ -57,14 +57,16 @@ export const useScrollDirection = (
 	/** 滚动状态重置定时器 */
 	const timeoutRef = useRef<number | null>(null);
 
-	// 解构配置选项，设置默认值
-	const {
-		offset = 0,
-		throttle = 100, // 默认 100ms 节流，避免过于频繁的更新
-	} = options;
+	// 解构配置选项，设置默认值，避免对象引用问题
+	const offset = options.offset ?? 0;
+	const throttle = options.throttle ?? 100; // 默认 100ms 节流，避免过于频繁的更新
 
 	// 处理 root 选项
 	const root = "root" in options ? options.root : null;
+
+	// 解构 step 和 threshold 以避免对象引用问题
+	const step = "step" in options ? options.step : undefined;
+	const threshold = "threshold" in options ? options.threshold : undefined;
 
 	/**
 	 * 计算最终的 threshold 数组
@@ -72,30 +74,25 @@ export const useScrollDirection = (
 	 */
 	const finalThreshold = useMemo(() => {
 		// 运行时检查：确保 step 和 threshold 不同时设置
-		if (
-			"step" in options &&
-			"threshold" in options &&
-			options.step !== undefined &&
-			options.threshold !== undefined
-		) {
+		if (step !== undefined && threshold !== undefined) {
 			console.warn(
 				"useScrollDirection: step 和 threshold 不能同时设置，将使用 threshold",
 			);
 		}
 
 		// 如果明确指定了 threshold，优先使用
-		if ("threshold" in options && options.threshold) {
-			return options.threshold;
+		if (threshold !== undefined) {
+			return threshold;
 		}
 
 		// 如果指定了 step，根据 step 生成 threshold 数组
-		if ("step" in options && options.step) {
-			return generateThresholdArray(options.step);
+		if (step !== undefined) {
+			return generateThresholdArray(step);
 		}
 
 		// 否则使用默认的 threshold 数组
 		return [0, 0.25, 0.5, 0.75, 1];
-	}, [options]);
+	}, [step, threshold]);
 
 	/**
 	 * 节流更新滚动方向
@@ -144,5 +141,9 @@ export const useScrollDirection = (
 		},
 	);
 
-	return { scrollDirection, isScrolling };
+	// 使用 useMemo 包裹返回值，避免不必要的重新渲染
+	return useMemo(
+		() => ({ scrollDirection, isScrolling }),
+		[scrollDirection, isScrolling],
+	);
 };
