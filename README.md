@@ -22,6 +22,21 @@
 - 📦 **轻量级**: 极小的包体积，不影响应用性能
 - 🧪 **测试覆盖**: 完整的单元测试覆盖
 - 📚 **详细文档**: 丰富的示例和文档
+- 🌐 **浏览器兼容**: 支持现代浏览器，自动降级处理
+- ⚡ **SSR 友好**: 完全支持服务端渲染
+
+## 📊 性能对比
+
+| 特性 | @fly4react/observer | react-intersection-observer | react-use-intersection-observer |
+|------|-------------------|---------------------------|--------------------------------|
+| 包大小 | ~2.2kB (gzipped) | ~3.1kB (gzipped) | ~2.8kB (gzipped) |
+| 依赖 | 零依赖 | 1 个依赖 | 1 个依赖 |
+| 位置跟踪 | ✅ | ❌ | ❌ |
+| 滚动方向检测 | ✅ | ❌ | ❌ |
+| 一次性可见性 | ✅ | ❌ | ❌ |
+| 自定义根元素 | ✅ | ✅ | ✅ |
+| TypeScript | ✅ | ✅ | ✅ |
+| SSR 支持 | ✅ | ✅ | ✅ |
 
 ## 📦 包含的包
 
@@ -54,6 +69,24 @@ npm install @fly4react/observer
 ```bash
 npm install @fly4react/memo
 ```
+
+## 🎯 使用场景
+
+### Observer 包适用场景
+- **懒加载**: 图片、组件、内容的按需加载
+- **无限滚动**: 社交媒体、电商列表的无限加载
+- **视差滚动**: 创建动态的视差效果
+- **动画触发**: 元素进入视口时触发动画
+- **性能监控**: 跟踪用户浏览行为
+- **广告展示**: 广告可见性统计
+- **表单验证**: 实时表单验证反馈
+
+### Memo 包适用场景
+- **列表渲染**: 大型列表的性能优化
+- **复杂组件**: 减少不必要的重新渲染
+- **数据展示**: 数据密集型组件的优化
+- **表单组件**: 表单字段的性能优化
+- **图表组件**: 数据可视化组件的优化
 
 ## 🚀 快速开始
 
@@ -154,6 +187,8 @@ react-intersection-tool/
 - [Memo 包文档](./packages/memo/README.md)
 - [示例代码](./examples/)
 - [在线演示](https://yyyyyyyyyunf.github.io/react-toolkit/)
+- [更新日志](./CHANGELOG.md)
+- [API 文档](./docs/API.md)
 
 ## 🤝 贡献
 
@@ -181,5 +216,40 @@ pnpm test
 # 启动开发服务器
 pnpm dev
 ```
+
+## ❓ 常见问题
+
+### Q: 这个库与其他类似库有什么区别？
+A: 我们的库专注于 Intersection Observer API 的完整封装，提供更丰富的功能（位置跟踪、滚动方向检测等），同时保持零依赖和极小的包体积。
+
+### Q: 支持哪些浏览器？
+A: 支持所有支持 Intersection Observer API 的现代浏览器（Chrome 51+, Firefox 55+, Safari 12.1+, Edge 15+）。
+
+### Q: 如何处理不支持 Intersection Observer 的浏览器？
+A: 库会自动降级到基于 scroll 事件的实现，确保在所有环境下都能正常工作。
+
+### Q: 性能如何？
+A: 基于原生 API，性能优异。支持节流控制和智能观察器复用，避免不必要的计算。
+
+### Q: 如何调试组件重新渲染？
+A: 使用 `@fly4react/memo` 的调试模式，可以轻松追踪 props 变化和组件重新渲染。
+
+### Q: 支持 SSR 吗？
+A: 是的，完全支持服务端渲染，所有 hooks 都会在服务端安全地返回默认值。
+
+## 🌟 社区
+
+### 支持我们
+如果这个项目对你有帮助，请给我们一个 ⭐️ Star！
+
+### 反馈和建议
+- 🐛 [报告 Bug](https://github.com/yyyyyyyyyunf/react-toolkit/issues)
+- 💡 [功能建议](https://github.com/yyyyyyyyyunf/react-toolkit/issues)
+- 📖 [文档改进](https://github.com/yyyyyyyyyunf/react-toolkit/issues)
+
+### 相关项目
+- [React Query](https://tanstack.com/query) - 数据获取和缓存
+- [React Hook Form](https://react-hook-form.com/) - 表单处理
+- [Framer Motion](https://www.framer.com/motion/) - 动画库
 
 ## 📄 许可证
