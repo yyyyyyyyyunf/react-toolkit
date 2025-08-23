@@ -9,7 +9,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@fly4react/memo': resolve(__dirname, 'node_modules/@fly4react/memo/dist/index.js'),
+      '@fly4react/memo': './node_modules/@fly4react/memo/dist/index.js',
     },
   },
   optimizeDeps: {
