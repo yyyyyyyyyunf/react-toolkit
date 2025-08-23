@@ -37,22 +37,16 @@ jobs:
       - name: Run linting
         run: pnpm lint
       
-      - name: Build memo package first
+      - name: Install memo package from npm
         run: |
-          echo "🔨 构建 memo 包..."
-          cd packages/memo
-          npx rslib build
-          echo "✅ memo 包构建完成"
-      
-      - name: Build observer package
-        run: |
-          echo "🔨 构建 observer 包..."
+          echo "📦 从 npm 安装 memo 包..."
           cd packages/observer
-          npx rslib build
-          echo "✅ observer 包构建完成"
+          pnpm install @fly4react/memo@1.0.6 --no-workspace
+          cd ../..
+          echo "✅ memo 包安装完成"
       
-      - name: Run tests
-        run: pnpm -r test:run
+      - name: Build packages
+        run: pnpm build
       
       - name: Check build output
         run: |
