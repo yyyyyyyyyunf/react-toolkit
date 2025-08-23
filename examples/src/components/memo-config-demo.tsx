@@ -137,7 +137,8 @@ const MemoConfigDemo = () => {
 					更新测试数据
 				</button>
 
-				<TestComponent {...testData} />
+				{/* 暂时注释掉有问题的组件 */}
+				{/* <TestComponent {...testData} /> */}
 			</div>
 
 			{/* 说明区域 */}
