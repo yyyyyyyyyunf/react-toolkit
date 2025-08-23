@@ -66,6 +66,11 @@ else
     echo "❌ 根目录无需更新版本"
 fi
 
+# 为了调试，输出当前的环境变量
+echo "🔍 调试信息:"
+echo "  GITHUB_OUTPUT: ${GITHUB_OUTPUT:-'未设置'}"
+echo "  GITHUB_ACTIONS: ${GITHUB_ACTIONS:-'未设置'}"
+
 echo ""
 echo "🎯 发布策略:"
 if [ $OBSERVER_CHANGES -gt 0 ] && [ $MEMO_CHANGES -gt 0 ]; then

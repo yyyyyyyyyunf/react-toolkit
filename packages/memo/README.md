@@ -1,5 +1,9 @@
 # @fly4react/memo
 
+[![npm version](https://img.shields.io/npm/v/@fly4react/memo.svg?label=@fly4react/memo)](https://www.npmjs.com/package/@fly4react/memo)
+[![npm downloads](https://img.shields.io/npm/dm/@fly4react/memo.svg?label=@fly4react/memo%20downloads)](https://www.npmjs.com/package/@fly4react/memo)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/memo.svg?label=@fly4react/memo%20size)](https://bundlephobia.com/package/@fly4react/memo)
+
 一个高级的 React 记忆化组件工具，提供灵活的 props 比较策略。
 
 ## ✨ 特性

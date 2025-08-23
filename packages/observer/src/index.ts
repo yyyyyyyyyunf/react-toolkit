@@ -5,6 +5,7 @@ export { useElementPosition } from "./hooks/useElementPosition";
 export { useIntersectionObserver } from "./hooks/useIntersectionObserver";
 export { useIntersectionRatio } from "./hooks/useIntersectionRatio";
 export { useInViewport } from "./hooks/useInViewport";
+export { useIsCeiling } from "./hooks/useIsCeiling";
 export { useOneOffVisibility } from "./hooks/useOneOffVisibility";
 export { useScrollDirection } from "./hooks/useScrollDirection";
 export * from "./types";

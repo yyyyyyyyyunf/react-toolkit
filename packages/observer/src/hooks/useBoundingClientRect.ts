@@ -1,4 +1,4 @@
-import type { ElementPositionOptions } from "../types";
+import type { Options } from "../types";
 import { useElementPosition } from "./useElementPosition";
 
 /**
@@ -42,7 +42,7 @@ import { useElementPosition } from "./useElementPosition";
  */
 export const useBoundingClientRect = (
 	ref: React.RefObject<HTMLElement | null>,
-	options: ElementPositionOptions = {},
+	options: Options = {},
 ) => {
 	const elPosition = useElementPosition(ref, options);
 	return elPosition?.boundingClientRect || null;

@@ -10,7 +10,7 @@ import {
 import { lazyloadManager } from "../base/IntersectionObserverManager";
 import type {
 	ElementPosition,
-	ElementPositionOptions,
+	Options,
 	ObserverCallbackParamType,
 } from "../types";
 import { generateThresholdArray, getDefaultThresholdArray } from "../utils";
@@ -53,7 +53,7 @@ import { generateThresholdArray, getDefaultThresholdArray } from "../utils";
  */
 export const useElementPosition = (
 	ref: React.RefObject<HTMLElement | null>,
-	options: ElementPositionOptions = {},
+	options: Options = {},
 ) => {
 	/** 当前元素位置信息 */
 	const [position, setPosition] = useState<ElementPosition | null>(null);

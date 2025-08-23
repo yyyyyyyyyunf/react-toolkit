@@ -1,16 +1,17 @@
 # React Toolkit
 
 [![CI](https://github.com/yyyyyyyyyunf/react-toolkit/workflows/CI/badge.svg)](https://github.com/yyyyyyyyyunf/react-toolkit/actions)
-[![npm version](https://img.shields.io/npm/v/@fly4react/observer.svg)](https://www.npmjs.com/package/@fly4react/observer)
-[![npm downloads](https://img.shields.io/npm/dm/@fly4react/observer.svg)](https://www.npmjs.com/package/@fly4react/observer)
-[![npm version](https://img.shields.io/npm/v/@fly4react/memo.svg)](https://www.npmjs.com/package/@fly4react/memo)
-[![npm downloads](https://img.shields.io/npm/dm/@fly4react/memo.svg)](https://www.npmjs.com/package/@fly4react/memo)
 [![License](https://img.shields.io/npm/l/@fly4react/observer.svg)](https://github.com/yyyyyyyyyunf/react-toolkit/blob/main/LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-16.8-61dafb.svg)](https://reactjs.org/)
-[![Bundle Size](https://img.shields.io/bundlephobia/min/@fly4react/observer)](https://bundlephobia.com/package/@fly4react/observer)
-[![Bundle Size](https://img.shields.io/bundlephobia/min/@fly4react/memo)](https://bundlephobia.com/package/@fly4react/memo)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/yyyyyyyyyunf/react-toolkit)
+
+### 📦 包信息
+
+| 包名 | 版本 | 下载量 | 大小 |
+|------|------|--------|------|
+| [@fly4react/observer](https://www.npmjs.com/package/@fly4react/observer) | [![npm version](https://img.shields.io/npm/v/@fly4react/observer.svg?label=version)](https://www.npmjs.com/package/@fly4react/observer) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/observer.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/observer) | [![bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/observer.svg?label=size)](https://bundlephobia.com/package/@fly4react/observer) |
+| [@fly4react/memo](https://www.npmjs.com/package/@fly4react/memo) | [![npm version](https://img.shields.io/npm/v/@fly4react/memo.svg?label=version)](https://www.npmjs.com/package/@fly4react/memo) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/memo.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/memo) | [![bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/memo.svg?label=size)](https://bundlephobia.com/package/@fly4react/memo) |
 
 这是一个 React Toolkit 的 monorepo，包含多个高性能的 React 工具库。
 
@@ -50,6 +51,7 @@
 - 📊 交叉比例监控 (`useIntersectionRatio`)
 - 📐 边界矩形获取 (`useBoundingClientRect`)
 - 🎮 滚动方向检测 (`useScrollDirection`)
+- 📌 元素贴顶检测 (`useIsCeiling`)
 - 🖼️ 懒加载组件 (`IntersectionLoad`)
 
 ```bash
@@ -93,13 +95,16 @@ npm install @fly4react/memo
 ### Observer 包使用示例
 
 ```tsx
-import { useInViewport, useElementPosition } from '@fly4react/observer';
+import { useInViewport, useElementPosition, useIsCeiling } from '@fly4react/observer';
 
 function MyComponent() {
   const ref = useRef<HTMLDivElement>(null);
   
   // 检测元素是否在视口中
   const isInViewport = useInViewport(ref);
+  
+  // 检测元素是否贴顶
+  const isCeiling = useIsCeiling(ref);
   
   // 获取元素的精确位置
   const position = useElementPosition(ref, {
@@ -108,8 +113,13 @@ function MyComponent() {
   });
 
   return (
-    <div ref={ref}>
-      {isInViewport ? '元素可见' : '元素不可见'}
+    <div ref={ref} style={{ 
+      background: isCeiling ? 'green' : 'blue',
+      position: 'sticky',
+      top: 0
+    }}>
+      <div>可见状态: {isInViewport ? '可见' : '不可见'}</div>
+      <div>贴顶状态: {isCeiling ? '已贴顶' : '未贴顶'}</div>
     </div>
   );
 }

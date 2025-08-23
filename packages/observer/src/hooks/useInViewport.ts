@@ -1,11 +1,7 @@
 import type React from "react";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { lazyloadManager } from "../base/IntersectionObserverManager";
-import type {
-	ObserverCallbackParamType,
-	ViewportElementPositionOptions,
-} from "../types";
-import { generateThresholdArray } from "../utils";
+import type { ObserverCallbackParamType } from "../types";
 
 /**
  * 元素视口可见性 Hook
@@ -15,22 +11,18 @@ import { generateThresholdArray } from "../utils";
  *
  * 特性：
  * - 返回元素是否在视口中可见（boolean）
- * - 支持所有位置相关 Hook 的配置选项
  * - 自动处理可见性更新和清理
  * - 类型安全：支持 null 值处理
- * - 性能优化：只关注可见性状态，不计算位置信息
+ * - 性能优化：只关注可见性状态，无额外开销
+ * - 简单易用：无需复杂配置，开箱即用
  *
  * @param ref 要检测可见性的元素的 ref
- * @param options 配置选项
  * @returns 元素是否在视口中可见（boolean）
  *
  * @example
  * ```tsx
  * const ref = useRef<HTMLDivElement>(null);
- * const isInViewport = useInViewport(ref, {
- *   step: 0.1, // 每 10% 触发一次
- *   offset: 50 // 偏移量
- * });
+ * const isInViewport = useInViewport(ref);
  *
  * if (isInViewport) {
  *   console.log('元素在视口中可见');
@@ -41,35 +33,9 @@ import { generateThresholdArray } from "../utils";
  */
 export const useInViewport = (
 	ref: React.RefObject<HTMLElement | null>,
-	options: ViewportElementPositionOptions = {},
 ): boolean => {
 	const [isInViewport, setIsInViewport] = useState(false);
 	const isMountedRef = useRef(true);
-
-	// 解构配置选项，避免对象引用问题
-	const offset = options.offset ?? 0;
-	const step = "step" in options ? options.step : undefined;
-	const threshold = "threshold" in options ? options.threshold : undefined;
-
-	// 计算最终的 threshold 数组
-	const finalThreshold = useMemo(() => {
-		if (step !== undefined && threshold !== undefined) {
-			console.warn(
-				"useInViewport: step 和 threshold 不能同时设置，将使用 threshold",
-			);
-		}
-
-		if (threshold !== undefined) {
-			return threshold;
-		}
-
-		if (step !== undefined) {
-			return generateThresholdArray(step);
-		}
-
-		// 对于 useInViewport，只需要检测是否在视口中，使用简单的阈值
-		return [0];
-	}, [step, threshold]);
 
 	// 组件卸载时设置标记
 	useLayoutEffect(() => {
@@ -88,14 +54,12 @@ export const useInViewport = (
 
 			// 只关注是否在视口中可见
 			const newIsInViewport = entry.isIntersecting;
-
 			setIsInViewport(newIsInViewport);
 		};
 
-		// 开始观察元素
+		// 开始观察元素，使用简单的配置
 		const unSubscribe = lazyloadManager.observe(ref.current, callback, {
-			threshold: finalThreshold,
-			rootMargin: `${offset}px`,
+			threshold: [0], // 只关心是否可见
 		});
 
 		// 清理函数
@@ -104,7 +68,7 @@ export const useInViewport = (
 				unSubscribe();
 			}
 		};
-	}, [ref, finalThreshold, offset]);
+	}, [ref]);
 
 	return isInViewport;
 };

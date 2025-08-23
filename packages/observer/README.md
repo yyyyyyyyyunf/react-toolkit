@@ -1,5 +1,9 @@
 # @fly4react/observer
 
+[![npm version](https://img.shields.io/npm/v/@fly4react/observer.svg?label=@fly4react/observer)](https://www.npmjs.com/package/@fly4react/observer)
+[![npm downloads](https://img.shields.io/npm/dm/@fly4react/observer.svg?label=@fly4react/observer%20downloads)](https://www.npmjs.com/package/@fly4react/observer)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/observer.svg?label=@fly4react/observer%20size)](https://bundlephobia.com/package/@fly4react/observer)
+
 一个基于 Intersection Observer API 的现代 React 工具库，提供懒加载、可见性检测、位置跟踪和滚动方向检测功能。
 
 ## ✨ 功能特性
@@ -15,6 +19,7 @@
 - 🎯 支持基于自定义容器的可见性检测
 - 🧭 支持滚动方向检测
 - 🎯 提供专门的 useScrollDirection Hook
+- 📌 支持元素贴顶检测（useIsCeiling）
 - ⚡ 智能初始状态：元素一开始就在视口中时立即触发回调
 - 🛡️ 自动内存泄漏防护：组件卸载时自动清理
 - 🔄 类型安全的互斥选项：once 和 active 不能同时使用
@@ -357,6 +362,47 @@ function MyComponent() {
 }
 ```
 
+#### useIsCeiling
+
+```tsx
+import { useIsCeiling } from '@fly4react/observer';
+import { useRef } from 'react';
+
+function MyComponent() {
+  const ref = useRef<HTMLDivElement>(null);
+  
+  // 检测是否贴顶（默认）
+  const isCeiling = useIsCeiling(ref);
+  
+  // 检测是否达到距离顶部 100px 的位置
+  const isAtPosition = useIsCeiling(ref, 100);
+  
+  // 检测是否超出视口顶部 50px
+  const isOverTop = useIsCeiling(ref, -50);
+
+  return (
+    <div>
+      <div 
+        ref={ref} 
+        style={{ 
+          height: '200px', 
+          background: isCeiling ? 'green' : 'lightblue',
+          position: 'sticky',
+          top: 0
+        }}
+      >
+        {isCeiling ? '已贴顶' : '未贴顶'}
+      </div>
+      <div style={{ height: '1000px' }}>
+        <p>贴顶状态: {isCeiling ? '是' : '否'}</p>
+        <p>距离顶部100px状态: {isAtPosition ? '已达到' : '未达到'}</p>
+        <p>超出顶部50px状态: {isOverTop ? '已超出' : '未超出'}</p>
+      </div>
+    </div>
+  );
+}
+```
+
 ## 📖 API 文档
 
 ### IntersectionLoad 组件
@@ -448,6 +494,21 @@ function useIntersectionRatio(
   options?: ElementPositionOptions
 ): number | undefined
 ```
+
+#### useIsCeiling
+
+```tsx
+function useIsCeiling(
+  ref: RefObject<HTMLElement | null>,
+  position?: number
+): boolean
+```
+
+**参数说明：**
+- `position`: 位置阈值（像素），默认为 0
+  - `position = 0`：元素顶部到达视口顶部时触发
+  - `position > 0`：元素顶部到达距离视口顶部 position 像素时触发
+  - `position < 0`：元素顶部超出视口顶部 |position| 像素时触发
 
 ## ⚡ 重要行为说明
 

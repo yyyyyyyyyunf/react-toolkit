@@ -65,6 +65,11 @@ const UseElementPosition = lazy(() =>
 		default: module.UseElementPositionExample,
 	})),
 );
+const UseIsCeiling = lazy(() =>
+	import("../hooks/use-is-ceiling-example").then((module) => ({
+		default: module.UseIsCeilingExample,
+	})),
+);
 const InitialViewportTest = lazy(() =>
 	import("../hooks/initial-viewport-test").then((module) => ({
 		default: module.default,
@@ -163,6 +168,12 @@ export const routes = [
 		name: "useElementPosition",
 		component: UseElementPosition,
 		description: "元素位置跟踪",
+	},
+	{
+		path: "/use-is-ceiling",
+		name: "useIsCeiling",
+		component: UseIsCeiling,
+		description: "元素贴顶检测",
 	},
 ];
 

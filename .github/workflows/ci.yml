@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 获取完整历史用于变化检测
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -43,3 +45,47 @@ jobs:
           echo "Checking build output..."
           ls -la packages/observer/dist/
           ls -la packages/memo/dist/
+      
+      - name: Detect changes
+        id: detect-changes
+        run: |
+          chmod +x ./scripts/detect-changes.sh
+          ./scripts/detect-changes.sh main
+      
+      - name: Setup npm authentication
+        if: steps.detect-changes.outputs.OBSERVER_CHANGED == 'true' || steps.detect-changes.outputs.MEMO_CHANGED == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Publish packages
+        if: steps.detect-changes.outputs.OBSERVER_CHANGED == 'true' || steps.detect-changes.outputs.MEMO_CHANGED == 'true'
+        run: |
+          echo "📦 发布包到 npm..."
+          echo "Observer 变化: ${{ steps.detect-changes.outputs.OBSERVER_CHANGED }}"
+          echo "Memo 变化: ${{ steps.detect-changes.outputs.MEMO_CHANGED }}"
+          
+          if [ "${{ steps.detect-changes.outputs.OBSERVER_CHANGED }}" = "true" ]; then
+            echo "🚀 发布 @fly4react/observer..."
+            cd packages/observer
+            npm publish --access public
+            cd ../..
+          fi
+          
+          if [ "${{ steps.detect-changes.outputs.MEMO_CHANGED }}" = "true" ]; then
+            echo "🚀 发布 @fly4react/memo..."
+            cd packages/memo
+            npm publish --access public
+            cd ../..
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Skip publishing
+        if: steps.detect-changes.outputs.OBSERVER_CHANGED != 'true' && steps.detect-changes.outputs.MEMO_CHANGED != 'true'
+        run: |
+          echo "✅ 没有检测到包代码变化，跳过发布"
+          echo "Observer 变化: ${{ steps.detect-changes.outputs.OBSERVER_CHANGED }}"
+          echo "Memo 变化: ${{ steps.detect-changes.outputs.MEMO_CHANGED }}"
+          echo "CI 成功完成，但未发布新版本"
