@@ -15,4 +15,8 @@ export default defineConfig({
   optimizeDeps: {
     include: ['@fly4react/memo'],
   },
+  // 确保只在测试环境中生效
+  define: {
+    'process.env.NODE_ENV': '"test"',
+  },
 });

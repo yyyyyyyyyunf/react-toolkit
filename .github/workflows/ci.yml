@@ -66,14 +66,16 @@ jobs:
           cd ../..
           echo "✅ observer 包构建完成"
       
-      - name: Run tests (skip IntersectionLoad)
+      - name: Run tests
         run: |
-          echo "🧪 运行测试（跳过 IntersectionLoad）..."
+          echo "🧪 运行所有测试..."
           cd packages/observer
           echo "📦 检查 memo 包是否存在..."
           ls -la node_modules/@fly4react/memo/ || echo "❌ memo 包不存在"
+          echo "📦 检查 memo 包的 dist 文件..."
+          ls -la node_modules/@fly4react/memo/dist/ || echo "❌ memo dist 不存在"
           echo "🧪 运行 observer 测试..."
-          pnpm vitest run --reporter=verbose --exclude="**/IntersectionLoad.test.tsx"
+          pnpm vitest run --reporter=verbose
           cd ../memo
           echo "🧪 运行 memo 测试..."
           pnpm vitest run --reporter=verbose
