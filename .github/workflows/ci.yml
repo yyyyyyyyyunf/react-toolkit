@@ -94,6 +94,13 @@ jobs:
           cat vitest.config.ts
           echo "🔍 尝试直接导入 memo 包..."
           node -e "try { console.log('✅ memo 包导入成功:', require('@fly4react/memo')); } catch(e) { console.log('❌ memo 包导入失败:', e.message); }" || echo "导入测试失败"
+          echo "🔍 检查文件系统路径..."
+          pwd
+          ls -la
+          echo "🔍 检查 memo 包的具体文件..."
+          find node_modules/@fly4react/memo -name "*.js" -o -name "*.ts" | head -10
+          echo "🔍 检查 memo 包的 index.js 内容..."
+          head -5 node_modules/@fly4react/memo/dist/index.js || echo "index.js 不存在"
           echo "🧪 运行 observer 测试..."
           pnpm vitest run --reporter=verbose
           cd ../memo

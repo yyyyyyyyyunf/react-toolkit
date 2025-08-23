@@ -18,4 +18,8 @@ export default defineConfig({
   define: {
     'process.env.NODE_ENV': '"test"',
   },
+  // 添加更详细的模块解析配置
+  ssr: {
+    noExternal: ['@fly4react/memo'],
+  },
 });
