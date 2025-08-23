@@ -186,6 +186,7 @@ react-intersection-tool/
 - [Observer 包文档](./packages/observer/README.md)
 - [Memo 包文档](./packages/memo/README.md)
 - [示例代码](./examples/)
+- [性能对比](./benchmark/)
 - [在线演示](https://yyyyyyyyyunf.github.io/react-toolkit/)
 - [更新日志](./CHANGELOG.md)
 - [API 文档](./docs/API.md)
