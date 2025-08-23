@@ -88,6 +88,12 @@ jobs:
           ls -la node_modules/@fly4react/memo/ || echo "❌ memo 包不存在"
           echo "📦 检查 memo 包的 dist 文件..."
           ls -la node_modules/@fly4react/memo/dist/ || echo "❌ memo dist 不存在"
+          echo "📦 检查 memo 包的 exports 配置..."
+          cat node_modules/@fly4react/memo/package.json | grep -A 10 '"exports"'
+          echo "🔍 测试 vitest 配置..."
+          cat vitest.config.ts
+          echo "🔍 尝试直接导入 memo 包..."
+          node -e "try { console.log('✅ memo 包导入成功:', require('@fly4react/memo')); } catch(e) { console.log('❌ memo 包导入失败:', e.message); }" || echo "导入测试失败"
           echo "🧪 运行 observer 测试..."
           pnpm vitest run --reporter=verbose
           cd ../memo
