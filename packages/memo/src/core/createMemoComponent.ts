@@ -1,6 +1,6 @@
 import React from "react";
-import { debugLog, shouldIgnoreProp } from "../utils/memoHelper";
 import type { MemoOptions, MemoizedComponent } from "../types";
+import { debugLog, shouldIgnoreProp } from "../utils/memoHelper";
 
 /**
  * 创建记忆化组件
