@@ -82,6 +82,25 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
+      - name: Auto merge to main
+        if: steps.detect-changes.outputs.OBSERVER_CHANGED == 'true' || steps.detect-changes.outputs.MEMO_CHANGED == 'true'
+        run: |
+          echo "🔄 自动合并 release 到 main..."
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 切换到 main 分支
+          git checkout main
+          git pull origin main
+          
+          # 合并 release 分支
+          git merge origin/release --no-edit
+          
+          # 推送到 main
+          git push origin main
+          
+          echo "✅ 成功合并到 main 分支"
+      
       - name: Skip publishing
         if: steps.detect-changes.outputs.OBSERVER_CHANGED != 'true' && steps.detect-changes.outputs.MEMO_CHANGED != 'true'
         run: |
