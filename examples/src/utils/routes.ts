@@ -70,9 +70,20 @@ const InitialViewportTest = lazy(() =>
 		default: module.default,
 	})),
 );
+const MemoConfigDemo = lazy(() =>
+	import("../components/memo-config-demo").then((module) => ({
+		default: module.default,
+	})),
+);
 
 // 路由配置
 export const routes = [
+	{
+		path: "/memo-config-demo",
+		name: "Memo 配置管理",
+		component: MemoConfigDemo,
+		description: "动态配置 memo 组件的调试和忽略属性",
+	},
 	{
 		path: "/initial-viewport-test",
 		name: "Initial Viewport Test",

@@ -8,6 +8,7 @@
 - 🎯 **灵活比较**: 支持自定义比较函数
 - 🔍 **选择性比较**: 只比较指定的属性
 - 🐛 **调试友好**: 内置调试日志功能
+- ⚙️ **动态配置**: 支持运行时动态配置调试和忽略属性
 - 📦 **TypeScript**: 完整的类型支持
 
 ## 📦 安装
@@ -54,6 +55,30 @@ const MyComponent = createMemoComponent(
 );
 ```
 
+## ⚙️ 配置管理
+
+### 使用配置管理函数
+
+```tsx
+import { 
+  registerDebugComponent, 
+  registerIgnoreProp 
+} from '@fly4react/memo';
+
+// 注册调试组件
+registerDebugComponent('MyComponent');
+registerDebugComponent('UserCard');
+
+// 注册忽略属性
+registerIgnoreProp('onClick');
+registerIgnoreProp('style');
+registerIgnoreProp('className');
+```
+
+
+
+
+
 ## 📖 API
 
 ### `createMemoComponent<P>(Component, options?)`
@@ -71,24 +96,47 @@ const MyComponent = createMemoComponent(
 
 记忆化的 React 组件
 
+### 配置管理函数
+
+#### `registerDebugComponent(component: string)`
+注册调试组件
+
+#### `registerIgnoreProp(prop: string)`
+注册忽略属性
+
+#### `getDebugComponents()`
+获取当前调试组件列表
+
+#### `getIgnoreProps()`
+获取当前忽略属性列表
+
+
+
 ## 🔧 配置
 
 ### 调试模式
 
+当组件名称包含调试列表中的任何字符串时，会在控制台输出 props 变化的调试日志。
+
 ```tsx
-import { debugComponentList } from '@fly4react/memo';
+import { registerDebugComponent } from '@fly4react/memo';
 
 // 启用特定组件的调试日志
-debugComponentList.push('MyComponent');
+registerDebugComponent('MyComponent');
+registerDebugComponent('UserCard');
 ```
 
 ### 忽略属性
 
+在比较 props 时，这些属性会被自动忽略，不会触发重新渲染。
+
 ```tsx
-import { ignorePropsList } from '@fly4react/memo';
+import { registerIgnoreProp } from '@fly4react/memo';
 
 // 添加要忽略的属性
-ignorePropsList.push('onClick');
+registerIgnoreProp('onClick');
+registerIgnoreProp('style');
+registerIgnoreProp('className');
 ```
 
 ## 📄 许可证
