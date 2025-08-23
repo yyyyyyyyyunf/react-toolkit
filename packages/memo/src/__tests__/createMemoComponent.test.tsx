@@ -54,7 +54,7 @@ describe('createMemoComponent', () => {
   })
 
   it('should use custom comparison function when provided', () => {
-    const customCompare = vi.fn((prev: any, next: any) => prev.id === next.id)
+    const customCompare = vi.fn((prev: { id: number; name: string }, next: { id: number; name: string }) => prev.id === next.id)
     
     const options: MemoOptions<{ id: number; name: string }> = {
       compare: customCompare

@@ -4,17 +4,18 @@ import { defineConfig } from "@rslib/core";
 export default defineConfig({
 	source: {
 		entry: {
-			index: ["./src/**"],
+			index: ["./src/index.ts"],
 		},
+		exclude: ["./src/**/__tests__/**", "./src/**/*.test.*", "./src/**/*.spec.*"],
 	},
 	lib: [
 		{
-			bundle: false,
+			bundle: true,
 			dts: true,
 			format: "esm",
 		},
 		{
-			bundle: false,
+			bundle: true,
 			dts: false, // CommonJS 不需要重复生成类型文件
 			format: "cjs",
 		},

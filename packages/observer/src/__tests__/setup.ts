@@ -8,7 +8,6 @@ declare global {
 
 // Mock IntersectionObserver
 ;(global as any).IntersectionObserver = class IntersectionObserver {
-  constructor() {}
   disconnect() {}
   observe() {}
   unobserve() {}
@@ -16,7 +15,6 @@ declare global {
 
 // Mock ResizeObserver
 ;(global as any).ResizeObserver = class ResizeObserver {
-  constructor() {}
   disconnect() {}
   observe() {}
   unobserve() {}
