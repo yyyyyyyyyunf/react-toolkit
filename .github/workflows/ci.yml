@@ -38,10 +38,10 @@ jobs:
         run: pnpm lint
       
       - name: Build memo package first
-        run: cd packages/memo && rslib build
+        run: cd packages/memo && npx rslib build
       
       - name: Build observer package
-        run: cd packages/observer && rslib build
+        run: cd packages/observer && npx rslib build
       
       - name: Run tests
         run: pnpm -r test:run
