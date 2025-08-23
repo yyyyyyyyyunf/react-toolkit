@@ -1,11 +1,11 @@
 import type React from "react";
 import {
 	useCallback,
+	useEffect,
 	useLayoutEffect,
 	useMemo,
 	useRef,
 	useState,
-	useEffect,
 } from "react";
 import { lazyloadManager } from "../base/IntersectionObserverManager";
 import type {

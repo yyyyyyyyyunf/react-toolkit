@@ -2,8 +2,8 @@ import type React from "react";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { lazyloadManager } from "../base/IntersectionObserverManager";
 import type {
-	ViewportElementPositionOptions,
 	ObserverCallbackParamType,
+	ViewportElementPositionOptions,
 } from "../types";
 import { generateThresholdArray } from "../utils";
 
