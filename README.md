@@ -7,7 +7,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/@fly4react/memo.svg)](https://www.npmjs.com/package/@fly4react/memo)
 [![License](https://img.shields.io/npm/l/@fly4react/observer.svg)](https://github.com/yyyyyyyyyunf/react-toolkit/blob/main/LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-16.8+-61dafb.svg)](https://reactjs.org/)
+[![React](https://img.shields.io/badge/React-16.8-61dafb.svg)](https://reactjs.org/)
 [![Bundle Size](https://img.shields.io/bundlephobia/min/@fly4react/observer)](https://bundlephobia.com/package/@fly4react/observer)
 [![Bundle Size](https://img.shields.io/bundlephobia/min/@fly4react/memo)](https://bundlephobia.com/package/@fly4react/memo)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/yyyyyyyyyunf/react-toolkit)
