@@ -12,7 +12,7 @@ const InitialViewportTest = () => {
 
 	// 使用不同的 hooks 测试初始 viewport 行为
 	const position = useElementPosition(elementPositionRef, { step: 0.1 });
-	const isInViewport = useInViewport(inViewportRef, { step: 0.1 });
+	const isInViewport = useInViewport(inViewportRef);
 	const hasBeenVisible = useOneOffVisibility(oneOffVisibilityRef, {
 		threshold: 0.1,
 	});

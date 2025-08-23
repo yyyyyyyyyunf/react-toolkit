@@ -23,4 +23,10 @@ export default defineConfig({
 		target: "web",
 	},
 	plugins: [pluginReact()],
+	// 确保rslib能正确解析workspace依赖
+	server: {
+		fs: {
+			allow: ['..'],
+		},
+	},
 });

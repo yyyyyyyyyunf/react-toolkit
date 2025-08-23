@@ -17,17 +17,11 @@ export function UseInViewportExample() {
 	// 使用默认配置检测元素是否在视口中
 	const isInViewport1 = useInViewport(ref1);
 
-	// 使用自定义配置，每 10% 触发一次，60fps 节流
-	const isInViewport2 = useInViewport(ref2, {
-		step: 0.1,
-		throttle: 16,
-	});
+	// 使用默认配置检测元素是否在视口中
+	const isInViewport2 = useInViewport(ref2);
 
-	// 使用更敏感的配置，每 5% 触发一次
-	const isInViewport3 = useInViewport(ref3, {
-		step: 0.05,
-		throttle: 8,
-	});
+	// 使用默认配置检测元素是否在视口中
+	const isInViewport3 = useInViewport(ref3);
 
 	// 添加 console 输出
 	console.log("useInViewport 状态变化:", {
