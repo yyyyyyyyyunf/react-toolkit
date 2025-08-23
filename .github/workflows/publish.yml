@@ -18,6 +18,20 @@ on:
           - all
           - memo
           - observer
+      version_type:
+        description: 'Version increment type (patch, minor, major)'
+        required: false
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      force_publish:
+        description: 'Force publish even if no changes detected'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   publish:
@@ -60,6 +74,19 @@ jobs:
       - name: Build packages
         run: pnpm build
       
+      - name: Show publish info
+        run: |
+          echo "🎯 发布信息:"
+          echo "  触发方式: ${{ github.event_name }}"
+          echo "  选择的包: ${{ github.event.inputs.package || 'auto' }}"
+          echo "  版本类型: ${{ github.event.inputs.version_type || 'auto' }}"
+          echo "  强制发布: ${{ github.event.inputs.force_publish || 'false' }}"
+          echo ""
+          echo "📦 包版本信息:"
+          echo "  根目录版本: $(node -p "require('./package.json').version")"
+          echo "  @fly4react/observer: $(node -p "require('./packages/observer/package.json').version")"
+          echo "  @fly4react/memo: $(node -p "require('./packages/memo/package.json').version")"
+      
       - name: Detect changes
         id: changes
         run: |
@@ -78,6 +105,10 @@ jobs:
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
           TAG_NAME=${GITHUB_REF#refs/tags/}
           
+          # 获取手动输入的版本类型
+          VERSION_TYPE="${{ github.event.inputs.version_type }}"
+          FORCE_PUBLISH="${{ github.event.inputs.force_publish }}"
+          
           if [[ "$GITHUB_REF" == refs/tags/* ]]; then
             # 标签触发：使用标签版本
             VERSION=${TAG_NAME#v}
@@ -87,6 +118,32 @@ jobs:
             echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
             echo "PUBLISH_TAG=latest" >> $GITHUB_OUTPUT
             echo "AUTO_INCREMENT=false" >> $GITHUB_OUTPUT
+          elif [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            # 手动触发：使用指定的版本类型
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+            MAJOR=${VERSION_PARTS[0]}
+            MINOR=${VERSION_PARTS[1]}
+            PATCH=${VERSION_PARTS[2]}
+            
+            if [[ "$VERSION_TYPE" == "major" ]]; then
+              NEW_MAJOR=$((MAJOR + 1))
+              VERSION="${NEW_MAJOR}.0.0"
+            elif [[ "$VERSION_TYPE" == "minor" ]]; then
+              NEW_MINOR=$((MINOR + 1))
+              VERSION="${MAJOR}.${NEW_MINOR}.0"
+            else
+              NEW_PATCH=$((PATCH + 1))
+              VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
+            fi
+            
+            IS_BETA=false
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            echo "IS_BETA=false" >> $GITHUB_OUTPUT
+            echo "TAG_NAME=v$VERSION" >> $GITHUB_OUTPUT
+            echo "PUBLISH_TAG=latest" >> $GITHUB_OUTPUT
+            echo "AUTO_INCREMENT=true" >> $GITHUB_OUTPUT
+            echo "FORCE_PUBLISH=$FORCE_PUBLISH" >> $GITHUB_OUTPUT
           elif [[ "$BRANCH_NAME" == "release" ]]; then
             # release 分支：智能版本管理
             CURRENT_VERSION=$(node -p "require('./package.json').version")
@@ -120,6 +177,8 @@ jobs:
           
           echo "Branch: $BRANCH_NAME"
           echo "Version: $VERSION"
+          echo "Version Type: $VERSION_TYPE"
+          echo "Force Publish: $FORCE_PUBLISH"
           echo "Is Beta: $IS_BETA"
           echo "Publish Tag: $PUBLISH_TAG"
           echo "Auto Increment: $AUTO_INCREMENT"
@@ -168,7 +227,8 @@ jobs:
       - name: Publish @fly4react/observer
         if: |
           (steps.changes.outputs.OBSERVER_CHANGED == 'true' && github.event.inputs.package != 'memo') || 
-          github.event.inputs.package == 'observer'
+          github.event.inputs.package == 'observer' ||
+          (github.event.inputs.package == 'all' && steps.version.outputs.FORCE_PUBLISH == 'true')
         run: |
           cd packages/observer
           # 使用包的版本号而不是根目录版本号
@@ -181,7 +241,8 @@ jobs:
       - name: Publish @fly4react/memo
         if: |
           (steps.changes.outputs.MEMO_CHANGED == 'true' && github.event.inputs.package != 'observer') || 
-          github.event.inputs.package == 'memo'
+          github.event.inputs.package == 'memo' ||
+          (github.event.inputs.package == 'all' && steps.version.outputs.FORCE_PUBLISH == 'true')
         run: |
           cd packages/memo
           # 使用包的版本号而不是根目录版本号
