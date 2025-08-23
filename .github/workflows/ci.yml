@@ -38,10 +38,18 @@ jobs:
         run: pnpm lint
       
       - name: Build memo package first
-        run: cd packages/memo && npx rslib build
+        run: |
+          echo "🔨 构建 memo 包..."
+          cd packages/memo
+          npx rslib build
+          echo "✅ memo 包构建完成"
       
       - name: Build observer package
-        run: cd packages/observer && npx rslib build
+        run: |
+          echo "🔨 构建 observer 包..."
+          cd packages/observer
+          npx rslib build
+          echo "✅ observer 包构建完成"
       
       - name: Run tests
         run: pnpm -r test:run
