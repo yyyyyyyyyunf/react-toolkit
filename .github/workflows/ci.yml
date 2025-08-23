@@ -37,8 +37,14 @@ jobs:
       - name: Run linting
         run: pnpm lint
       
-      - name: Build packages
-        run: pnpm build
+      - name: Build memo package first
+        run: cd packages/memo && rslib build
+      
+      - name: Build observer package
+        run: cd packages/observer && rslib build
+      
+      - name: Run tests
+        run: pnpm -r test:run
       
       - name: Check build output
         run: |
