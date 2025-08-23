@@ -171,6 +171,9 @@ jobs:
           github.event.inputs.package == 'observer'
         run: |
           cd packages/observer
+          # 使用包的版本号而不是根目录版本号
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          echo "Publishing @fly4react/observer@$PACKAGE_VERSION"
           npm publish --access public --tag ${{ steps.version.outputs.PUBLISH_TAG }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -181,6 +184,9 @@ jobs:
           github.event.inputs.package == 'memo'
         run: |
           cd packages/memo
+          # 使用包的版本号而不是根目录版本号
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          echo "Publishing @fly4react/memo@$PACKAGE_VERSION"
           npm publish --access public --tag ${{ steps.version.outputs.PUBLISH_TAG }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
