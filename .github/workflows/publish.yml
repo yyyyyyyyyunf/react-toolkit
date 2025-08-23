@@ -120,7 +120,20 @@ jobs:
             echo "AUTO_INCREMENT=false" >> $GITHUB_OUTPUT
           elif [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
             # 手动触发：使用指定的版本类型
-            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            # 根据选择的包来确定版本
+            SELECTED_PACKAGE="${{ github.event.inputs.package }}"
+            
+            if [[ "$SELECTED_PACKAGE" == "observer" ]]; then
+              # 只发布 observer，使用 observer 包的版本
+              CURRENT_VERSION=$(node -p "require('./packages/observer/package.json').version")
+            elif [[ "$SELECTED_PACKAGE" == "memo" ]]; then
+              # 只发布 memo，使用 memo 包的版本
+              CURRENT_VERSION=$(node -p "require('./packages/memo/package.json').version")
+            else
+              # 发布所有包，使用根目录版本
+              CURRENT_VERSION=$(node -p "require('./package.json').version")
+            fi
+            
             IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
             MAJOR=${VERSION_PARTS[0]}
             MINOR=${VERSION_PARTS[1]}
@@ -187,41 +200,77 @@ jobs:
         if: steps.version.outputs.AUTO_INCREMENT == 'true'
         run: |
           VERSION=${{ steps.version.outputs.VERSION }}
+          SELECTED_PACKAGE="${{ github.event.inputs.package }}"
           
-          # 更新根目录版本（如果有任何变化）
-          if [ "${{ steps.changes.outputs.ROOT_CHANGED }}" == "true" ]; then
-            npm version $VERSION --no-git-tag-version
-            echo "Updated root package.json to version $VERSION"
-          fi
-          
-          # 更新 observer 包版本（如果有 observer 变化）
-          if [ "${{ steps.changes.outputs.OBSERVER_CHANGED }}" == "true" ]; then
-            cd packages/observer
-            CURRENT_VERSION=$(node -p "require('./package.json').version")
-            IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
-            MAJOR=${VERSION_PARTS[0]}
-            MINOR=${VERSION_PARTS[1]}
-            PATCH=${VERSION_PARTS[2]}
-            NEW_PATCH=$((PATCH + 1))
-            OBSERVER_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
-            npm version $OBSERVER_VERSION --no-git-tag-version
-            echo "Updated @fly4react/observer to version $OBSERVER_VERSION"
-            cd ../..
-          fi
-          
-          # 更新 memo 包版本（如果有 memo 变化）
-          if [ "${{ steps.changes.outputs.MEMO_CHANGED }}" == "true" ]; then
-            cd packages/memo
-            CURRENT_VERSION=$(node -p "require('./package.json').version")
-            IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
-            MAJOR=${VERSION_PARTS[0]}
-            MINOR=${VERSION_PARTS[1]}
-            PATCH=${VERSION_PARTS[2]}
-            NEW_PATCH=$((PATCH + 1))
-            MEMO_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
-            npm version $MEMO_VERSION --no-git-tag-version
-            echo "Updated @fly4react/memo to version $MEMO_VERSION"
-            cd ../..
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            # 手动触发：根据选择的包更新版本
+            if [[ "$SELECTED_PACKAGE" == "observer" ]]; then
+              # 只更新 observer 包版本
+              cd packages/observer
+              npm version $VERSION --no-git-tag-version
+              echo "Updated @fly4react/observer to version $VERSION"
+              cd ../..
+            elif [[ "$SELECTED_PACKAGE" == "memo" ]]; then
+              # 只更新 memo 包版本
+              cd packages/memo
+              npm version $VERSION --no-git-tag-version
+              echo "Updated @fly4react/memo to version $VERSION"
+              cd ../..
+            else
+              # 更新所有包版本
+              # 更新根目录版本
+              npm version $VERSION --no-git-tag-version
+              echo "Updated root package.json to version $VERSION"
+              
+              # 更新 observer 包版本
+              cd packages/observer
+              npm version $VERSION --no-git-tag-version
+              echo "Updated @fly4react/observer to version $VERSION"
+              cd ../..
+              
+              # 更新 memo 包版本
+              cd packages/memo
+              npm version $VERSION --no-git-tag-version
+              echo "Updated @fly4react/memo to version $VERSION"
+              cd ../..
+            fi
+          else
+            # 自动触发：基于变化检测更新版本
+            # 更新根目录版本（如果有任何变化）
+            if [ "${{ steps.changes.outputs.ROOT_CHANGED }}" == "true" ]; then
+              npm version $VERSION --no-git-tag-version
+              echo "Updated root package.json to version $VERSION"
+            fi
+            
+            # 更新 observer 包版本（如果有 observer 变化）
+            if [ "${{ steps.changes.outputs.OBSERVER_CHANGED }}" == "true" ]; then
+              cd packages/observer
+              CURRENT_VERSION=$(node -p "require('./package.json').version")
+              IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+              MAJOR=${VERSION_PARTS[0]}
+              MINOR=${VERSION_PARTS[1]}
+              PATCH=${VERSION_PARTS[2]}
+              NEW_PATCH=$((PATCH + 1))
+              OBSERVER_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
+              npm version $OBSERVER_VERSION --no-git-tag-version
+              echo "Updated @fly4react/observer to version $OBSERVER_VERSION"
+              cd ../..
+            fi
+            
+            # 更新 memo 包版本（如果有 memo 变化）
+            if [ "${{ steps.changes.outputs.MEMO_CHANGED }}" == "true" ]; then
+              cd packages/memo
+              CURRENT_VERSION=$(node -p "require('./package.json').version")
+              IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+              MAJOR=${VERSION_PARTS[0]}
+              MINOR=${VERSION_PARTS[1]}
+              PATCH=${VERSION_PARTS[2]}
+              NEW_PATCH=$((PATCH + 1))
+              MEMO_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
+              npm version $MEMO_VERSION --no-git-tag-version
+              echo "Updated @fly4react/memo to version $MEMO_VERSION"
+              cd ../..
+            fi
           fi
       
       - name: Publish @fly4react/observer
