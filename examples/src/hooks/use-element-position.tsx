@@ -1,4 +1,4 @@
-import { useElementPosition } from "@fly4react/observer";
+import { type ElementPosition, useElementPosition } from "@fly4react/observer";
 import { useRef, useState } from "react";
 
 /**
@@ -35,7 +35,7 @@ export function UseElementPositionExample() {
 		throttle: 50, // 20fps，降低频率
 	});
 
-	const formatPosition = (position: any) => {
+	const formatPosition = (position: ElementPosition | null) => {
 		if (!position)
 			return {
 				visible: "未检测到",

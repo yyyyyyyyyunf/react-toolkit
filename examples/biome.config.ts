@@ -43,6 +43,7 @@ const config = {
 	files: {
 		ignoreUnknown: false,
 		includes: ["src/**/*", "*.ts", "*.tsx", "*.js", "*.jsx", "*.json"],
+		ignore: ["dist", "node_modules"],
 	},
 };
 

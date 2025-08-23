@@ -1,10 +1,10 @@
-import { useState } from "react";
 import {
-	registerDebugComponent,
-	registerIgnoreProp,
 	getDebugComponents,
 	getIgnoreProps,
+	registerDebugComponent,
+	registerIgnoreProp,
 } from "@fly4react/memo";
+import { useState } from "react";
 
 // 配置管理组件
 const MemoConfigDemo = () => {

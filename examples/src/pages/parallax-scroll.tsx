@@ -1,4 +1,8 @@
-import { useElementPosition, useScrollDirection } from "@fly4react/observer";
+import {
+	type ElementPosition,
+	useElementPosition,
+	useScrollDirection,
+} from "@fly4react/observer";
 import { useRef } from "react";
 
 /**
@@ -40,7 +44,7 @@ export function ParallaxScrollExample() {
 	);
 
 	// 计算视差偏移
-	const calculateParallax = (position: any, speed = 0.5) => {
+	const calculateParallax = (position: ElementPosition | null, speed = 0.5) => {
 		if (!position) return 0;
 
 		const elementTop = position.boundingClientRect.top;
@@ -57,7 +61,7 @@ export function ParallaxScrollExample() {
 	const hero3Offset = calculateParallax(hero3Position, 0.4);
 
 	// 获取滚动进度
-	const getScrollProgress = (position: any) => {
+	const getScrollProgress = (position: ElementPosition | null) => {
 		if (!position) return 0;
 
 		const elementTop = position.boundingClientRect.top;
@@ -258,7 +262,7 @@ export function ParallaxScrollExample() {
 					>
 						{[...Array(5)].map((_, i) => (
 							<div
-								key={`star-${i}`}
+								key={`star-${i}-${hero2Progress}`}
 								style={{
 									width: "20px",
 									height: "20px",

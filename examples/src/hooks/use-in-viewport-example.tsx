@@ -1,5 +1,5 @@
 import { useInViewport } from "@fly4react/observer";
-import { useRef, useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * useInViewport Hook 示例

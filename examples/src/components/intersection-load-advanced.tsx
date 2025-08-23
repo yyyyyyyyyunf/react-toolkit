@@ -1,5 +1,5 @@
 import { IntersectionLoad } from "@fly4react/observer";
-import { useState, useRef, useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 
 /**
  * IntersectionLoad 高级使用示例

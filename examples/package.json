@@ -8,9 +8,9 @@
 		"dev": "vite",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
-		"lint": "biome check .",
-		"lint:fix": "biome check --fix --unsafe .",
-		"format": "biome format --write ."
+		"lint": "biome check src/",
+		"lint:fix": "biome check --fix --unsafe src/",
+		"format": "biome format --write src/"
 	},
 	"dependencies": {
 		"@fly4react/observer": "workspace:*",

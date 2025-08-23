@@ -1,4 +1,4 @@
-import { useState, Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Navigation } from "./components/Navigation";
 import { defaultRoute, routes } from "./utils/routes";
 

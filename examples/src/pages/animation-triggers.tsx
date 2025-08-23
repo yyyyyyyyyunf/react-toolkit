@@ -1,4 +1,4 @@
-import { useOneOffVisibility, useIntersectionRatio } from "@fly4react/observer";
+import { useIntersectionRatio, useOneOffVisibility } from "@fly4react/observer";
 import { useRef } from "react";
 
 /**

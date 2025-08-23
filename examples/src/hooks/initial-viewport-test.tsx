@@ -1,9 +1,9 @@
-import { useRef, useEffect, useState, useCallback } from "react";
 import {
 	useElementPosition,
 	useInViewport,
 	useOneOffVisibility,
 } from "@fly4react/observer";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const InitialViewportTest = () => {
 	const elementPositionRef = useRef<HTMLDivElement>(null);
