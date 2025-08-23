@@ -1,19 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
-import IntersectionLoad from '../components/IntersectionLoad'
+import IntersectionLoad from '../src/components/IntersectionLoad'
 
 // Mock dependencies
-vi.mock('../utils', () => ({
+vi.mock('../src/utils', () => ({
   isSupportIntersectionObserver: () => true,
   checkVisibility: vi.fn(() => false),
 }))
 
 vi.mock('@fly4react/memo', () => ({
-  default: (Component: any) => Component,
+  default: (Component: React.ComponentType<any>) => Component,
 }))
 
-vi.mock('../base/IntersectionObserverManager', () => ({
+vi.mock('../src/base/IntersectionObserverManager', () => ({
   lazyloadManager: {
     observe: vi.fn(() => vi.fn()), // Return unsubscribe function
   },

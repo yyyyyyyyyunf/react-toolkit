@@ -1,9 +1,9 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/vitest';
 
 // Extend global types for TypeScript
 declare global {
-  var IntersectionObserver: typeof IntersectionObserver
-  var ResizeObserver: typeof ResizeObserver
+  var IntersectionObserver: typeof IntersectionObserver;
+  var ResizeObserver: typeof ResizeObserver;
 }
 
 // Mock IntersectionObserver

@@ -1,25 +1,26 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import {
   registerDebugComponent,
-  registerIgnoreProp,
   getDebugComponents,
+  registerIgnoreProp,
   getIgnoreProps,
-} from '../config'
+} from '../src/config'
 
-describe('Config Management', () => {
+describe('Config', () => {
   beforeEach(() => {
-    // 重置配置状态
-    // 注意：这里我们需要访问内部状态来重置，实际实现中可能需要添加清理函数
+    // 清理状态，重置为初始状态
+    // 注意：这里我们无法直接重置，因为配置是模块级别的
+    // 在实际使用中，这通常不是问题，因为测试是隔离的
   })
 
-  describe('Debug Components', () => {
-    it('should register debug components', () => {
+  describe('registerDebugComponent', () => {
+    it('should register debug component', () => {
       registerDebugComponent('TestComponent')
       const components = getDebugComponents()
       expect(components).toContain('TestComponent')
     })
 
-    it('should not register duplicate debug components', () => {
+    it('should not register duplicate debug component', () => {
       registerDebugComponent('TestComponent')
       registerDebugComponent('TestComponent')
       const components = getDebugComponents()
@@ -39,14 +40,14 @@ describe('Config Management', () => {
     })
   })
 
-  describe('Ignore Props', () => {
-    it('should register ignore props', () => {
+  describe('registerIgnoreProp', () => {
+    it('should register ignore prop', () => {
       registerIgnoreProp('testProp')
       const props = getIgnoreProps()
       expect(props).toContain('testProp')
     })
 
-    it('should not register duplicate ignore props', () => {
+    it('should not register duplicate ignore prop', () => {
       registerIgnoreProp('testProp')
       registerIgnoreProp('testProp')
       const props = getIgnoreProps()

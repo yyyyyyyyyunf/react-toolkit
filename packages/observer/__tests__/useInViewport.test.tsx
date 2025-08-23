@@ -1,16 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useRef } from 'react'
-import { useInViewport } from '../hooks/useInViewport'
+import { useInViewport } from '../src/hooks/useInViewport'
 
 // Mock dependencies
-vi.mock('../base/IntersectionObserverManager', () => ({
+vi.mock('../src/base/IntersectionObserverManager', () => ({
   lazyloadManager: {
     observe: vi.fn(() => vi.fn()), // Return unsubscribe function
   },
 }))
 
-vi.mock('../utils', () => ({
+vi.mock('../src/utils', () => ({
   generateThresholdArray: vi.fn((step: number) => [0, step, 1]),
 }))
 

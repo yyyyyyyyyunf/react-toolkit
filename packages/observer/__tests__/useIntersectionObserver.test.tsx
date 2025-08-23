@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
-import { useIntersectionObserver } from '../hooks/useIntersectionObserver'
+import { useIntersectionObserver } from '../src/hooks/useIntersectionObserver'
 
 // Mock dependencies
-vi.mock('../base/IntersectionObserverManager', () => ({
+vi.mock('../src/base/IntersectionObserverManager', () => ({
   lazyloadManager: {
     observe: vi.fn(() => vi.fn()), // Return unsubscribe function
   },
