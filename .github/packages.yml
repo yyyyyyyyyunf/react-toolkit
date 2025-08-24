@@ -1,0 +1,15 @@
+# GitHub Packages Configuration
+# This file helps GitHub identify published packages
+
+packages:
+  - name: "@fly4react/observer"
+    description: "一个基于 Intersection Observer API 的现代 React 工具库"
+    repository: "https://github.com/yyyyyyyyyunf/react-toolkit"
+    registry: "https://registry.npmjs.org/"
+    latest_version: "1.2.3"
+    
+  - name: "@fly4react/memo"
+    description: "一个高级的 React 记忆化组件工具"
+    repository: "https://github.com/yyyyyyyyyunf/react-toolkit"
+    registry: "https://registry.npmjs.org/"
+    latest_version: "1.0.9"
