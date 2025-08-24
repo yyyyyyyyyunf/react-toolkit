@@ -145,6 +145,26 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
+      - name: Verify package publication
+        run: |
+          echo "🔍 验证包发布状态..."
+          
+          # 检查observer包
+          if npm view @fly4react/observer version > /dev/null 2>&1; then
+            OBSERVER_VERSION=$(npm view @fly4react/observer version)
+            echo "✅ @fly4react/observer 已发布，版本: $OBSERVER_VERSION"
+          else
+            echo "❌ @fly4react/observer 发布失败"
+          fi
+          
+          # 检查memo包
+          if npm view @fly4react/memo version > /dev/null 2>&1; then
+            MEMO_VERSION=$(npm view @fly4react/memo version)
+            echo "✅ @fly4react/memo 已发布，版本: $MEMO_VERSION"
+          else
+            echo "❌ @fly4react/memo 发布失败"
+          fi
+      
       - name: Commit version updates and create tag
         if: github.event_name == 'workflow_dispatch'
         run: |
@@ -190,7 +210,7 @@ jobs:
           echo "✅ 成功合并到 main 分支"
       
       - name: Create GitHub Release
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -200,7 +220,7 @@ jobs:
           body: |
             ## Release ${{ github.ref_name }}
             
-            This release includes updates to @react-toolkit packages.
+            This release includes updates to @fly4react packages.
             
             ### Installation
             ```bash
@@ -208,8 +228,14 @@ jobs:
             npm install @fly4react/memo@latest
             ```
             
-            ### Packages Updated
+            ### Packages Published
             - @fly4react/observer@$(node -p "require('./packages/observer/package.json').version")
             - @fly4react/memo@$(node -p "require('./packages/memo/package.json').version")
+            
+            ### What's New
+            - Enhanced intersection observer functionality
+            - Improved performance and browser compatibility
+            - Better TypeScript support
+            - SSR (Server-Side Rendering) support
           draft: false
           prerelease: false
