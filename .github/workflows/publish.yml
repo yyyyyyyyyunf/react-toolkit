@@ -15,6 +15,15 @@ on:
           - all
           - memo
           - observer
+      version_type:
+        description: 'Version increment type (patch, minor, major)'
+        required: false
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
   publish:
@@ -49,11 +58,63 @@ jobs:
       - name: Build packages
         run: pnpm build
       
+      - name: Update package versions
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          VERSION_TYPE="${{ github.event.inputs.version_type }}"
+          SELECTED_PACKAGE="${{ github.event.inputs.package }}"
+          
+          echo "🎯 版本更新信息:"
+          echo "  版本类型: $VERSION_TYPE"
+          echo "  选择的包: $SELECTED_PACKAGE"
+          
+          if [[ "$SELECTED_PACKAGE" == "observer" ]]; then
+            # 只更新 observer 包版本
+            cd packages/observer
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            echo "当前 observer 版本: $CURRENT_VERSION"
+            npm version $VERSION_TYPE --no-git-tag-version
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "更新 observer 版本到: $NEW_VERSION"
+            cd ../..
+          elif [[ "$SELECTED_PACKAGE" == "memo" ]]; then
+            # 只更新 memo 包版本
+            cd packages/memo
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            echo "当前 memo 版本: $CURRENT_VERSION"
+            npm version $VERSION_TYPE --no-git-tag-version
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "更新 memo 版本到: $NEW_VERSION"
+            cd ../..
+          else
+            # 更新所有包版本
+            echo "更新所有包版本..."
+            
+            # 更新 observer 包版本
+            cd packages/observer
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            echo "当前 observer 版本: $CURRENT_VERSION"
+            npm version $VERSION_TYPE --no-git-tag-version
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "更新 observer 版本到: $NEW_VERSION"
+            cd ../..
+            
+            # 更新 memo 包版本
+            cd packages/memo
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            echo "当前 memo 版本: $CURRENT_VERSION"
+            npm version $VERSION_TYPE --no-git-tag-version
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "更新 memo 版本到: $NEW_VERSION"
+            cd ../..
+          fi
+      
       - name: Show publish info
         run: |
           echo "🎯 发布信息:"
           echo "  触发方式: ${{ github.event_name }}"
           echo "  选择的包: ${{ github.event.inputs.package || 'auto' }}"
+          echo "  版本类型: ${{ github.event.inputs.version_type || 'auto' }}"
           echo "  标签: ${{ github.ref_name }}"
           echo ""
           echo "📦 包版本信息:"
@@ -83,6 +144,15 @@ jobs:
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Commit version updates
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "chore: bump version via manual trigger"
+          git push origin ${{ github.ref }}
       
       - name: Create GitHub Release
         if: github.event_name == 'push'
