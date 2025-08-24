@@ -41,6 +41,10 @@
     "url": "https://github.com/yyyyyyyyyunf/react-toolkit/issues"
   },
   "homepage": "https://github.com/yyyyyyyyyunf/react-toolkit#readme",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/yyyyyyyyyunf/react-toolkit"
+  },
   "scripts": {
     "build": "rslib build",
     "dev": "rslib build --watch",

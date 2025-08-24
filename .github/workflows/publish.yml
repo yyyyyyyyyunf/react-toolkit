@@ -109,6 +109,12 @@ jobs:
             cd ../..
           fi
       
+      - name: Update packages.yml
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "📝 更新 packages.yml 文件..."
+          node scripts/update-packages-yml.js
+      
       - name: Show publish info
         run: |
           echo "🎯 发布信息:"
