@@ -189,6 +189,10 @@ jobs:
           
           git push origin ${{ github.ref }}
           git push origin --tags
+          
+          # 为手动触发创建GitHub Release
+          echo "📦 创建GitHub Release..."
+          gh release create "v$NEW_VERSION" --title "Release v$NEW_VERSION" --repo yyyyyyyyyunf/react-toolkit
       
       - name: Auto merge to main
         if: github.ref == 'refs/heads/release'
@@ -210,7 +214,7 @@ jobs:
           echo "✅ 成功合并到 main 分支"
       
       - name: Create GitHub Release
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'push'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
