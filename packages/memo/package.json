@@ -31,7 +31,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yyyyyyyyyunf/react-toolkit.git"
+    "url": "git+https://github.com/yyyyyyyyyunf/react-toolkit.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "bugs": {
     "url": "https://github.com/yyyyyyyyyunf/react-toolkit/issues"
