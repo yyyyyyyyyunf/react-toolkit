@@ -152,10 +152,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add .
           git commit -m "chore: bump version via manual trigger"
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/yyyyyyyyyunf/react-toolkit.git
           git push origin ${{ github.ref }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Auto merge to main
         if: github.ref == 'refs/heads/release'
@@ -171,13 +168,10 @@ jobs:
           # 合并 release 分支
           git merge origin/release --no-edit
           
-          # 推送到 main，使用GITHUB_TOKEN
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/yyyyyyyyyunf/react-toolkit.git
+          # 推送到 main
           git push origin main
           
           echo "✅ 成功合并到 main 分支"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Create GitHub Release
         if: github.event_name == 'push'
