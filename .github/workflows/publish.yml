@@ -148,8 +148,8 @@ jobs:
       - name: Commit version updates
         if: github.event_name == 'workflow_dispatch'
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
           git add .
           git commit -m "chore: bump version via manual trigger"
           git push origin ${{ github.ref }}
@@ -159,7 +159,7 @@ jobs:
         run: |
           echo "🔄 自动合并 release 到 main..."
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
           # 切换到 main 分支
           git checkout main
