@@ -88,6 +88,28 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
+      - name: Update packages.yml
+        if: steps.detect-changes.outputs.OBSERVER_CHANGED == 'true' || steps.detect-changes.outputs.MEMO_CHANGED == 'true'
+        run: |
+          echo "📝 更新 packages.yml 文件..."
+          OBSERVER_VERSION=$(node -p "require('./packages/observer/package.json').version")
+          MEMO_VERSION=$(node -p "require('./packages/memo/package.json').version")
+          
+          # 使用 sed 直接替换版本号
+          sed -i "s/latest_version: \".*\"/latest_version: \"$OBSERVER_VERSION\"/" .github/packages.yml
+          sed -i "s/latest_version: \".*\"/latest_version: \"$MEMO_VERSION\"/" .github/packages.yml
+          
+          echo "✅ packages.yml 已更新:"
+          echo "  @fly4react/observer: $OBSERVER_VERSION"
+          echo "  @fly4react/memo: $MEMO_VERSION"
+          
+          # 提交更新
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .github/packages.yml
+          git commit -m "chore: update packages.yml versions via CI"
+          git push origin ${{ github.ref }}
+      
       - name: Auto merge to main
         if: github.ref == 'refs/heads/release'
         run: |
