@@ -10,8 +10,8 @@
 
 | 包名 | 版本 | 下载量 | 大小 |
 |------|------|--------|------|
-| [@fly4react/observer](https://www.npmjs.com/package/@fly4react/observer) | [![npm version](https://img.shields.io/npm/v/@fly4react/observer.svg?label=version)](https://www.npmjs.com/package/@fly4react/observer) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/observer.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/observer) | [![bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/observer.svg?label=size)](https://bundlephobia.com/package/@fly4react/observer) |
-| [@fly4react/memo](https://www.npmjs.com/package/@fly4react/memo) | [![npm version](https://img.shields.io/npm/v/@fly4react/memo.svg?label=version)](https://www.npmjs.com/package/@fly4react/memo) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/memo.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/memo) | [![bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/memo.svg?label=size)](https://bundlephobia.com/package/@fly4react/memo) |
+| [@fly4react/observer](https://www.npmjs.com/package/@fly4react/observer) | [![npm version](https://img.shields.io/npm/v/@fly4react/observer.svg?label=version)](https://www.npmjs.com/package/@fly4react/observer) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/observer.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/observer) | [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/observer.svg?label=size)](https://bundlephobia.com/package/@fly4react/observer) |
+| [@fly4react/memo](https://www.npmjs.com/package/@fly4react/memo) | [![npm version](https://img.shields.io/npm/v/@fly4react/memo.svg?label=version)](https://www.npmjs.com/package/@fly4react/memo) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/memo.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/memo) | [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/memo.svg?label=size)](https://bundlephobia.com/package/@fly4react/memo) |
 
 这是一个 React Toolkit 的 monorepo，包含多个高性能的 React 工具库。
 
