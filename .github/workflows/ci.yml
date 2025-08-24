@@ -102,10 +102,13 @@ jobs:
           # 合并 release 分支
           git merge origin/release --no-edit
           
-          # 推送到 main
+          # 推送到 main，使用GITHUB_TOKEN
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/yyyyyyyyyunf/react-toolkit.git
           git push origin main
           
           echo "✅ 成功合并到 main 分支"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Skip publishing
         if: steps.detect-changes.outputs.OBSERVER_CHANGED != 'true' && steps.detect-changes.outputs.MEMO_CHANGED != 'true'
