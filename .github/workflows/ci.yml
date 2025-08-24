@@ -37,75 +37,17 @@ jobs:
       - name: Run linting
         run: pnpm lint
       
-      - name: Install memo package from npm
+      - name: Build packages
         run: |
-          echo "📦 从 npm 安装 memo 包..."
-          cd packages/observer
-          echo "🔍 当前目录: $(pwd)"
-          echo "📦 安装前检查 node_modules..."
-          ls -la node_modules/ || echo "node_modules 不存在"
-          pnpm install @fly4react/memo@1.0.6 --no-workspace
-          echo "📦 安装后检查 memo 包..."
-          ls -la node_modules/@fly4react/memo/ || echo "❌ memo 包不存在"
-          echo "📦 检查 memo 包的 package.json..."
-          cat node_modules/@fly4react/memo/package.json | head -20
-          echo "📦 检查 memo 包的 exports..."
-          cat node_modules/@fly4react/memo/package.json | grep -A 10 '"exports"'
-          cd ../..
-          echo "✅ memo 包安装完成"
-      
-      - name: Build memo package first
-        run: |
-          echo "🔨 先构建 memo 包..."
-          cd packages/memo
-          npx rslib build
-          cd ../..
-          echo "✅ memo 包构建完成"
-      
-      - name: Build observer package
-        run: |
-          echo "🔨 构建 observer 包..."
-          cd packages/observer
-          # 确保memo包可以被正确解析
-          echo "📦 检查 memo 包是否存在..."
-          ls -la node_modules/@fly4react/memo/ || echo "❌ memo 包不存在"
-          echo "📦 检查 memo 包的 dist 文件..."
-          ls -la node_modules/@fly4react/memo/dist/ || echo "❌ memo dist 不存在"
-          echo "📦 检查 memo 包的 exports 配置..."
-          cat node_modules/@fly4react/memo/package.json | grep -A 10 '"exports"'
-          echo "🔍 尝试直接导入 memo 包..."
-          node -e "try { console.log('✅ memo 包导入成功:', require('@fly4react/memo')); } catch(e) { console.log('❌ memo 包导入失败:', e.message); }" || echo "导入测试失败"
-          echo "🔨 开始构建..."
-          npx rslib build
-          cd ../..
-          echo "✅ observer 包构建完成"
+          echo "🔨 构建所有包..."
+          pnpm build
+          echo "✅ 构建完成"
       
       - name: Run tests
         run: |
           echo "🧪 运行所有测试..."
-          cd packages/observer
-          echo "📦 检查 memo 包是否存在..."
-          ls -la node_modules/@fly4react/memo/ || echo "❌ memo 包不存在"
-          echo "📦 检查 memo 包的 dist 文件..."
-          ls -la node_modules/@fly4react/memo/dist/ || echo "❌ memo dist 不存在"
-          echo "📦 检查 memo 包的 exports 配置..."
-          cat node_modules/@fly4react/memo/package.json | grep -A 10 '"exports"'
-          echo "🔍 测试 vitest 配置..."
-          cat vitest.config.ts
-          echo "🔍 尝试直接导入 memo 包..."
-          node -e "try { console.log('✅ memo 包导入成功:', require('@fly4react/memo')); } catch(e) { console.log('❌ memo 包导入失败:', e.message); }" || echo "导入测试失败"
-          echo "🔍 检查文件系统路径..."
-          pwd
-          ls -la
-          echo "🔍 检查 memo 包的具体文件..."
-          find node_modules/@fly4react/memo -name "*.js" -o -name "*.ts" | head -10
-          echo "🔍 检查 memo 包的 index.js 内容..."
-          head -5 node_modules/@fly4react/memo/dist/index.js || echo "index.js 不存在"
-          echo "🧪 运行 observer 测试..."
-          pnpm vitest run --reporter=verbose
-          cd ../memo
-          echo "🧪 运行 memo 测试..."
-          pnpm vitest run --reporter=verbose
+          pnpm test:run
+          echo "✅ 测试完成"
       
       - name: Check build output
         run: |
