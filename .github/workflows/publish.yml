@@ -145,14 +145,30 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
-      - name: Commit version updates
+      - name: Commit version updates and create tag
         if: github.event_name == 'workflow_dispatch'
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add .
           git commit -m "chore: bump version via manual trigger"
+          
+          # 创建新的版本标签
+          SELECTED_PACKAGE="${{ github.event.inputs.package }}"
+          if [[ "$SELECTED_PACKAGE" == "observer" ]]; then
+            NEW_VERSION=$(node -p "require('./packages/observer/package.json').version")
+            git tag "v$NEW_VERSION"
+          elif [[ "$SELECTED_PACKAGE" == "memo" ]]; then
+            NEW_VERSION=$(node -p "require('./packages/memo/package.json').version")
+            git tag "v$NEW_VERSION"
+          else
+            # 使用observer版本作为主版本
+            NEW_VERSION=$(node -p "require('./packages/observer/package.json').version")
+            git tag "v$NEW_VERSION"
+          fi
+          
           git push origin ${{ github.ref }}
+          git push origin --tags
       
       - name: Auto merge to main
         if: github.ref == 'refs/heads/release'
