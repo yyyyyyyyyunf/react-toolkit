@@ -32,7 +32,7 @@
 | 特性 | @fly4react/observer | react-intersection-observer | react-use-intersection-observer | react-visibility-sensor |
 |------|-------------------|---------------------------|--------------------------------|------------------------|
 | 包大小 | ~5.0kB (gzipped) | ~3.1kB (gzipped) | ~2.8kB (gzipped) | ~4.2kB (gzipped) |
-| 依赖 | 零依赖 | 1 个依赖 | 1 个依赖 | 零依赖 |
+| 依赖 | 1 个内部依赖 | 1 个依赖 | 1 个依赖 | 零依赖 |
 | 位置跟踪 | ✅ | ❌ | ❌ | ❌ |
 | 滚动方向检测 | ✅ | ❌ | ❌ | ❌ |
 | 一次性可见性 | ✅ | ❌ | ❌ | ❌ |
@@ -61,6 +61,7 @@
 - 🖼️ 懒加载组件 (`IntersectionLoad`)
 - 🌐 浏览器兼容性 (IE 11+)
 - 🔄 自动降级策略
+- 🧠 智能记忆化支持 (依赖 @fly4react/memo)
 
 ```bash
 npm install @fly4react/observer
@@ -118,6 +119,7 @@ npm install @fly4react/memo
 | **维护性** | 活跃维护，持续更新 | 维护较少，更新频率低 |
 | **配置复杂度** | 简单易用，开箱即用 | 需要手动配置节流等参数 |
 | **API 设计** | 现代化 hooks API | 基于 render props 模式 |
+| **依赖管理** | 1个内部依赖，可控性强 | 零依赖，但功能有限 |
 
 ### Memo 包适用场景
 - **列表渲染**: 大型列表的性能优化
@@ -295,8 +297,34 @@ A: 是的，完全支持服务端渲染，所有 hooks 都会在服务端安全�
 - 📖 [文档改进](https://github.com/yyyyyyyyyunf/react-toolkit/issues)
 
 ### 相关项目
-- [React Query](https://tanstack.com/query) - 数据获取和缓存
-- [React Hook Form](https://react-hook-form.com/) - 表单处理
-- [Framer Motion](https://www.framer.com/motion/) - 动画库
+- [@fly4react/observer](https://www.npmjs.com/package/@fly4react/observer) - 基于 Intersection Observer API 的现代 React 工具库
+- [@fly4react/memo](https://www.npmjs.com/package/@fly4react/memo) - 高级的 React 记忆化组件工具
+- [React Toolkit](https://github.com/yyyyyyyyyunf/react-toolkit) - React 工具集合，包含 observer 和 memo 等工具库
 
 ## 📄 许可证
+
+本项目采用 [MIT 许可证](./LICENSE)。
+
+```bash
+MIT License
+
+Copyright (c) 2024 yyyyyyyyunf
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
