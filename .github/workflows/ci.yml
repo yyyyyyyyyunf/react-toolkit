@@ -29,7 +29,10 @@ jobs:
           echo "npm version: $(npm --version)"
       
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: |
+          echo "📦 从 workspace 安装依赖..."
+          pnpm install --no-frozen-lockfile
+          echo "✅ 依赖安装完成"
       
       - name: Run type check
         run: pnpm check
@@ -37,17 +40,11 @@ jobs:
       - name: Run linting
         run: pnpm lint
       
-      - name: Build packages
+      - name: Build and test packages
         run: |
-          echo "🔨 构建所有包..."
-          pnpm build
-          echo "✅ 构建完成"
-      
-      - name: Run tests
-        run: |
-          echo "🧪 运行所有测试..."
-          pnpm test:run
-          echo "✅ 测试完成"
+          echo "🔨 构建并测试所有包..."
+          pnpm build:test
+          echo "✅ 构建和测试完成"
       
       - name: Check build output
         run: |

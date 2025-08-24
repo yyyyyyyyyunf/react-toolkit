@@ -16,7 +16,8 @@
   "license": "MIT",
   "scripts": {
     "check": "pnpm -r check",
-    "build": "pnpm test:run && pnpm -r build",
+    "build": "pnpm -r build",
+    "build:test": "pnpm build && pnpm test:run",
     "format": "pnpm -r format",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",

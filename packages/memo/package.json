@@ -38,7 +38,7 @@
   },
   "homepage": "https://github.com/yyyyyyyyyunf/react-toolkit#readme",
   "scripts": {
-    "build": "pnpm test:run && rslib build",
+    "build": "rslib build",
     "dev": "rslib build --watch",
     "format": "biome format --write src/",
     "format:check": "biome format --check src/",
