@@ -1,3 +1,4 @@
+import "intersection-observer";
 import type { ObserverOptions } from "../types";
 
 /**
@@ -224,11 +225,5 @@ export const createIntersectionObserver = (
 	callback: IntersectionObserverCallback,
 	options?: ObserverOptions,
 ): IntersectionObserver => {
-	// 导入标准的 intersection-observer polyfill
-	if (typeof window !== "undefined" && !isSupportIntersectionObserver()) {
-		// 动态导入 polyfill，确保在需要时才加载
-		import("intersection-observer");
-	}
-
 	return new IntersectionObserver(callback, options);
 };

@@ -96,7 +96,7 @@ Not applicable - this is the initial release.
 
 #### Changed
 - **重构 polyfill 实现**: 移除自定义 polyfill，改用谷歌官方的 `intersection-observer` polyfill
-- **依赖管理优化**: 将 `intersection-observer` 改为 peerDependency，提供更好的版本控制
+- **依赖管理优化**: 将 `intersection-observer` 作为 peerDependency，避免与现有项目冲突
 - **类型声明优化**: 清理不需要的自定义类型声明，减少包体积约 1KB
 - **文档更新**: 更新所有文档中的安装说明，提供 npm、yarn、pnpm 三种安装方式
 

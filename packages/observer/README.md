@@ -49,7 +49,7 @@ yarn add @fly4react/observer intersection-observer
 pnpm add @fly4react/observer intersection-observer
 ```
 
-> **注意**：`intersection-observer` 是 peer dependency，需要单独安装以确保在不支持 IntersectionObserver 的浏览器中正常工作。
+> **注意**：`intersection-observer` 是 peer dependency，需要单独安装以确保在不支持 IntersectionObserver 的浏览器中正常工作。如果项目中已经安装了其他使用该 polyfill 的库（如 ahooks），则无需重复安装。
 
 ## 🚀 使用方法
 
