@@ -31,8 +31,8 @@
 
 | 特性 | @fly4react/observer | react-intersection-observer | react-use-intersection-observer | react-visibility-sensor |
 |------|-------------------|---------------------------|--------------------------------|------------------------|
-| 包大小 | ~5.0kB (gzipped) | ~3.1kB (gzipped) | ~2.8kB (gzipped) | ~4.2kB (gzipped) |
-| 依赖 | 1 个内部依赖 | 1 个依赖 | 1 个依赖 | 零依赖 |
+| 包大小 | ![bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/observer) | ~3.1kB (gzipped) | ~2.8kB (gzipped) | ~4.2kB (gzipped) |
+| 依赖 | 1 个 peerDependency | 1 个依赖 | 1 个依赖 | 零依赖 |
 | 位置跟踪 | ✅ | ❌ | ❌ | ❌ |
 | 滚动方向检测 | ✅ | ❌ | ❌ | ❌ |
 | 一次性可见性 | ✅ | ❌ | ❌ | ❌ |
@@ -126,7 +126,7 @@ npm install @fly4react/memo
 | **维护性** | 活跃维护，持续更新 | 维护较少，更新频率低 |
 | **配置复杂度** | 简单易用，开箱即用 | 需要手动配置节流等参数 |
 | **API 设计** | 现代化 hooks API | 基于 render props 模式 |
-| **依赖管理** | 1个内部依赖，可控性强 | 零依赖，但功能有限 |
+| **依赖管理** | 1个 peerDependency，避免冲突 | 零依赖，但功能有限 |
 
 ### Memo 包适用场景
 - **列表渲染**: 大型列表的性能优化
