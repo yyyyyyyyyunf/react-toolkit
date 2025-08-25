@@ -31,8 +31,8 @@
 
 | 特性 | @fly4react/observer | react-intersection-observer | react-use-intersection-observer | react-visibility-sensor |
 |------|-------------------|---------------------------|--------------------------------|------------------------|
-| 包大小 | ![bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/observer) | ~3.1kB (gzipped) | ~2.8kB (gzipped) | ~4.2kB (gzipped) |
-| 依赖 | 1 个 peerDependency | 1 个依赖 | 1 个依赖 | 零依赖 |
+| 包大小 | ![bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/observer) | ![bundle size](https://img.shields.io/bundlephobia/minzip/react-intersection-observer) | ![bundle size](https://img.shields.io/bundlephobia/minzip/react-use-intersection-observer) | ![bundle size](https://img.shields.io/bundlephobia/minzip/react-visibility-sensor) |
+| 依赖 | 1 个依赖 + 3 个 peerDependencies | 1 个依赖 | 1 个依赖 | 零依赖 |
 | 位置跟踪 | ✅ | ❌ | ❌ | ❌ |
 | 滚动方向检测 | ✅ | ❌ | ❌ | ❌ |
 | 一次性可见性 | ✅ | ❌ | ❌ | ❌ |
