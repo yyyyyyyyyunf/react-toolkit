@@ -64,7 +64,14 @@
 - 🧠 智能记忆化支持 (依赖 @fly4react/memo)
 
 ```bash
-npm install @fly4react/observer
+# 使用 npm
+npm install @fly4react/observer intersection-observer
+
+# 使用 yarn
+yarn add @fly4react/observer intersection-observer
+
+# 使用 pnpm
+pnpm add @fly4react/observer intersection-observer
 ```
 
 #### 浏览器兼容性
@@ -110,7 +117,7 @@ npm install @fly4react/memo
 
 | 方面 | @fly4react/observer | react-visibility-sensor |
 |------|-------------------|------------------------|
-| **性能** | 基于原生 IntersectionObserver API，性能优异 | 基于 scroll 事件，性能较差 |
+| **性能** | 基于原生 IntersectionObserver API，性能优异 | 基于标准 polyfill，性能良好 |
 | **内存管理** | 自动清理观察器，无内存泄漏 | 需要手动清理，容易内存泄漏 |
 | **功能丰富度** | 提供位置跟踪、滚动方向检测等高级功能 | 只提供基本的可见性检测 |
 | **TypeScript** | 完整的 TypeScript 支持 | 无 TypeScript 支持 |
@@ -275,7 +282,7 @@ A: 我们的库专注于 Intersection Observer API 的完整封装，提供更�
 A: 支持所有支持 Intersection Observer API 的现代浏览器（Chrome 51+, Firefox 55+, Safari 12.1+, Edge 15+）。
 
 ### Q: 如何处理不支持 Intersection Observer 的浏览器？
-A: 库会自动降级到基于 scroll 事件的实现，确保在所有环境下都能正常工作。
+A: 库会自动使用标准的 intersection-observer polyfill，确保在所有环境下都能正常工作。
 
 ### Q: 性能如何？
 A: 基于原生 API，性能优异。支持节流控制和智能观察器复用，避免不必要的计算。

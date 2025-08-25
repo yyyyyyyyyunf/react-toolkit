@@ -1,4 +1,3 @@
-import { IntersectionObserverPolyfill } from "../base/polyfill/IntersectionObserverPolyfill";
 import type { ObserverOptions } from "../types";
 
 /**
@@ -205,7 +204,7 @@ export const calculateScrollDirection = (
  * 为不支持 IntersectionObserver 的浏览器提供降级方案。
  *
  * @param callback IntersectionObserver 回调函数
- * @param options 配置选项，支持标准的 IntersectionObserverInit 和额外的 throttle 选项
+ * @param options 配置选项，支持标准的 IntersectionObserverInit
  * @returns IntersectionObserver 实例
  *
  * @example
@@ -215,8 +214,7 @@ export const calculateScrollDirection = (
  *     console.log('Element visibility changed:', entry.isIntersecting);
  *   });
  * }, {
- *   threshold: [0, 0.5, 1],
- *   throttle: 16 // 仅在降级模式下生效
+ *   threshold: [0, 0.5, 1]
  * });
  *
  * observer.observe(element);
@@ -226,14 +224,11 @@ export const createIntersectionObserver = (
 	callback: IntersectionObserverCallback,
 	options?: ObserverOptions,
 ): IntersectionObserver => {
-	if (isSupportIntersectionObserver()) {
-		// 原生支持时，忽略 throttle 参数
-		const { throttle, ...nativeOptions } = options || {};
-		return new IntersectionObserver(callback, nativeOptions);
+	// 导入标准的 intersection-observer polyfill
+	if (typeof window !== "undefined" && !isSupportIntersectionObserver()) {
+		// 动态导入 polyfill，确保在需要时才加载
+		import("intersection-observer");
 	}
-	// 降级时，使用 polyfill
-	return new IntersectionObserverPolyfill(
-		callback,
-		options,
-	) as unknown as IntersectionObserver;
+
+	return new IntersectionObserver(callback, options);
 };

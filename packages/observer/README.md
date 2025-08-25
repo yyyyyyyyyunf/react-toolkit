@@ -29,21 +29,27 @@
 
 ### 降级策略
 
-对于不支持 `IntersectionObserver` 的浏览器（如 IE 11），库会自动降级到使用 `scroll` 事件 + `getBoundingClientRect()` 的方案：
+对于不支持 `IntersectionObserver` 的浏览器（如 IE 11），库会自动使用谷歌提供的标准 `intersection-observer` polyfill：
 
 - **原生支持**：使用 `IntersectionObserver` API，性能最佳
-- **降级支持**：使用 `scroll` 事件监听，提供相同的 API 接口
+- **降级支持**：使用标准的 `intersection-observer` polyfill，提供完整的 API 兼容性
 - **功能一致性**：无论使用哪种方案，都提供相同的功能和 API
+- **可靠性**：使用经过充分测试的官方 polyfill，确保稳定性和兼容性
 
 ## 安装
 
 ```bash
-npm install @fly4react/observer
-# 或
-yarn add @fly4react/observer
-# 或
-pnpm add @fly4react/observer
+# 使用 npm
+npm install @fly4react/observer intersection-observer
+
+# 使用 yarn
+yarn add @fly4react/observer intersection-observer
+
+# 使用 pnpm
+pnpm add @fly4react/observer intersection-observer
 ```
+
+> **注意**：`intersection-observer` 是 peer dependency，需要单独安装以确保在不支持 IntersectionObserver 的浏览器中正常工作。
 
 ## 🚀 使用方法
 

@@ -7,10 +7,8 @@ import type {
 import {
 	calculateScrollDirection,
 	createIntersectionObserver,
-	isSupportIntersectionObserver,
 	uniqueId,
 } from "../utils";
-import { FallbackPositionTracker } from "./polyfill/FallbackPositionTracker";
 
 /**
  * Intersection Observer 管理器
@@ -24,21 +22,17 @@ import { FallbackPositionTracker } from "./polyfill/FallbackPositionTracker";
  * - 跟踪元素位置变化，计算滚动方向
  * - 提供统一的回调接口，支持扩展的 entry 对象
  * - 自动清理资源，防止内存泄漏
- * - 降级支持：在不支持 IntersectionObserver 的浏览器中使用 scroll 事件
+ * - 降级支持：在不支持 IntersectionObserver 的浏览器中使用标准 polyfill
  */
 class IntersectionObserverManager {
 	/** 存储不同配置的 Intersection Observer 实例 */
 	private observers: Map<string, IntersectionObserver>;
-	/** 存储降级策略的跟踪器实例 */
-	private fallbackTrackers: Map<string, FallbackPositionTracker>;
 	/** 存储每个元素的回调函数 */
 	private callbacks: Map<string, ObserverCallbackType>;
 	/** 存储每个元素的前一次位置信息，用于计算滚动方向 */
 	private previousRects: Map<string, DOMRect>;
 	/** 默认配置选项 */
 	private defaultOptions: ObserverOptions;
-	/** 是否支持 IntersectionObserver */
-	private isSupported: boolean;
 
 	/**
 	 * 创建 Intersection Observer 管理器
@@ -46,7 +40,6 @@ class IntersectionObserverManager {
 	 */
 	constructor(options: ObserverOptions = {}) {
 		this.observers = new Map<string, IntersectionObserver>();
-		this.fallbackTrackers = new Map<string, FallbackPositionTracker>();
 		this.callbacks = new Map<string, ObserverCallbackType>();
 		this.previousRects = new Map<string, DOMRect>();
 		this.defaultOptions = {
@@ -54,7 +47,6 @@ class IntersectionObserverManager {
 			threshold: 0,
 			...options,
 		};
-		this.isSupported = isSupportIntersectionObserver();
 	}
 
 	/**
@@ -166,46 +158,6 @@ class IntersectionObserverManager {
 	) {
 		if (!target) return;
 
-		if (!this.isSupported) {
-			const elementUniqueId =
-				target.getAttribute("data-intersection-unique-id") ||
-				uniqueId("intersection_element");
-			target.setAttribute("data-intersection-unique-id", elementUniqueId);
-			this.callbacks.set(elementUniqueId, callback);
-
-			const tracker = new FallbackPositionTracker((entry) => {
-				const elementUniqueId =
-					target.getAttribute("data-intersection-unique-id") ||
-					"intersection_element_void";
-				const previousRect = this.previousRects.get(elementUniqueId);
-				const currentRect = entry.boundingClientRect;
-				const scrollDirection = previousRect
-					? calculateScrollDirection(currentRect, previousRect)
-					: "none";
-
-				const extendedEntry: ObserverCallbackParamType = {
-					target: target,
-					rootBounds: null, // Fallback doesn't support rootBounds
-					boundingClientRect: currentRect,
-					intersectionRect: currentRect,
-					intersectionRatio: entry.intersectionRatio,
-					isIntersecting: entry.isIntersecting,
-					time: entry.time,
-					scrollDirection,
-					previousRect,
-				};
-				this.previousRects.set(elementUniqueId, currentRect);
-				callback(extendedEntry);
-			}, 16);
-
-			tracker.observe(target);
-			this.fallbackTrackers.set(elementUniqueId, tracker);
-
-			return () => {
-				this.unobserve(target, options);
-			};
-		}
-
 		const elementUniqueId =
 			target.getAttribute("data-intersection-unique-id") ||
 			uniqueId("intersection_element");
@@ -240,13 +192,6 @@ class IntersectionObserverManager {
 			this.previousRects.delete(elementUniqueId); // 清理位置跟踪数据
 			target.removeAttribute("data-intersection-unique-id");
 		}
-
-		// 清理降级策略的跟踪器
-		const fallbackTracker = this.fallbackTrackers.get(elementUniqueId);
-		if (fallbackTracker) {
-			fallbackTracker.unobserve();
-			this.fallbackTrackers.delete(elementUniqueId);
-		}
 	}
 
 	/**
@@ -260,10 +205,6 @@ class IntersectionObserverManager {
 		this.observers.clear();
 		this.callbacks.clear();
 		this.previousRects.clear(); // 清理位置跟踪数据
-		for (const tracker of this.fallbackTrackers.values()) {
-			tracker.unobserve();
-		}
-		this.fallbackTrackers.clear();
 	}
 }
 

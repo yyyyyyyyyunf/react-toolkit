@@ -13,6 +13,7 @@
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "@fly4react/observer": "workspace:*",
+    "intersection-observer": "^0.12.2",
     "react-visibility-sensor": "^5.1.1"
   },
   "devDependencies": {

@@ -30,8 +30,6 @@ export type ObserverCallbackType = (entry: ObserverCallbackParamType) => void;
 export type ObserverOptions = IntersectionObserverInit & {
 	/** 是否只触发一次，触发后自动取消观察 */
 	once?: boolean;
-	/** 节流时间间隔（毫秒），用于控制检查频率，仅在降级策略中使用 */
-	throttle?: number;
 };
 
 /**
@@ -217,34 +215,6 @@ interface CustomRootScrollDirectionOptions extends BaseScrollDirectionOptions {
 export type UseScrollDirectionOptions =
 	| ViewportScrollDirectionOptions
 	| CustomRootScrollDirectionOptions;
-
-/**
- * 降级策略的 IntersectionObserverEntry 类型
- * 用于 FallbackPositionTracker 的回调参数
- *
- * 注意：与原生 IntersectionObserverEntry 的差异：
- * 1. boundingClientRect 使用 DOMRect 而非 DOMRectReadOnly（实现限制）
- * 2. rootBounds 不允许 null（降级策略中总是有值）
- * 3. 缺少 readonly 修饰符（polyfill 实现限制）
- *
- * 这些差异是为了在不支持 IntersectionObserver 的浏览器中提供降级支持
- */
-export interface FallbackIntersectionEntry {
-	/** 元素相对于视口的边界矩形 */
-	boundingClientRect: DOMRect;
-	/** 元素与根元素的交叉区域 */
-	intersectionRect: DOMRectReadOnly;
-	/** 元素与根元素的交叉比例（0-1） */
-	intersectionRatio: number;
-	/** 元素是否与根元素相交 */
-	isIntersecting: boolean;
-	/** 根元素的边界矩形（降级策略中总是有值） */
-	rootBounds: DOMRectReadOnly;
-	/** 被观察的目标元素 */
-	target: Element;
-	/** 时间戳 */
-	time: number;
-}
 
 /**
  * 基础 IntersectionLoad 属性

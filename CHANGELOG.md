@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `@fly4react/observer` - Intersection Observer 工具库
 - `@fly4react/memo` - React 记忆化组件工具
 
-## [1.0.0] - 2024-12-19
+## [1.0.0] - 2025-08-23
 
 ### @fly4react/observer
 
@@ -90,7 +90,41 @@ Not applicable - this is the initial release.
 
 ## Future Releases
 
-### [Unreleased]
+### [1.2.6] - 2025-08-25
+
+### @fly4react/observer
+
+#### Changed
+- **重构 polyfill 实现**: 移除自定义 polyfill，改用谷歌官方的 `intersection-observer` polyfill
+- **依赖管理优化**: 将 `intersection-observer` 改为 peerDependency，提供更好的版本控制
+- **类型声明优化**: 清理不需要的自定义类型声明，减少包体积约 1KB
+- **文档更新**: 更新所有文档中的安装说明，提供 npm、yarn、pnpm 三种安装方式
+
+#### Removed
+- **自定义 polyfill**: 删除 `IntersectionObserverPolyfill` 和 `FallbackPositionTracker` 实现
+- **自定义类型**: 删除 `FallbackIntersectionEntry` 类型声明
+- **throttle 选项**: 从 `ObserverOptions` 中移除 `throttle` 选项（标准 polyfill 不支持）
+
+#### Technical Improvements
+- **更可靠的 polyfill**: 使用经过充分测试的官方 polyfill
+- **更好的兼容性**: 标准 polyfill 支持更多浏览器和边缘情况
+- **更小的维护负担**: 不需要维护自己的 polyfill 实现
+- **更好的性能**: 官方 polyfill 经过优化，性能更好
+- **API 一致性**: 与标准 IntersectionObserver API 完全一致
+
+#### Breaking Changes
+- `intersection-observer` 现在是 peerDependency，需要单独安装
+- `ObserverOptions` 中不再支持 `throttle` 选项
+
+#### Migration Guide
+1. 安装 `intersection-observer` 作为 peerDependency：
+   ```bash
+   npm install @fly4react/observer intersection-observer
+   ```
+
+2. 如果之前使用了 `throttle` 选项，请移除该选项（标准 polyfill 不支持）
+
+## [Unreleased]
 - Virtual scrolling support
 - More animation integration examples
 - Performance analytics tools
