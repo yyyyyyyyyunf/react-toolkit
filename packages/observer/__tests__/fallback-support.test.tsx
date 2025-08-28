@@ -22,7 +22,7 @@ describe("Fallback Support", () => {
 			undefined;
 
 		const { result } = renderHook(() => {
-			const ref = useRef<HTMLDivElement>(null);
+			const ref = useRef<HTMLDivElement | null>(null);
 			return useElementPosition(ref, { throttle: 16 });
 		});
 
@@ -31,7 +31,7 @@ describe("Fallback Support", () => {
 
 	it("should provide consistent API regardless of browser support", () => {
 		const { result } = renderHook(() => {
-			const ref = useRef<HTMLDivElement>(null);
+			const ref = useRef<HTMLDivElement | null>(null);
 			return useElementPosition(ref, {
 				step: 0.1,
 				throttle: 16,
