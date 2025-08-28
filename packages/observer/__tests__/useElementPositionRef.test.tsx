@@ -3,10 +3,10 @@ import { renderHook, act } from "@testing-library/react-hooks";
 import { useRef } from "react";
 import { useElementPositionRef } from "../src/hooks/useElementPositionRef";
 
-// Mock dependencies
+// 模拟依赖
 vi.mock("../src/base/IntersectionObserverManager", () => ({
 	lazyloadManager: {
-		observe: vi.fn(() => vi.fn()), // Return unsubscribe function
+		observe: vi.fn(() => vi.fn()), // 返回取消订阅函数
 	},
 }));
 
@@ -15,7 +15,7 @@ vi.mock("../src/utils", () => ({
 	getDefaultThresholdArray: vi.fn(() => [0, 0.25, 0.5, 0.75, 1]),
 }));
 
-// Mock IntersectionObserver
+// 模拟 IntersectionObserver
 const mockObserve = vi.fn();
 const mockUnobserve = vi.fn();
 const mockDisconnect = vi.fn();
@@ -35,7 +35,7 @@ beforeEach(() => {
 describe("useElementPositionRef", () => {
 	it("should return a ref with null initial value", () => {
 		const { result } = renderHook(() => {
-			const ref = useRef<HTMLDivElement>(null);
+			const ref = useRef<HTMLDivElement | null>(null);
 			return useElementPositionRef(ref);
 		});
 
@@ -44,25 +44,24 @@ describe("useElementPositionRef", () => {
 
 	it("should observe element when ref is set", () => {
 		const { result } = renderHook(() => {
-			const ref = useRef<HTMLDivElement>(null);
+			const ref = useRef<HTMLDivElement | null>(null);
 			return { ref, positionRef: useElementPositionRef(ref) };
 		});
 
-		// Simulate setting the ref
+		// 模拟设置 ref
 		const mockElement = document.createElement("div");
 		act(() => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(result.current.ref as any).current = mockElement;
+			result.current.ref.current = mockElement;
 		});
 
-		// The hook should be called, but we can't directly test the internal observe call
-		// since it's handled by lazyloadManager
+		// Hook 应该被调用，但我们无法直接测试内部的 observe 调用
+		// 因为它由 lazyloadManager 处理
 		expect(result.current.positionRef.current).toBe(null);
 	});
 
 	it("should handle custom options", () => {
 		const { result } = renderHook(() => {
-			const ref = useRef<HTMLDivElement>(null);
+			const ref = useRef<HTMLDivElement | null>(null);
 			const options = {
 				step: 0.1,
 				throttle: 100,
@@ -72,38 +71,37 @@ describe("useElementPositionRef", () => {
 			return { ref, positionRef: useElementPositionRef(ref, options) };
 		});
 
-		// Simulate setting the ref
+		// 模拟设置 ref
 		const mockElement = document.createElement("div");
 		act(() => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(result.current.ref as any).current = mockElement;
+			result.current.ref.current = mockElement;
 		});
 
-		// The hook should be called with custom options
+		// Hook 应该使用自定义选项被调用
 		expect(result.current.positionRef.current).toBe(null);
 	});
 
 	it("should cleanup observer on unmount", () => {
 		const { unmount } = renderHook(() => {
-			const ref = useRef<HTMLDivElement>(null);
+			const ref = useRef<HTMLDivElement | null>(null);
 			return useElementPositionRef(ref);
 		});
 
 		unmount();
 
-		// We can't directly test disconnect calls since we're using lazyloadManager
-		// But we can verify the hook doesn't throw
+		// 我们无法直接测试 disconnect 调用，因为我们使用的是 lazyloadManager
+		// 但我们可以验证 Hook 不会抛出错误
 		expect(true).toBe(true);
 	});
 
 	it("should use default configuration when no options provided", () => {
 		renderHook(() => {
-			const ref = useRef<HTMLDivElement>(null);
+			const ref = useRef<HTMLDivElement | null>(null);
 			return useElementPositionRef(ref);
 		});
 
-		// We can't directly test IntersectionObserver calls since we're using lazyloadManager
-		// But we can verify the hook doesn't throw and uses default config
+		// 我们无法直接测试 IntersectionObserver 调用，因为我们使用的是 lazyloadManager
+		// 但我们可以验证 Hook 不会抛出错误并使用默认配置
 		expect(true).toBe(true);
 	});
 });

@@ -3,14 +3,14 @@ import { renderHook, act } from "@testing-library/react-hooks";
 import { useRef } from "react";
 import { useElementDetector } from "../src/hooks/useElementDetector";
 
-// Mock dependencies
+// 模拟依赖
 vi.mock("../src/base/IntersectionObserverManager", () => ({
 	lazyloadManager: {
-		observe: vi.fn(() => vi.fn()), // Return unsubscribe function
+		observe: vi.fn(() => vi.fn()), // 返回取消订阅函数
 	},
 }));
 
-// Mock IntersectionObserver
+// 模拟 IntersectionObserver
 const mockObserve = vi.fn();
 const mockUnobserve = vi.fn();
 const mockDisconnect = vi.fn();
@@ -39,85 +39,86 @@ describe("useElementDetector", () => {
 
 	it("should observe element when ref is set", () => {
 		const { result } = renderHook(() => {
-			const ref = useRef<HTMLDivElement>(null);
+			const ref = useRef<HTMLDivElement | null>(null);
 			return { ref, condition: useElementDetector(ref) };
 		});
 
-		// Simulate setting the ref
+		// 模拟设置 ref
 		const mockElement = document.createElement("div");
 		act(() => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(result.current.ref as any).current = mockElement;
+			result.current.ref.current = mockElement;
 		});
 
-		// The hook should be called, but we can't directly test the internal observe call
-		// since it's handled by lazyloadManager
+		// Hook 应该被调用，但我们无法直接测试内部的 observe 调用
+		// 因为它由 lazyloadManager 处理
 		expect(result.current.condition).toBe(false);
 	});
 
 	it("should use default ceiling detection when no compute function provided", () => {
 		const { result } = renderHook(() => {
-			const ref = useRef<HTMLDivElement>(null);
+			const ref = useRef<HTMLDivElement | null>(null);
 			return { ref, condition: useElementDetector(ref) };
 		});
 
-		// Simulate setting the ref
+		// 模拟设置 ref
 		const mockElement = document.createElement("div");
 		act(() => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(result.current.ref as any).current = mockElement;
+			result.current.ref.current = mockElement;
 		});
 
-		// The hook should use default ceiling detection (top <= 0)
+		// Hook 应该使用默认的贴顶检测 (top <= 0)
 		expect(result.current.condition).toBe(false);
 	});
 
 	it("should use custom compute function when provided", () => {
-		const customCompute = vi.fn((rect: DOMRect) => rect.top <= 50 && rect.bottom >= 100);
-		
+		const customCompute = vi.fn(
+			(rect: DOMRect) => rect.top <= 50 && rect.bottom >= 100,
+		);
+
 		const { result } = renderHook(() => {
-			const ref = useRef<HTMLDivElement>(null);
-			return { ref, condition: useElementDetector(ref, { compute: customCompute }) };
+			const ref = useRef<HTMLDivElement | null>(null);
+			return {
+				ref,
+				condition: useElementDetector(ref, { compute: customCompute }),
+			};
 		});
 
-		// Simulate setting the ref
+		// 模拟设置 ref
 		const mockElement = document.createElement("div");
 		act(() => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(result.current.ref as any).current = mockElement;
+			result.current.ref.current = mockElement;
 		});
 
-		// The hook should use custom compute function
+		// Hook 应该使用自定义计算函数
 		expect(result.current.condition).toBe(false);
 	});
 
 	it("should cleanup observer on unmount", () => {
 		const { unmount } = renderHook(() => {
-			const ref = useRef<HTMLDivElement>(null);
+			const ref = useRef<HTMLDivElement | null>(null);
 			return useElementDetector(ref);
 		});
 
 		unmount();
 
-		// We can't directly test disconnect calls since we're using lazyloadManager
-		// But we can verify the hook doesn't throw
+		// 我们无法直接测试 disconnect 调用，因为我们使用的是 lazyloadManager
+		// 但我们可以验证 Hook 不会抛出错误
 		expect(true).toBe(true);
 	});
 
 	it("should only update when condition state changes", () => {
 		const { result } = renderHook(() => {
-			const ref = useRef<HTMLDivElement>(null);
+			const ref = useRef<HTMLDivElement | null>(null);
 			return { ref, condition: useElementDetector(ref) };
 		});
 
-		// Simulate element movement
+		// 模拟元素移动
 		const mockElement = document.createElement("div");
 		act(() => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(result.current.ref as any).current = mockElement;
+			result.current.ref.current = mockElement;
 		});
 
-		// The state should remain false initially since we're mocking the manager
+		// 状态应该保持为 false，因为我们正在模拟管理器
 		expect(result.current.condition).toBe(false);
 	});
 
@@ -129,37 +130,38 @@ describe("useElementDetector", () => {
 			const tolerance = 50;
 			return Math.abs(elementCenter - centerY) <= tolerance;
 		});
-		
+
 		const { result } = renderHook(() => {
-			const ref = useRef<HTMLDivElement>(null);
-			return { ref, condition: useElementDetector(ref, { compute: complexCompute }) };
+			const ref = useRef<HTMLDivElement | null>(null);
+			return {
+				ref,
+				condition: useElementDetector(ref, { compute: complexCompute }),
+			};
 		});
 
-		// Simulate setting the ref
+		// 模拟设置 ref
 		const mockElement = document.createElement("div");
 		act(() => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(result.current.ref as any).current = mockElement;
+			result.current.ref.current = mockElement;
 		});
 
-		// The hook should use complex compute function
+		// Hook 应该使用复杂的计算函数
 		expect(result.current.condition).toBe(false);
 	});
 
 	it("should work with empty options object", () => {
 		const { result } = renderHook(() => {
-			const ref = useRef<HTMLDivElement>(null);
+			const ref = useRef<HTMLDivElement | null>(null);
 			return { ref, condition: useElementDetector(ref, {}) };
 		});
 
-		// Simulate setting the ref
+		// 模拟设置 ref
 		const mockElement = document.createElement("div");
 		act(() => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(result.current.ref as any).current = mockElement;
+			result.current.ref.current = mockElement;
 		});
 
-		// The hook should use default ceiling detection
+		// Hook 应该使用默认的贴顶检测
 		expect(result.current.condition).toBe(false);
 	});
 });

@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import  React from "react";
+import type React from "react";
 import IntersectionLoad from "../src/components/IntersectionLoad";
 
-// Mock dependencies
+// 模拟依赖
 vi.mock("../src/utils", () => ({
 	isSupportIntersectionObserver: () => true,
 	checkVisibility: vi.fn(() => false),
@@ -15,11 +15,11 @@ vi.mock("@fly4react/memo", () => ({
 
 vi.mock("../src/base/IntersectionObserverManager", () => ({
 	lazyloadManager: {
-		observe: vi.fn(() => vi.fn()), // Return unsubscribe function
+		observe: vi.fn(() => vi.fn()), // 返回取消订阅函数
 	},
 }));
 
-// Mock IntersectionObserver
+// 模拟 IntersectionObserver
 const mockObserve = vi.fn();
 const mockUnobserve = vi.fn();
 const mockDisconnect = vi.fn();
@@ -29,7 +29,7 @@ beforeEach(() => {
 	mockUnobserve.mockClear();
 	mockDisconnect.mockClear();
 
-	// Mock IntersectionObserver
+	// 模拟 IntersectionObserver
 	(
 		global as unknown as { IntersectionObserver: typeof IntersectionObserver }
 	).IntersectionObserver = vi.fn().mockImplementation(() => ({
@@ -63,8 +63,8 @@ describe("IntersectionLoad", () => {
 	});
 
 	it("should render children when IntersectionObserver is not supported", () => {
-		// This test is complex to mock properly, so we'll skip it for now
-		// The functionality is already tested in the main component logic
+		// 这个测试很难正确模拟，所以我们暂时跳过它
+		// 功能已经在主组件逻辑中测试过了
 		expect(true).toBe(true);
 	});
 

@@ -1,9 +1,9 @@
-import React, { useRef } from "react";
 import { useElementPositionRef } from "@fly4react/observer";
+import React, { useRef } from "react";
 
 /**
  * useElementPositionRef 示例
- * 
+ *
  * 这个 Hook 与 useElementPosition 功能相同，但使用 useRef 存储位置信息，
  * 不会触发组件重新渲染，适用于需要实时获取元素位置但不想影响渲染性能的场景。
  */
@@ -33,13 +33,15 @@ export const UseElementPositionRefExample: React.FC = () => {
 	React.useEffect(() => {
 		const interval = setInterval(() => {
 			if (positionRef.current?.isIntersecting) {
-				console.log("元素当前可见，位置:", positionRef.current.boundingClientRect);
+				console.log(
+					"元素当前可见，位置:",
+					positionRef.current.boundingClientRect,
+				);
 			}
 		}, 1000);
 
 		return () => clearInterval(interval);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [positionRef]);
 
 	return (
 		<div className="example-container">
@@ -78,13 +80,16 @@ export const UseElementPositionRefExample: React.FC = () => {
 					<h4>使用说明：</h4>
 					<ul>
 						<li>
-							<strong>不会触发重新渲染：</strong>位置信息存储在 ref 中，组件不会因为位置变化而重新渲染
+							<strong>不会触发重新渲染：</strong>位置信息存储在 ref
+							中，组件不会因为位置变化而重新渲染
 						</li>
 						<li>
-							<strong>实时获取位置：</strong>可以在事件处理函数、定时器等地方实时获取元素位置
+							<strong>实时获取位置：</strong>
+							可以在事件处理函数、定时器等地方实时获取元素位置
 						</li>
 						<li>
-							<strong>性能优化：</strong>适合需要频繁检查元素位置但不想影响渲染性能的场景
+							<strong>性能优化：</strong>
+							适合需要频繁检查元素位置但不想影响渲染性能的场景
 						</li>
 						<li>
 							<strong>节流控制：</strong>支持自定义节流时间，控制位置更新的频率
@@ -114,7 +119,13 @@ const handleClick = () => {
 			</div>
 
 			{/* 添加一些空间让用户可以滚动测试 */}
-			<div style={{ height: "1000px", backgroundColor: "#f5f5f5", marginTop: "20px" }}>
+			<div
+				style={{
+					height: "1000px",
+					backgroundColor: "#f5f5f5",
+					marginTop: "20px",
+				}}
+			>
 				<div style={{ padding: "20px", textAlign: "center" }}>
 					向下滚动以测试元素位置跟踪
 				</div>

@@ -1,9 +1,10 @@
-import React, { useRef } from "react";
 import { useElementDetector } from "@fly4react/observer";
+import type React from "react";
+import { useRef } from "react";
 
 /**
  * useElementDetector 示例
- * 
+ *
  * 展示 useElementDetector Hook 的使用方法，包括默认贴顶检测和自定义条件检测。
  */
 export const UseElementDetectorExample: React.FC = () => {
@@ -34,7 +35,8 @@ export const UseElementDetectorExample: React.FC = () => {
 		<div className="example-container">
 			<h2>useElementDetector 示例</h2>
 			<p>
-				展示 useElementDetector Hook 的使用方法，支持默认贴顶检测和自定义条件检测。
+				展示 useElementDetector Hook
+				的使用方法，支持默认贴顶检测和自定义条件检测。
 			</p>
 
 			<div className="demo-section">
@@ -111,13 +113,15 @@ export const UseElementDetectorExample: React.FC = () => {
 					<h4>功能说明：</h4>
 					<ul>
 						<li>
-							<strong>默认检测：</strong>不传参数时，默认检测元素是否贴顶（top ≤ 0）
+							<strong>默认检测：</strong>不传参数时，默认检测元素是否贴顶（top ≤
+							0）
 						</li>
 						<li>
 							<strong>自定义检测：</strong>传入 compute 函数实现自定义检测逻辑
 						</li>
 						<li>
-							<strong>灵活配置：</strong>支持任何基于 boundingClientRect 的检测逻辑
+							<strong>灵活配置：</strong>支持任何基于 boundingClientRect
+							的检测逻辑
 						</li>
 						<li>
 							<strong>状态持久化：</strong>一旦满足条件就保持激活状态
@@ -151,7 +155,13 @@ const isInCenter = useElementDetector(ref, {
 			</div>
 
 			{/* 添加一些空间让用户可以滚动测试 */}
-			<div style={{ height: "800px", backgroundColor: "#f5f5f5", marginTop: "20px" }}>
+			<div
+				style={{
+					height: "800px",
+					backgroundColor: "#f5f5f5",
+					marginTop: "20px",
+				}}
+			>
 				<div style={{ padding: "20px", textAlign: "center" }}>
 					向下滚动以测试各种检测功能
 				</div>

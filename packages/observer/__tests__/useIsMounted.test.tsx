@@ -35,16 +35,16 @@ describe("useIsMounted", () => {
 	it("should work with async operations", async () => {
 		const { result, unmount } = renderHook(() => useIsMounted());
 
-		// Simulate async operation
+		// 模拟异步操作
 		const asyncOperation = async () => {
 			await new Promise((resolve) => setTimeout(resolve, 10));
 			return result.current.current;
 		};
 
-		// Start async operation
+		// 开始异步操作
 		const promise = asyncOperation();
 
-		// Unmount before operation completes
+		// 在操作完成前卸载
 		act(() => {
 			unmount();
 		});
