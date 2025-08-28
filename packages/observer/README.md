@@ -428,12 +428,15 @@ function MyComponent() {
   // 默认贴顶检测
   const isCeiling = useElementDetector(ref);
   
-  // 自定义条件检测
+  // 自定义条件检测，使用细致的 threshold 配置
   const isCustom = useElementDetector(ref, {
-    compute: (rect) => rect.top <= 50 && rect.bottom >= 100
+    compute: (rect) => rect.top <= 50 && rect.bottom >= 100,
+    step: 0.1, // 每 10% 触发一次
+    throttle: 16, // 60fps
+    skipWhenOffscreen: true
   });
   
-  // 复杂条件检测：检测元素是否在视口中心
+  // 使用自定义 threshold 数组
   const isInCenter = useElementDetector(ref, {
     compute: (rect) => {
       const viewportHeight = window.innerHeight;
@@ -441,7 +444,9 @@ function MyComponent() {
       const elementCenter = rect.top + rect.height / 2;
       const tolerance = 50;
       return Math.abs(elementCenter - centerY) <= tolerance;
-    }
+    },
+    threshold: [0, 0.25, 0.5, 0.75, 1], // 自定义阈值
+    throttle: 32 // 30fps
   });
 
   return (
@@ -467,7 +472,7 @@ function MyComponent() {
 }
 ```
 
-> **注意**：`useElementDetector` 是一个简化的通用检测器，完全移除 `position` 参数，只支持可选的 `compute` 函数。默认检测元素是否贴顶（top ≤ 0）。
+> **注意**：`useElementDetector` 是一个灵活的通用检测器，支持自定义计算逻辑和细致的 threshold 配置。默认检测元素是否贴顶（top ≤ 0），支持 step、threshold、throttle、skipWhenOffscreen、offset 等配置选项。
 
 #### useIsMounted
 
@@ -596,7 +601,7 @@ function useIntersectionRatio(
 ```tsx
 function useElementDetector(
   ref: RefObject<HTMLElement | null>,
-  options?: { compute?: (boundingClientRect: DOMRect) => boolean }
+  options?: UseElementDetectorOptions
 ): boolean
 ```
 
@@ -604,6 +609,11 @@ function useElementDetector(
 - `options.compute`: 自定义计算函数，接受 boundingClientRect 参数，返回 boolean
   - 不传参数时，默认检测元素是否贴顶（top ≤ 0）
   - 传入自定义函数时，使用自定义逻辑进行检测
+- `options.step`: 步长值（0-1之间），用于自动生成 threshold 数组
+- `options.threshold`: 手动指定的 threshold 数组
+- `options.throttle`: 节流时间（毫秒），控制更新频率
+- `options.skipWhenOffscreen`: 元素完全不可见时跳过更新
+- `options.offset`: 偏移量（像素）
 
 #### useIsMounted
 

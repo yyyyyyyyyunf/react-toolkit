@@ -270,3 +270,12 @@ export type IntersectionLoadProps =
 	| IntersectionLoadOnceProps
 	| IntersectionLoadActiveProps
 	| IntersectionLoadDefaultProps;
+
+/**
+ * useElementDetector Hook 选项类型
+ * 扩展了基础的 Options 类型，增加了 compute 函数选项
+ */
+export type UseElementDetectorOptions = Options & {
+	/** 自定义计算函数，接受 boundingClientRect 参数，返回 boolean */
+	compute?: (boundingClientRect: DOMRect) => boolean;
+};

@@ -138,7 +138,7 @@ Not applicable - this is the initial release.
 ### @fly4react/observer
 
 #### Added
-- **useElementDetector**: 新增通用元素检测器 Hook
+- **useElementDetector**: 新增通用元素检测器 Hook，支持细致的 threshold 配置
   - 完全移除 `position` 参数，简化 API 设计
   - 支持可选的 `compute` 函数，实现自定义检测逻辑
   - 默认检测元素是否贴顶（top ≤ 0）
@@ -157,7 +157,7 @@ Not applicable - this is the initial release.
 
 ### Breaking Changes
 - **useIsCeiling 移除**: 原有的 useIsCeiling Hook 已被移除，请使用 useElementDetector 替代
-- **API 变更**: useElementDetector 不再支持 position 参数，只支持 compute 函数
+- **API 变更**: useElementDetector 不再支持 position 参数，支持 compute 函数和细致的 threshold 配置
 
 ## [1.4.1] - 2025-08-25
 
