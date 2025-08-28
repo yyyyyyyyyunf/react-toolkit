@@ -72,12 +72,15 @@ export const useOneOffVisibility = (
 	}, [threshold, offset]);
 
 	// 使用 useCallback 稳定回调函数，内部处理挂载状态
-	const callback = useCallback((entry: ObserverCallbackParamType) => {
-		// 只有在组件仍然挂载时才更新状态
-		if (entry.isIntersecting && isMountedRef.current) {
-			setIsVisible(true);
-		}
-	}, [isMountedRef]);
+	const callback = useCallback(
+		(entry: ObserverCallbackParamType) => {
+			// 只有在组件仍然挂载时才更新状态
+			if (entry.isIntersecting && isMountedRef.current) {
+				setIsVisible(true);
+			}
+		},
+		[isMountedRef],
+	);
 
 	// 使用 Intersection Observer 检测可见性
 	useIntersectionObserver(ref, callback, observerOptions);

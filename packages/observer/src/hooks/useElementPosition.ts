@@ -1,11 +1,5 @@
 import type React from "react";
-import {
-	useCallback,
-	useLayoutEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { lazyloadManager } from "../base/IntersectionObserverManager";
 import type {
 	ElementPosition,
