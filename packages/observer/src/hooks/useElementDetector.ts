@@ -90,10 +90,8 @@ export const useElementDetector = (
 	const throttle = options.throttle ?? 16; // 默认 60fps
 	const skipWhenOffscreen = options.skipWhenOffscreen ?? true; // 元素完全不可见时跳过更新
 
-	// 处理 root 和 relativeToRoot 选项
+	// 处理 root 选项
 	const root = "root" in options ? options.root : null;
-	const relativeToRoot =
-		root && "relativeToRoot" in options ? options.relativeToRoot : false;
 
 	// 解构 step 和 threshold 以避免对象引用问题
 	const step = "step" in options ? options.step : undefined;
