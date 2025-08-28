@@ -1,7 +1,8 @@
 import type React from "react";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { lazyloadManager } from "../base/IntersectionObserverManager";
 import type { ObserverCallbackParamType } from "../types";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * 元素视口可见性 Hook
@@ -41,14 +42,7 @@ export const useInViewport = (
 	ref: React.RefObject<HTMLElement | null>,
 ): boolean => {
 	const [isInViewport, setIsInViewport] = useState(false);
-	const isMountedRef = useRef(true);
-
-	// 组件卸载时设置标记
-	useLayoutEffect(() => {
-		return () => {
-			isMountedRef.current = false;
-		};
-	}, []);
+	const isMountedRef = useIsMounted();
 
 	// 设置 Intersection Observer
 	useLayoutEffect(() => {
@@ -74,7 +68,7 @@ export const useInViewport = (
 				unSubscribe();
 			}
 		};
-	}, [ref]);
+	}, [ref, isMountedRef]);
 
 	return isInViewport;
 };

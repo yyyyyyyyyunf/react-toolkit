@@ -270,3 +270,5 @@ export type IntersectionLoadProps =
 	| IntersectionLoadOnceProps
 	| IntersectionLoadActiveProps
 	| IntersectionLoadDefaultProps;
+
+

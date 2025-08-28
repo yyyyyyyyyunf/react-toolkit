@@ -65,9 +65,15 @@ const UseElementPosition = lazy(() =>
 		default: module.UseElementPositionExample,
 	})),
 );
-const UseIsCeiling = lazy(() =>
-	import("../hooks/use-is-ceiling-example").then((module) => ({
-		default: module.UseIsCeilingExample,
+const UseElementPositionRef = lazy(() =>
+	import("../hooks/use-element-position-ref-example").then((module) => ({
+		default: module.UseElementPositionRefExample,
+	})),
+);
+
+const UseElementDetector = lazy(() =>
+	import("../hooks/use-element-detector-example").then((module) => ({
+		default: module.UseElementDetectorExample,
 	})),
 );
 const InitialViewportTest = lazy(() =>
@@ -170,10 +176,17 @@ export const routes = [
 		description: "元素位置跟踪",
 	},
 	{
-		path: "/use-is-ceiling",
-		name: "useIsCeiling",
-		component: UseIsCeiling,
-		description: "元素贴顶检测",
+		path: "/use-element-position-ref",
+		name: "useElementPositionRef",
+		component: UseElementPositionRef,
+		description: "元素位置跟踪 (Ref 版本，不触发重新渲染)",
+	},
+
+	{
+		path: "/use-element-detector",
+		name: "useElementDetector",
+		component: UseElementDetector,
+		description: "元素条件检测器 - 通用检测 Hook",
 	},
 ];
 

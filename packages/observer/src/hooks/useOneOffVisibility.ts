@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type {
 	ObserverCallbackParamType,
 	ObserverOptions,
 	OneOffVisibilityOptions,
 } from "../types";
 import { useIntersectionObserver } from "./useIntersectionObserver";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * 一次性可见性检测 Hook
@@ -56,17 +57,10 @@ export const useOneOffVisibility = (
 	const [isVisible, setIsVisible] = useState(false);
 
 	/** 组件挂载状态跟踪 */
-	const isMountedRef = useRef(true);
+	const isMountedRef = useIsMounted();
 
 	// 解构 options 以避免对象引用问题
 	const { threshold = 0.1, offset = 100 } = options;
-
-	// 组件卸载时设置标记
-	useEffect(() => {
-		return () => {
-			isMountedRef.current = false;
-		};
-	}, []);
 
 	// 构建稳定的 observer options 对象
 	const observerOptions: ObserverOptions = useMemo(() => {
@@ -83,7 +77,7 @@ export const useOneOffVisibility = (
 		if (entry.isIntersecting && isMountedRef.current) {
 			setIsVisible(true);
 		}
-	}, []);
+	}, [isMountedRef]);
 
 	// 使用 Intersection Observer 检测可见性
 	useIntersectionObserver(ref, callback, observerOptions);

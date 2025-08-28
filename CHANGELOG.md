@@ -88,9 +88,7 @@ None - this is the initial release.
 ### Migration Guide
 Not applicable - this is the initial release.
 
-## Future Releases
-
-### [1.2.6] - 2025-08-25
+## [1.2.6] - 2025-08-25
 
 ### @fly4react/observer
 
@@ -98,7 +96,85 @@ Not applicable - this is the initial release.
 - **重构 polyfill 实现**: 移除自定义 polyfill，改用谷歌官方的 `intersection-observer` polyfill
 - **依赖管理优化**: 将 `intersection-observer` 作为 peerDependency，避免与现有项目冲突
 - **类型声明优化**: 清理不需要的自定义类型声明，减少包体积约 1KB
-- **文档更新**: 更新所有文档中的安装说明，提供 npm、yarn、pnpm 三种安装方式
+
+#### Documentation
+- **安装说明更新**: 添加 npm、yarn、pnpm 三种包管理器的安装命令
+- **依赖说明**: 明确说明 `intersection-observer` 作为 peerDependency 的安装要求
+- **性能指标更新**: 使用动态 Bundlephobia 徽章显示实时包大小
+- **FAQ 更新**: 更新关于 polyfill 处理的常见问题解答
+
+### Breaking Changes
+- **依赖变更**: `intersection-observer` 现在是 peerDependency，用户需要手动安装
+- **类型变更**: 移除了 `throttle` 选项和 `FallbackIntersectionEntry` 类型
+
+### Migration Guide
+1. **安装 intersection-observer**: 
+   ```bash
+   npm install intersection-observer
+   # 或
+   yarn add intersection-observer
+   # 或
+   pnpm add intersection-observer
+   ```
+2. **移除 throttle 配置**: 如果之前使用了 `throttle` 选项，需要移除该配置
+3. **更新类型引用**: 如果使用了 `FallbackIntersectionEntry` 类型，需要移除相关代码
+
+## [1.3.4] - 2025-08-25
+
+### @fly4react/observer
+
+#### Added
+- **useElementPositionRef**: 新增 Ref 版本的元素位置跟踪 Hook
+  - 使用 `useRef` 存储位置信息，不会触发组件重新渲染
+  - 适用于需要实时获取元素位置但不想影响渲染性能的场景
+  - 支持所有 `useElementPosition` 的功能和配置选项
+    - 提供完整的 TypeScript 类型支持和测试覆盖
+  - **文档更新**: 更新所有文档中的安装说明，提供 npm、yarn、pnpm 三种安装方式
+
+
+
+## [1.4.0] - 2025-08-25
+
+### @fly4react/observer
+
+#### Added
+- **useElementDetector**: 新增通用元素检测器 Hook
+  - 完全移除 `position` 参数，简化 API 设计
+  - 支持可选的 `compute` 函数，实现自定义检测逻辑
+  - 默认检测元素是否贴顶（top ≤ 0）
+  - 提供完整的 TypeScript 类型支持和测试覆盖
+  - 包含详细的文档和示例
+
+#### Changed
+- **API 简化**: 
+  - 移除复杂的类型定义，直接使用内联类型
+  - 简化参数结构，只保留 `compute` 选项
+  - 更清晰的命名和文档说明
+
+#### Removed
+- **useIsCeiling**: 移除原有的 useIsCeiling Hook，由 useElementDetector 替代
+- **相关文件**: 删除 useIsCeiling 相关的测试文件、示例文件和文档
+
+### Breaking Changes
+- **useIsCeiling 移除**: 原有的 useIsCeiling Hook 已被移除，请使用 useElementDetector 替代
+- **API 变更**: useElementDetector 不再支持 position 参数，只支持 compute 函数
+
+## [1.4.1] - 2025-08-25
+
+### @fly4react/observer
+
+#### Added
+- **useIsMounted**: 新增组件挂载状态管理 Hook
+  - 提供统一的组件挂载状态跟踪
+  - 防止在组件卸载后执行异步操作
+  - 减少重复代码，提高代码复用性
+  - 完整的 TypeScript 类型支持和测试覆盖
+
+#### Changed
+- **代码重构**: 
+  - 将多个 Hook 中的 `isMountedRef` 逻辑抽取为 `useIsMounted` Hook
+  - 更新 `useElementDetector`、`useElementPosition`、`useElementPositionRef`、`useInViewport`、`useOneOffVisibility` 使用新的 Hook
+  - 减少重复代码，提高维护性
 
 #### Removed
 - **自定义 polyfill**: 删除 `IntersectionObserverPolyfill` 和 `FallbackPositionTracker` 实现

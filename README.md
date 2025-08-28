@@ -52,12 +52,12 @@
 
 **特性:**
 - 🔍 元素可见性检测 (`useInViewport`)
-- 📍 精确位置跟踪 (`useElementPosition`)
+- 📍 精确位置跟踪 (`useElementPosition`, `useElementPositionRef`)
 - 🎯 一次性可见性检测 (`useOneOffVisibility`)
 - 📊 交叉比例监控 (`useIntersectionRatio`)
 - 📐 边界矩形获取 (`useBoundingClientRect`)
 - 🎮 滚动方向检测 (`useScrollDirection`)
-- 📌 元素贴顶检测 (`useIsCeiling`)
+- 📌 元素条件检测 (`useElementDetector`)
 - 🖼️ 懒加载组件 (`IntersectionLoad`)
 - 🌐 浏览器兼容性 (IE 11+)
 - 🔄 自动降级策略
@@ -140,7 +140,7 @@ npm install @fly4react/memo
 ### Observer 包使用示例
 
 ```tsx
-import { useInViewport, useElementPosition, useIsCeiling } from '@fly4react/observer';
+import { useInViewport, useElementPosition, useElementDetector } from '@fly4react/observer';
 
 function MyComponent() {
   const ref = useRef<HTMLDivElement>(null);
@@ -149,7 +149,7 @@ function MyComponent() {
   const isInViewport = useInViewport(ref);
   
   // 检测元素是否贴顶
-  const isCeiling = useIsCeiling(ref);
+  const isCeiling = useElementDetector(ref);
   
   // 获取元素的精确位置
   const position = useElementPosition(ref, {

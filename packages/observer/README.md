@@ -325,6 +325,41 @@ function MyComponent() {
 }
 ```
 
+#### useElementPositionRef
+
+```tsx
+import { useElementPositionRef } from '@fly4react/observer';
+import { useRef } from 'react';
+
+function MyComponent() {
+  const ref = useRef<HTMLDivElement>(null);
+  const positionRef = useElementPositionRef(ref, {
+    step: 0.1, // 每 10% 触发一次
+    throttle: 16 // 60fps
+  });
+
+  // 事件处理函数示例：获取实时位置信息
+  const handleClick = () => {
+    if (positionRef.current) {
+      console.log('元素位置:', positionRef.current.boundingClientRect);
+      console.log('交叉比例:', positionRef.current.intersectionRatio);
+      console.log('是否相交:', positionRef.current.isIntersecting);
+    }
+  };
+
+  return (
+    <div>
+      <button onClick={handleClick}>获取位置信息</button>
+      <div ref={ref} style={{ height: '100px', background: 'lightblue' }}>
+        Tracked Element
+      </div>
+    </div>
+  );
+}
+```
+
+> **注意**：`useElementPositionRef` 与 `useElementPosition` 功能相同，但使用 `useRef` 存储位置信息，不会触发组件重新渲染。适用于需要实时获取元素位置但不想影响渲染性能的场景。
+
 #### useBoundingClientRect
 
 ```tsx
@@ -379,23 +414,35 @@ function MyComponent() {
 }
 ```
 
-#### useIsCeiling
+
+
+#### useElementDetector
 
 ```tsx
-import { useIsCeiling } from '@fly4react/observer';
+import { useElementDetector } from '@fly4react/observer';
 import { useRef } from 'react';
 
 function MyComponent() {
   const ref = useRef<HTMLDivElement>(null);
   
-  // 检测是否贴顶（默认）
-  const isCeiling = useIsCeiling(ref);
+  // 默认贴顶检测
+  const isCeiling = useElementDetector(ref);
   
-  // 检测是否达到距离顶部 100px 的位置
-  const isAtPosition = useIsCeiling(ref, 100);
+  // 自定义条件检测
+  const isCustom = useElementDetector(ref, {
+    compute: (rect) => rect.top <= 50 && rect.bottom >= 100
+  });
   
-  // 检测是否超出视口顶部 50px
-  const isOverTop = useIsCeiling(ref, -50);
+  // 复杂条件检测：检测元素是否在视口中心
+  const isInCenter = useElementDetector(ref, {
+    compute: (rect) => {
+      const viewportHeight = window.innerHeight;
+      const centerY = viewportHeight / 2;
+      const elementCenter = rect.top + rect.height / 2;
+      const tolerance = 50;
+      return Math.abs(elementCenter - centerY) <= tolerance;
+    }
+  });
 
   return (
     <div>
@@ -412,13 +459,45 @@ function MyComponent() {
       </div>
       <div style={{ height: '1000px' }}>
         <p>贴顶状态: {isCeiling ? '是' : '否'}</p>
-        <p>距离顶部100px状态: {isAtPosition ? '已达到' : '未达到'}</p>
-        <p>超出顶部50px状态: {isOverTop ? '已超出' : '未超出'}</p>
+        <p>自定义条件状态: {isCustom ? '满足' : '不满足'}</p>
+        <p>中心区域状态: {isInCenter ? '在中心' : '不在中心'}</p>
       </div>
     </div>
   );
 }
 ```
+
+> **注意**：`useElementDetector` 是一个简化的通用检测器，完全移除 `position` 参数，只支持可选的 `compute` 函数。默认检测元素是否贴顶（top ≤ 0）。
+
+#### useIsMounted
+
+```tsx
+import { useIsMounted } from '@fly4react/observer';
+import { useRef } from 'react';
+
+function MyComponent() {
+  const isMountedRef = useIsMounted();
+  
+  const handleAsyncOperation = async () => {
+    const result = await someAsyncOperation();
+    
+    // 检查组件是否仍然挂载，避免在已卸载的组件上设置状态
+    if (isMountedRef.current) {
+      setData(result);
+    }
+  };
+
+  return (
+    <div>
+      <button onClick={handleAsyncOperation}>
+        执行异步操作
+      </button>
+    </div>
+  );
+}
+```
+
+> **注意**：`useIsMounted` 是一个通用的组件挂载状态管理 Hook，用于防止在组件卸载后执行异步操作。返回一个 ref，其 current 值表示组件是否仍然挂载。
 
 ## 📖 API 文档
 
@@ -512,20 +591,29 @@ function useIntersectionRatio(
 ): number | undefined
 ```
 
-#### useIsCeiling
+#### useElementDetector
 
 ```tsx
-function useIsCeiling(
+function useElementDetector(
   ref: RefObject<HTMLElement | null>,
-  position?: number
+  options?: { compute?: (boundingClientRect: DOMRect) => boolean }
 ): boolean
 ```
 
 **参数说明：**
-- `position`: 位置阈值（像素），默认为 0
-  - `position = 0`：元素顶部到达视口顶部时触发
-  - `position > 0`：元素顶部到达距离视口顶部 position 像素时触发
-  - `position < 0`：元素顶部超出视口顶部 |position| 像素时触发
+- `options.compute`: 自定义计算函数，接受 boundingClientRect 参数，返回 boolean
+  - 不传参数时，默认检测元素是否贴顶（top ≤ 0）
+  - 传入自定义函数时，使用自定义逻辑进行检测
+
+#### useIsMounted
+
+```tsx
+function useIsMounted(): RefObject<boolean>
+```
+
+**返回值说明：**
+- 返回一个 ref，其 current 值表示组件是否仍然挂载
+- 用于防止在组件卸载后执行异步操作
 
 ## ⚡ 重要行为说明
 

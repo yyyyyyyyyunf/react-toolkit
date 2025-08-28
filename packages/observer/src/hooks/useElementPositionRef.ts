@@ -4,7 +4,6 @@ import {
 	useLayoutEffect,
 	useMemo,
 	useRef,
-	useState,
 } from "react";
 import { lazyloadManager } from "../base/IntersectionObserverManager";
 import type {
@@ -16,10 +15,10 @@ import { generateThresholdArray, getDefaultThresholdArray } from "../utils";
 import { useIsMounted } from "./useIsMounted";
 
 /**
- * 元素位置跟踪 Hook
+ * 元素位置跟踪 Hook (Ref 版本)
  *
- * 实时跟踪元素在视口中的位置变化，支持节流、自定义根元素和相对位置计算。
- * 适用于滚动动画、位置监控、性能分析等场景。
+ * 实时跟踪元素在视口中的位置变化，但不触发组件重新渲染。
+ * 适用于需要实时获取元素位置但不想影响渲染性能的场景。
  * 
  * 浏览器兼容性：
  * - 支持 IntersectionObserver 的浏览器：使用原生 API，性能最佳
@@ -27,6 +26,7 @@ import { useIsMounted } from "./useIsMounted";
  * - 降级策略提供相同的 API 接口，确保功能一致性
 
  * 特性：
+ * - 使用 useRef 存储位置信息，不会触发组件重新渲染
  * - 支持基于 viewport 和自定义 root 的位置跟踪
  * - 内置节流机制，可控制更新频率
  * - 支持 step 和 threshold 两种配置方式
@@ -38,35 +38,36 @@ import { useIsMounted } from "./useIsMounted";
  *
  * @param ref 要跟踪的元素的 ref
  * @param options 配置选项
- * @returns 元素位置信息，如果元素一开始就在视口中会立即有值，否则为 null
+ * @returns 包含位置信息的 ref 对象，可以通过 .current 访问最新的位置信息
  *
  * @example
  * ```tsx
  * const ref = useRef<HTMLDivElement>(null);
- * const position = useElementPosition(ref, {
+ * const positionRef = useElementPositionRef(ref, {
  *   step: 0.1, // 每 10% 触发一次
  *   throttle: 16, // 60fps
  *   skipWhenOffscreen: true
  * });
  *
- * if (position) {
- *   console.log('元素位置:', position.boundingClientRect);
- *   console.log('交叉比例:', position.intersectionRatio);
- *   console.log('是否相交:', position.isIntersecting);
- *   console.log('时间戳:', position.time);
- * }
+ * // 在事件处理函数或其他地方获取位置信息
+ * const handleClick = () => {
+ *   if (positionRef.current) {
+ *     console.log('元素位置:', positionRef.current.boundingClientRect);
+ *     console.log('交叉比例:', positionRef.current.intersectionRatio);
+ *     console.log('是否相交:', positionRef.current.isIntersecting);
+ *     console.log('时间戳:', positionRef.current.time);
+ *   }
+ * };
  * ```
  */
-export const useElementPosition = (
+export const useElementPositionRef = (
 	ref: React.RefObject<HTMLElement | null>,
 	options: Options = {},
 ) => {
-	/** 当前元素位置信息 */
-	const [position, setPosition] = useState<ElementPosition | null>(null);
+	/** 当前元素位置信息，存储在 ref 中不会触发重新渲染 */
+	const positionRef = useRef<ElementPosition | null>(null);
 	/** 上次更新时间戳，用于节流控制 */
 	const lastUpdateTimeRef = useRef(0);
-	/** 缓存的最新位置信息，确保最后一次更新被记录 */
-	const lastPositionRef = useRef<ElementPosition | null>(null);
 	/** 节流定时器引用 */
 	const timeoutRef = useRef<number | null>(null);
 	/** 组件挂载状态跟踪 */
@@ -94,7 +95,7 @@ export const useElementPosition = (
 		// 运行时检查：确保 step 和 threshold 不同时设置
 		if (step !== undefined && threshold !== undefined) {
 			console.warn(
-				"useElementPosition: step 和 threshold 不能同时设置，将使用 threshold",
+				"useElementPositionRef: step 和 threshold 不能同时设置，将使用 threshold",
 			);
 		}
 
@@ -124,11 +125,10 @@ export const useElementPosition = (
 			if (!isMountedRef.current) return;
 
 			const now = Date.now();
-			lastPositionRef.current = newPosition; // 总是缓存最新值
 
 			if (now - lastUpdateTimeRef.current >= throttle) {
 				// 立即更新
-				setPosition(newPosition);
+				positionRef.current = newPosition;
 				lastUpdateTimeRef.current = now;
 
 				// 清除之前的延迟更新
@@ -144,8 +144,8 @@ export const useElementPosition = (
 				timeoutRef.current = setTimeout(
 					() => {
 						// 再次检查组件是否仍然挂载
-						if (isMountedRef.current && lastPositionRef.current) {
-							setPosition(lastPositionRef.current);
+						if (isMountedRef.current) {
+							positionRef.current = newPosition;
 							lastUpdateTimeRef.current = Date.now();
 						}
 						timeoutRef.current = null;
@@ -226,5 +226,5 @@ export const useElementPosition = (
 		};
 	}, [ref, finalThreshold, offset, root, relativeToRoot, skipWhenOffscreen]);
 
-	return position;
+	return positionRef;
 };
