@@ -1,10 +1,7 @@
-import type React from "react";
 import { type PreloadOptions, getPreloadQueue } from "../utils/preload";
 import type { ImagePreloadConsumerProps } from "../types";
 
-const ImagePreloadConsumer: React.FC<ImagePreloadConsumerProps> = ({
-	ssr = false,
-}) => {
+const ImagePreloadConsumer = ({ ssr = false }: ImagePreloadConsumerProps) => {
 	// 只在服务端渲染时生成预加载 HTML
 	if (typeof window !== "undefined" || !ssr) {
 		return null;

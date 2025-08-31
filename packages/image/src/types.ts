@@ -58,3 +58,13 @@ export type ImageLoaderProps =
 	| ({
 			type: "background";
 	  } & BackgroundImageProps);
+
+/**
+ * 图片预加载消费者组件
+ * 在 SSR 环境下渲染预加载的 <link> 标签
+ * 用户可以选择在 head 或 body 中渲染
+ */
+export interface ImagePreloadConsumerProps {
+	/** 是否在服务端渲染时显示预加载链接 */
+	ssr?: boolean;
+}
