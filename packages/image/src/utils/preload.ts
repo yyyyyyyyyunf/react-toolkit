@@ -7,11 +7,18 @@ export interface PreloadOptions {
 	/** 图片 URL */
 	src: string;
 	/** 图片类型，默认为 'image' */
-	type?: 'image' | 'image/webp' | 'image/avif' | 'image/jpeg' | 'image/png' | 'image/gif' | 'image/svg+xml';
+	type?:
+		| "image"
+		| "image/webp"
+		| "image/avif"
+		| "image/jpeg"
+		| "image/png"
+		| "image/gif"
+		| "image/svg+xml";
 	/** 是否在 SSR 时预加载 */
 	ssr?: boolean;
 	/** 预加载优先级 */
-	priority?: 'high' | 'low' | 'auto';
+	priority?: "high" | "low" | "auto";
 	/** 图片尺寸信息 */
 	sizes?: string;
 	/** 媒体查询 */
@@ -21,12 +28,12 @@ export interface PreloadOptions {
 /**
  * 检测是否在服务端环境
  */
-export const isServer = typeof window === 'undefined';
+export const isServer = typeof window === "undefined";
 
 /**
  * 检测是否在浏览器环境
  */
-export const isBrowser = typeof window !== 'undefined';
+export const isBrowser = typeof window !== "undefined";
 
 /**
  * 全局预加载队列
@@ -72,31 +79,31 @@ export const addToPreloadQueue = (options: PreloadOptions): void => {
  */
 export const generatePreloadHTML = (): string => {
 	if (preloadQueue.length === 0) {
-		return '';
+		return "";
 	}
 
 	const links = preloadQueue.map((options) => {
-		const { src, type = 'image', priority = 'auto', sizes, media } = options;
-		
+		const { src, type = "image", priority = "auto", sizes, media } = options;
+
 		let link = `<link rel="preload" as="${type}" href="${src}"`;
-		
-		if (priority !== 'auto') {
+
+		if (priority !== "auto") {
 			link += ` importance="${priority}"`;
 		}
-		
+
 		if (sizes) {
 			link += ` sizes="${sizes}"`;
 		}
-		
+
 		if (media) {
 			link += ` media="${media}"`;
 		}
-		
-		link += '>';
+
+		link += ">";
 		return link;
 	});
 
-	return links.join('\n');
+	return links.join("\n");
 };
 
 /**

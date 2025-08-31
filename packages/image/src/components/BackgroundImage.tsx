@@ -1,7 +1,7 @@
-import React, { useMemo } from "react";
 import createMemoComponent from "@fly4react/memo";
-import type { BackgroundImageProps } from "../types";
+import React, { useMemo } from "react";
 import { useImagePreload } from "../hooks/useImagePreload";
+import type { BackgroundImageProps } from "../types";
 
 const BackgroundImage = React.forwardRef<HTMLDivElement, BackgroundImageProps>(
 	({ src, style, className, children, preload, transform }, ref) => {
@@ -11,8 +11,8 @@ const BackgroundImage = React.forwardRef<HTMLDivElement, BackgroundImageProps>(
 		// 使用预加载 Hook
 		useImagePreload({
 			src: transformedSrc,
-			priority: preload?.priority || 'auto',
-			type: preload?.type || 'image',
+			priority: preload?.priority || "auto",
+			type: preload?.type || "image",
 			ssr: preload?.ssr ?? true,
 			sizes: preload?.sizes,
 			media: preload?.media,
@@ -33,7 +33,7 @@ const BackgroundImage = React.forwardRef<HTMLDivElement, BackgroundImageProps>(
 				{children}
 			</div>
 		);
-	}
+	},
 );
 
 BackgroundImage.displayName = "BackgroundImage";

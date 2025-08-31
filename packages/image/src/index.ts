@@ -5,5 +5,5 @@ export * from "./utils/preload";
 export * from "./utils/ssr";
 
 // 导出组件
-export { default as ImageLoader } from './components/ImageLoader';
-export { default as ImagePreloadConsumer } from './components/ImagePreloadConsumer';
+export { default as ImageLoader } from "./components/ImageLoader";
+export { default as ImagePreloadConsumer } from "./components/ImagePreloadConsumer";

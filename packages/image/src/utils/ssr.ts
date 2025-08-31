@@ -1,4 +1,9 @@
-import { generatePreloadHTML, clearPreloadQueue, getPreloadQueue, type PreloadOptions } from './preload';
+import {
+	type PreloadOptions,
+	clearPreloadQueue,
+	generatePreloadHTML,
+	getPreloadQueue,
+} from "./preload";
 
 /**
  * SSR 图片预加载工具
@@ -7,14 +12,14 @@ import { generatePreloadHTML, clearPreloadQueue, getPreloadQueue, type PreloadOp
 /**
  * 生成预加载 HTML 标签
  * 在服务端渲染时调用，生成 <link rel="preload"> 标签
- * 
+ *
  * @returns 预加载 HTML 字符串
- * 
+ *
  * @example
  * ```tsx
  * // 在服务端
  * const preloadHTML = generateImagePreloadHTML();
- * 
+ *
  * // 在 HTML 模板中插入
  * <head>
  *   {preloadHTML}
@@ -28,7 +33,7 @@ export const generateImagePreloadHTML = (): string => {
 /**
  * 获取当前预加载队列
  * 用于调试或自定义处理
- * 
+ *
  * @returns 预加载选项数组
  */
 export const getImagePreloadQueue = () => {
@@ -38,7 +43,7 @@ export const getImagePreloadQueue = () => {
 /**
  * 清空预加载队列
  * 在每次请求开始时调用，避免队列累积
- * 
+ *
  * @example
  * ```tsx
  * // 在每次 SSR 请求开始时
@@ -72,31 +77,31 @@ export class ImagePreloadManager {
 	getPagePreloadHTML(pageId: string): string {
 		const pageQueue = this.queue.get(pageId) || [];
 		if (pageQueue.length === 0) {
-			return '';
+			return "";
 		}
 
 		const links = pageQueue.map((options) => {
-			const { src, type = 'image', priority = 'auto', sizes, media } = options;
-			
+			const { src, type = "image", priority = "auto", sizes, media } = options;
+
 			let link = `<link rel="preload" as="${type}" href="${src}"`;
-			
-			if (priority !== 'auto') {
+
+			if (priority !== "auto") {
 				link += ` importance="${priority}"`;
 			}
-			
+
 			if (sizes) {
 				link += ` sizes="${sizes}"`;
 			}
-			
+
 			if (media) {
 				link += ` media="${media}"`;
 			}
-			
-			link += '>';
+
+			link += ">";
 			return link;
 		});
 
-		return links.join('\n');
+		return links.join("\n");
 	}
 
 	/**

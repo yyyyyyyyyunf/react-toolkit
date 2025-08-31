@@ -1,9 +1,8 @@
-
-import React from "react";
 import createMemoComponent from "@fly4react/memo";
-import type { ContentImageProps } from "../types";
 import { IntersectionLoad } from "@fly4react/observer";
+import React from "react";
 import { useImagePreload } from "../hooks/useImagePreload";
+import type { ContentImageProps } from "../types";
 
 const ContentImage = React.forwardRef<HTMLImageElement, ContentImageProps>(
 	({ src, lazyload, preload, transform, ...rest }, ref) => {
@@ -13,8 +12,8 @@ const ContentImage = React.forwardRef<HTMLImageElement, ContentImageProps>(
 		// 使用预加载 Hook
 		useImagePreload({
 			src: transformedSrc,
-			priority: preload?.priority || 'auto',
-			type: preload?.type || 'image',
+			priority: preload?.priority || "auto",
+			type: preload?.type || "image",
 			ssr: preload?.ssr ?? true,
 			sizes: preload?.sizes,
 			media: preload?.media,
@@ -28,7 +27,7 @@ const ContentImage = React.forwardRef<HTMLImageElement, ContentImageProps>(
 			);
 		}
 		return <img ref={ref} src={transformedSrc} {...rest} />;
-	}
+	},
 );
 
 ContentImage.displayName = "ContentImage";
