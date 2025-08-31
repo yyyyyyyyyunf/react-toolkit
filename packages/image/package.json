@@ -1,6 +1,6 @@
 {
 	"name": "@fly4react/image",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Image optimization and lazy loading utilities for React",
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.mjs",
@@ -12,7 +12,9 @@
 			"types": "./dist/index.d.ts"
 		}
 	},
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"scripts": {
 		"build": "rslib build",
 		"dev": "rslib build --watch",
@@ -48,7 +50,13 @@
 		"@fly4react/observer": "^1.5.0",
 		"@fly4react/memo": "^1.0.9"
 	},
-	"keywords": ["react", "image", "lazy-loading", "optimization", "hooks"],
+	"keywords": [
+		"react",
+		"image",
+		"lazy-loading",
+		"optimization",
+		"hooks"
+	],
 	"author": "yunfeng",
 	"license": "MIT",
 	"repository": {
