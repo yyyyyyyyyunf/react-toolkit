@@ -1,6 +1,6 @@
 {
 	"name": "@fly4react/observer",
-	"version": "1.4.3",
+	"version": "1.4.4",
 	"description": "一个基于 Intersection Observer API 的现代 React 工具库，提供懒加载、可见性检测、位置跟踪和滚动方向检测功能",
 	"type": "module",
 	"exports": {
@@ -13,7 +13,11 @@
 	"types": "./dist/index.d.ts",
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.js",
-	"files": ["dist", "README.md", "LICENSE"],
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
 	"keywords": [
 		"react",
 		"intersection-observer",
