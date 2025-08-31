@@ -12,6 +12,7 @@
 |------|------|--------|------|
 | [@fly4react/observer](https://www.npmjs.com/package/@fly4react/observer) | [![npm version](https://img.shields.io/npm/v/@fly4react/observer.svg?label=version)](https://www.npmjs.com/package/@fly4react/observer) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/observer.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/observer) | [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/observer.svg?label=size)](https://bundlephobia.com/package/@fly4react/observer) |
 | [@fly4react/memo](https://www.npmjs.com/package/@fly4react/memo) | [![npm version](https://img.shields.io/npm/v/@fly4react/memo.svg?label=version)](https://www.npmjs.com/package/@fly4react/memo) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/memo.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/memo) | [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/memo.svg?label=size)](https://bundlephobia.com/package/@fly4react/memo) |
+| [@fly4react/image](https://www.npmjs.com/package/@fly4react/image) | [![npm version](https://img.shields.io/npm/v/@fly4react/image.svg?label=version)](https://www.npmjs.com/package/@fly4react/image) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/image.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/image) | [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/image.svg?label=size)](https://bundlephobia.com/package/@fly4react/image) |
 
 这是一个 React Toolkit 的 monorepo，包含多个高性能的 React 工具库。
 
@@ -99,6 +100,24 @@ pnpm add @fly4react/observer intersection-observer
 npm install @fly4react/memo
 ```
 
+### `@fly4react/image`
+一个现代化的图片优化和懒加载工具库，提供 SSR 预加载、图片转换和智能懒加载功能。
+
+**特性:**
+- 🖼️ 智能图片懒加载 (`ImageLoader`)
+- ⚡ SSR 预加载支持 (`ImagePreloadConsumer`)
+- 🔄 图片 URL 转换 (`transform` 属性)
+- 📱 响应式图片支持 (`sizes` 属性)
+- 🎯 预加载优先级控制 (`priority` 属性)
+- 🔗 ForwardRef 支持
+- 🌐 完全 SSR 兼容
+- 🧠 智能记忆化 (依赖 @fly4react/memo)
+- 🎨 内容图片和背景图片支持
+
+```bash
+npm install @fly4react/image @fly4react/observer @fly4react/memo
+```
+
 ## 🎯 使用场景
 
 ### Observer 包适用场景
@@ -134,6 +153,16 @@ npm install @fly4react/memo
 - **数据展示**: 数据密集型组件的优化
 - **表单组件**: 表单字段的性能优化
 - **图表组件**: 数据可视化组件的优化
+
+### Image 包适用场景
+- **电商网站**: 商品图片的懒加载和优化
+- **新闻媒体**: 文章图片的按需加载
+- **社交媒体**: 用户头像和内容图片优化
+- **企业官网**: 产品展示图片的智能加载
+- **博客平台**: 文章配图的性能优化
+- **图片画廊**: 大量图片的高效展示
+- **移动应用**: 移动端图片加载优化
+- **SSR 应用**: 服务端渲染的图片预加载
 
 ## 🚀 快速开始
 
@@ -188,6 +217,47 @@ const MyMemoComponent = createMemoComponent<{ name: string; count: number }>(
 );
 ```
 
+### Image 包使用示例
+
+```tsx
+import { ImageLoader, ImagePreloadConsumer } from '@fly4react/image';
+
+function MyComponent() {
+  // 自定义图片转换函数
+  const toWebP = (src: string) => src.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+  
+  return (
+    <div>
+      {/* 在 SSR 时渲染预加载链接 */}
+      <ImagePreloadConsumer />
+      
+      {/* 内容图片 */}
+      <ImageLoader
+        type="content"
+        src="https://example.com/image.jpg"
+        alt="示例图片"
+        transform={toWebP}
+        preload={{ priority: 'high', ssr: true }}
+        style={{ width: '100%', height: 'auto' }}
+      />
+      
+      {/* 背景图片 */}
+      <ImageLoader
+        type="background"
+        src="https://example.com/background.jpg"
+        style={{
+          width: '100%',
+          height: '200px',
+          backgroundSize: 'cover'
+        }}
+      >
+        <div>背景图片内容</div>
+      </ImageLoader>
+    </div>
+  );
+}
+```
+
 ## 🚀 开发
 
 ### 安装依赖
@@ -224,10 +294,18 @@ react-intersection-tool/
 │   │   ├── src/
 │   │   ├── package.json
 │   │   └── rslib.config.ts
-│   └── memo/             # @fly4react/memo
+│   ├── memo/             # @fly4react/memo
+│   │   ├── src/
+│   │   │   ├── index.ts   # createMemoComponent
+│   │   │   └── memoHelper.ts
+│   │   ├── package.json
+│   │   └── rslib.config.ts
+│   └── image/            # @fly4react/image
 │       ├── src/
-│       │   ├── index.ts   # createMemoComponent
-│       │   └── memoHelper.ts
+│       │   ├── components/ # ImageLoader, ImagePreloadConsumer
+│       │   ├── hooks/      # useImagePreload
+│       │   ├── utils/      # 预加载工具函数
+│       │   └── types.ts    # 类型定义
 │       ├── package.json
 │       └── rslib.config.ts
 ├── examples/             # 示例代码
@@ -240,6 +318,7 @@ react-intersection-tool/
 
 - [Observer 包文档](./packages/observer/README.md)
 - [Memo 包文档](./packages/memo/README.md)
+- [Image 包文档](./packages/image/README.md)
 - [示例代码](./examples/)
 - [性能对比](./benchmark/)
 - [在线演示](https://yyyyyyyyyunf.github.io/react-toolkit/)
@@ -306,7 +385,8 @@ A: 是的，完全支持服务端渲染，所有 hooks 都会在服务端安全�
 ### 相关项目
 - [@fly4react/observer](https://www.npmjs.com/package/@fly4react/observer) - 基于 Intersection Observer API 的现代 React 工具库
 - [@fly4react/memo](https://www.npmjs.com/package/@fly4react/memo) - 高级的 React 记忆化组件工具
-- [React Toolkit](https://github.com/yyyyyyyyyunf/react-toolkit) - React 工具集合，包含 observer 和 memo 等工具库
+- [@fly4react/image](https://www.npmjs.com/package/@fly4react/image) - 现代化的图片优化和懒加载工具库
+- [React Toolkit](https://github.com/yyyyyyyyyunf/react-toolkit) - React 工具集合，包含 observer、memo 和 image 等工具库
 
 ## 📄 许可证
 

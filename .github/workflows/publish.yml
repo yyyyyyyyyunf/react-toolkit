@@ -7,7 +7,7 @@ on:
   workflow_dispatch:  # 手动触发
     inputs:
       package:
-        description: 'Package to publish (memo, observer, or all)'
+        description: 'Package to publish (memo, observer, image, or all)'
         required: false
         default: 'all'
         type: choice
@@ -15,6 +15,7 @@ on:
           - all
           - memo
           - observer
+          - image
       version_type:
         description: 'Version increment type (patch, minor, major)'
         required: false
@@ -86,6 +87,15 @@ jobs:
             NEW_VERSION=$(node -p "require('./package.json').version")
             echo "更新 memo 版本到: $NEW_VERSION"
             cd ../..
+          elif [[ "$SELECTED_PACKAGE" == "image" ]]; then
+            # 只更新 image 包版本
+            cd packages/image
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            echo "当前 image 版本: $CURRENT_VERSION"
+            npm version $VERSION_TYPE --no-git-tag-version
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "更新 image 版本到: $NEW_VERSION"
+            cd ../..
           else
             # 更新所有包版本
             echo "更新所有包版本..."
@@ -107,6 +117,15 @@ jobs:
             NEW_VERSION=$(node -p "require('./package.json').version")
             echo "更新 memo 版本到: $NEW_VERSION"
             cd ../..
+            
+            # 更新 image 包版本
+            cd packages/image
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            echo "当前 image 版本: $CURRENT_VERSION"
+            npm version $VERSION_TYPE --no-git-tag-version
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "更新 image 版本到: $NEW_VERSION"
+            cd ../..
           fi
       
       - name: Update packages.yml
@@ -126,6 +145,7 @@ jobs:
           echo "📦 包版本信息:"
           echo "  @fly4react/observer: $(node -p "require('./packages/observer/package.json').version")"
           echo "  @fly4react/memo: $(node -p "require('./packages/memo/package.json').version")"
+          echo "  @fly4react/image: $(node -p "require('./packages/image/package.json').version")"
       
       - name: Publish @fly4react/observer
         if: |
@@ -151,6 +171,18 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
+      - name: Publish @fly4react/image
+        if: |
+          github.event.inputs.package == 'image' ||
+          github.event.inputs.package == 'all' ||
+          github.event_name == 'push'
+        run: |
+          cd packages/image
+          echo "Publishing @fly4react/image..."
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
       - name: Verify package publication
         run: |
           echo "🔍 验证包发布状态..."
@@ -170,6 +202,14 @@ jobs:
           else
             echo "❌ @fly4react/memo 发布失败"
           fi
+          
+          # 检查image包
+          if npm view @fly4react/image version > /dev/null 2>&1; then
+            IMAGE_VERSION=$(npm view @fly4react/image version)
+            echo "✅ @fly4react/image 已发布，版本: $IMAGE_VERSION"
+          else
+            echo "❌ @fly4react/image 发布失败"
+          fi
       
       - name: Commit version updates and create tag
         if: github.event_name == 'workflow_dispatch'
@@ -180,14 +220,17 @@ jobs:
           echo "📝 更新 packages.yml 文件..."
           OBSERVER_VERSION=$(node -p "require('./packages/observer/package.json').version")
           MEMO_VERSION=$(node -p "require('./packages/memo/package.json').version")
+          IMAGE_VERSION=$(node -p "require('./packages/image/package.json').version")
           
           # 使用 sed 直接替换版本号
           sed -i "s/latest_version: \".*\"/latest_version: \"$OBSERVER_VERSION\"/" .github/packages.yml
           sed -i "s/latest_version: \".*\"/latest_version: \"$MEMO_VERSION\"/" .github/packages.yml
+          sed -i "s/latest_version: \".*\"/latest_version: \"$IMAGE_VERSION\"/" .github/packages.yml
           
           echo "✅ packages.yml 已更新:"
           echo "  @fly4react/observer: $OBSERVER_VERSION"
           echo "  @fly4react/memo: $MEMO_VERSION"
+          echo "  @fly4react/image: $IMAGE_VERSION"
           
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
@@ -201,6 +244,9 @@ jobs:
             git tag "v$NEW_VERSION"
           elif [[ "$SELECTED_PACKAGE" == "memo" ]]; then
             NEW_VERSION=$(node -p "require('./packages/memo/package.json').version")
+            git tag "v$NEW_VERSION"
+          elif [[ "$SELECTED_PACKAGE" == "image" ]]; then
+            NEW_VERSION=$(node -p "require('./packages/image/package.json').version")
             git tag "v$NEW_VERSION"
           else
             # 使用observer版本作为主版本
@@ -251,16 +297,19 @@ jobs:
             ```bash
             npm install @fly4react/observer@latest
             npm install @fly4react/memo@latest
+            npm install @fly4react/image@latest
             ```
             
             ### Packages Published
             - @fly4react/observer@$(node -p "require('./packages/observer/package.json').version")
             - @fly4react/memo@$(node -p "require('./packages/memo/package.json').version")
+            - @fly4react/image@$(node -p "require('./packages/image/package.json').version")
             
             ### What's New
             - Enhanced intersection observer functionality
             - Improved performance and browser compatibility
             - Better TypeScript support
             - SSR (Server-Side Rendering) support
+            - Image optimization and lazy loading utilities
           draft: false
           prerelease: false

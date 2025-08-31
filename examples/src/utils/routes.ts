@@ -21,6 +21,11 @@ const ScrollDirectionExample = lazy(() =>
 		default: module.ScrollDirectionExample,
 	})),
 );
+const ImageLoadingExample = lazy(() =>
+	import("../pages/image-loading").then((module) => ({
+		default: module.default,
+	})),
+);
 
 // 添加组件示例
 const BasicLazyLoad = lazy(() =>
@@ -124,6 +129,12 @@ export const routes = [
 		name: "滚动方向检测",
 		component: ScrollDirectionExample,
 		description: "检测页面滚动方向",
+	},
+	{
+		path: "/image-loading",
+		name: "图片加载",
+		component: ImageLoadingExample,
+		description: "ImageLoader 组件功能演示 - 懒加载、预加载、URL 转换等",
 	},
 	// 添加组件示例路由
 	{
