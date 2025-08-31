@@ -1,15 +1,6 @@
 import type React from "react";
 import { type PreloadOptions, getPreloadQueue } from "../utils/preload";
-
-/**
- * 图片预加载消费者组件
- * 在 SSR 环境下渲染预加载的 <link> 标签
- * 用户可以选择在 head 或 body 中渲染
- */
-interface ImagePreloadConsumerProps {
-	/** 是否在服务端渲染时显示预加载链接 */
-	ssr?: boolean;
-}
+import type { ImagePreloadConsumerProps } from "../types";
 
 const ImagePreloadConsumer: React.FC<ImagePreloadConsumerProps> = ({
 	ssr = false,
