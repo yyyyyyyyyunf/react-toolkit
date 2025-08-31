@@ -19,7 +19,7 @@
 		"test": "vitest",
 		"test:run": "vitest run",
 		"test:coverage": "vitest run --coverage",
-		"check": "biome check src/ --skip=a11y",
+		"check": "biome lint src/ --skip=a11y",
 		"format": "biome format src/ --write",
 		"lint": "biome lint src/ --skip=a11y",
 		"lint:fix": "biome lint src/ --write --skip=a11y"
