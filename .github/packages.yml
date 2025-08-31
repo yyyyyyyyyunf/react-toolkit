@@ -13,3 +13,9 @@ packages:
     repository: "https://github.com/yyyyyyyyyunf/react-toolkit"
     registry: "https://registry.npmjs.org/"
     latest_version: "1.0.1"
+    
+  - name: "@fly4react/image"
+    description: "现代化的图片优化和懒加载工具库"
+    repository: "https://github.com/yyyyyyyyyunf/react-toolkit"
+    registry: "https://registry.npmjs.org/"
+    latest_version: "1.0.1"
