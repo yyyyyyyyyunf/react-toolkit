@@ -155,6 +155,23 @@ jobs:
         run: |
           cd packages/observer
           echo "Publishing @fly4react/observer..."
+          
+          # 显示当前版本信息
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "📦 当前 package.json 版本: $CURRENT_VERSION"
+          
+          # 检查 npm 上的最新版本
+          NPM_LATEST=$(npm view @fly4react/observer version 2>/dev/null || echo "none")
+          echo "📦 npm 上最新版本: $NPM_LATEST"
+          
+          # 如果版本相同，说明需要递增版本
+          if [[ "$CURRENT_VERSION" == "$NPM_LATEST" ]]; then
+            echo "⚠️  版本相同，需要递增版本号"
+            npm version patch --no-git-tag-version
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "📦 递增版本到: $NEW_VERSION"
+          fi
+          
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -167,6 +184,23 @@ jobs:
         run: |
           cd packages/memo
           echo "Publishing @fly4react/memo..."
+          
+          # 显示当前版本信息
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "📦 当前 package.json 版本: $CURRENT_VERSION"
+          
+          # 检查 npm 上的最新版本
+          NPM_LATEST=$(npm view @fly4react/memo version 2>/dev/null || echo "none")
+          echo "📦 npm 上最新版本: $NPM_LATEST"
+          
+          # 如果版本相同，说明需要递增版本
+          if [[ "$CURRENT_VERSION" == "$NPM_LATEST" ]]; then
+            echo "⚠️  版本相同，需要递增版本号"
+            npm version patch --no-git-tag-version
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "📦 递增版本到: $NEW_VERSION"
+          fi
+          
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -179,6 +213,23 @@ jobs:
         run: |
           cd packages/image
           echo "Publishing @fly4react/image..."
+          
+          # 显示当前版本信息
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "📦 当前 package.json 版本: $CURRENT_VERSION"
+          
+          # 检查 npm 上的最新版本
+          NPM_LATEST=$(npm view @fly4react/image version 2>/dev/null || echo "none")
+          echo "📦 npm 上最新版本: $NPM_LATEST"
+          
+          # 如果版本相同，说明需要递增版本
+          if [[ "$CURRENT_VERSION" == "$NPM_LATEST" ]]; then
+            echo "⚠️  版本相同，需要递增版本号"
+            npm version patch --no-git-tag-version
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "📦 递增版本到: $NEW_VERSION"
+          fi
+          
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
