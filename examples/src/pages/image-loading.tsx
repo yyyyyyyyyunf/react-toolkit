@@ -1,7 +1,7 @@
 import { ImageLoader, ImagePreloadConsumer } from "@fly4react/image";
 import React, { useRef, useState } from "react";
 
-const ImageLoadingExample: React.FC = () => {
+const ImageLoadingExample = () => {
 	const imageRef = useRef<HTMLImageElement>(null);
 	const [showPreloadDemo, setShowPreloadDemo] = useState(false);
 
@@ -269,7 +269,7 @@ const ImageLoadingExample: React.FC = () => {
 };
 
 // 预加载队列演示组件
-const PreloadQueueDemo: React.FC = () => {
+const PreloadQueueDemo = () => {
 	const [preloadQueue, setPreloadQueue] = useState<
 		Array<{ src: string; priority?: string; sizes?: string }>
 	>([]);
@@ -331,7 +331,7 @@ const PreloadQueueDemo: React.FC = () => {
 };
 
 // 动态切换类型的示例组件
-const DynamicImageLoader: React.FC = () => {
+const DynamicImageLoader = () => {
 	const [type, setType] = React.useState<"content" | "background">("content");
 	const dynamicRef = useRef<HTMLImageElement | HTMLDivElement>(null);
 
