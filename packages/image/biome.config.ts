@@ -1,23 +1,9 @@
 const config = {
-	// 导入排序配置
-	organizeImports: {
-		enabled: true,
-	},
-
 	// Linter 配置
 	linter: {
 		enabled: true,
 		rules: {
 			recommended: true,
-			correctness: {
-				noUnusedVariables: "error",
-			},
-			suspicious: {
-				noExplicitAny: "warn",
-			},
-			style: {
-				useConst: "error",
-			},
 			a11y: {
 				useAltText: "off", // 禁用 alt 文本检查，让用户自己决定
 			},
@@ -40,12 +26,6 @@ const config = {
 			trailingCommas: "es5",
 			semicolons: "always",
 		},
-	},
-
-	// 文件配置
-	files: {
-		ignoreUnknown: false,
-		includes: ["src/**/*", "*.ts", "*.tsx", "*.js", "*.jsx", "*.json"],
 	},
 };
 

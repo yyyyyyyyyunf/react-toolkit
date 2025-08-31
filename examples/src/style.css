@@ -135,3 +135,75 @@ body {
 		flex-shrink: 0;
 	}
 }
+
+/* 图片加载示例样式 */
+.image-loading-example {
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.image-loading-example h1 {
+	color: #646cff;
+	margin-bottom: 2rem;
+	text-align: center;
+}
+
+.example-section {
+	margin-bottom: 3rem;
+	padding: 2rem;
+	background: #1a1a1a;
+	border-radius: 12px;
+	border: 1px solid #333;
+}
+
+.example-section h2 {
+	color: #fff;
+	margin-bottom: 1.5rem;
+	font-size: 1.5rem;
+	border-bottom: 2px solid #646cff;
+	padding-bottom: 0.5rem;
+}
+
+.image-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 2rem;
+}
+
+.image-item {
+	background: #2a2a2a;
+	border-radius: 8px;
+	padding: 1rem;
+	border: 1px solid #444;
+	transition: all 0.2s ease;
+}
+
+.image-item:hover {
+	border-color: #646cff;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(100, 108, 255, 0.2);
+}
+
+.image-item h3 {
+	color: #fff;
+	margin-bottom: 1rem;
+	font-size: 1.1rem;
+}
+
+.image-item p {
+	color: #888;
+	font-size: 0.9rem;
+	margin-top: 0.5rem;
+}
+
+/* 响应式图片网格 */
+@media (max-width: 768px) {
+	.image-grid {
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+	
+	.example-section {
+		padding: 1rem;
+	}
+}

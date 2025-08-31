@@ -1,95 +1,91 @@
 {
-  "name": "@fly4react/observer",
-  "version": "1.4.3",
-  "description": "一个基于 Intersection Observer API 的现代 React 工具库，提供懒加载、可见性检测、位置跟踪和滚动方向检测功能",
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "types": "./dist/index.d.ts",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
-  "keywords": [
-    "react",
-    "intersection-observer",
-    "lazy-loading",
-    "visibility",
-    "scroll",
-    "performance",
-    "typescript",
-    "hooks",
-    "component",
-    "visibility-detection",
-    "visibility-sensor"
-  ],
-  "author": "yyyyyyyyyunf",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yyyyyyyyyunf/react-toolkit.git"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
-  "bugs": {
-    "url": "https://github.com/yyyyyyyyyunf/react-toolkit/issues"
-  },
-  "homepage": "https://github.com/yyyyyyyyyunf/react-toolkit#readme",
-  "funding": {
-    "type": "github",
-    "url": "https://github.com/yyyyyyyyyunf/react-toolkit"
-  },
-  "scripts": {
-    "build": "rslib build",
-    "dev": "rslib build --watch",
-    "format": "biome format --write src/",
-    "format:check": "biome format --check src/",
-    "lint": "biome lint --write src/",
-    "lint:fix": "biome lint --write src/",
-    "check": "biome check src/",
-    "check:fix": "biome check --write src/",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage",
-    "clean": "rm -rf dist",
-    "prepublishOnly": "pnpm check && pnpm test:run && pnpm build",
-    "prepack": "pnpm build",
-    "prepare": "[ -d .git ] && husky || true"
-  },
-  "dependencies": {
-    "@fly4react/memo": "^1.0.6"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.5.3",
-    "@rsbuild/plugin-react": "^1.3.5",
-    "@rslib/core": "^0.12.2",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^12.1.5",
-    "@testing-library/react-hooks": "^8.0.1",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/react": "^16.8.0",
-    "@vitest/ui": "^3.2.4",
-    "intersection-observer": "^0.12.2",
-    "jsdom": "^26.1.0",
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
-  },
-  "peerDependencies": {
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0",
-    "intersection-observer": "^0.12.0"
-  }
+	"name": "@fly4react/observer",
+	"version": "1.4.3",
+	"description": "一个基于 Intersection Observer API 的现代 React 工具库，提供懒加载、可见性检测、位置跟踪和滚动方向检测功能",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"types": "./dist/index.d.ts",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"files": ["dist", "README.md", "LICENSE"],
+	"keywords": [
+		"react",
+		"intersection-observer",
+		"lazy-loading",
+		"visibility",
+		"scroll",
+		"performance",
+		"typescript",
+		"hooks",
+		"component",
+		"visibility-detection",
+		"visibility-sensor"
+	],
+	"author": "yyyyyyyyyunf",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yyyyyyyyyunf/react-toolkit.git"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org/"
+	},
+	"bugs": {
+		"url": "https://github.com/yyyyyyyyyunf/react-toolkit/issues"
+	},
+	"homepage": "https://github.com/yyyyyyyyyunf/react-toolkit#readme",
+	"funding": {
+		"type": "github",
+		"url": "https://github.com/yyyyyyyyyunf/react-toolkit"
+	},
+	"scripts": {
+		"build": "rslib build",
+		"dev": "rslib build --watch",
+		"format": "biome format --write src/",
+		"format:check": "biome format --check src/",
+		"lint": "biome lint --write src/",
+		"lint:fix": "biome lint --write src/",
+		"check": "biome check src/",
+		"check:fix": "biome check --write src/",
+		"test": "vitest",
+		"test:run": "vitest run",
+		"test:ui": "vitest --ui",
+		"test:coverage": "vitest run --coverage",
+		"clean": "rm -rf dist",
+		"prepublishOnly": "pnpm check && pnpm test:run && pnpm build",
+		"prepack": "pnpm build",
+		"prepare": "[ -d .git ] && husky || true"
+	},
+	"dependencies": {
+		"@fly4react/memo": "^1.0.6"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.5.3",
+		"@rsbuild/plugin-react": "^1.3.5",
+		"@rslib/core": "^0.12.2",
+		"@testing-library/jest-dom": "^5.17.0",
+		"@testing-library/react": "^12.1.5",
+		"@testing-library/react-hooks": "^8.0.1",
+		"@testing-library/user-event": "^14.6.1",
+		"@types/react": "^16.8.0",
+		"@vitest/ui": "^3.2.4",
+		"intersection-observer": "^0.12.2",
+		"jsdom": "^26.1.0",
+		"react": "^16.8.0",
+		"react-dom": "^16.8.0",
+		"typescript": "^5.9.2",
+		"vitest": "^3.2.4"
+	},
+	"peerDependencies": {
+		"react": ">=16.8.0",
+		"react-dom": ">=16.8.0",
+		"intersection-observer": "^0.12.0"
+	}
 }

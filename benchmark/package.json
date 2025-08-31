@@ -1,26 +1,26 @@
 {
-  "name": "@fly4react/benchmark",
-  "version": "1.0.0",
-  "description": "Performance benchmark for @fly4react/observer vs react-visibility-sensor",
-  "private": true,
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "benchmark": "node benchmark.js"
-  },
-  "dependencies": {
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0",
-    "@fly4react/observer": "workspace:*",
-    "intersection-observer": "^0.12.2",
-    "react-visibility-sensor": "^5.1.1"
-  },
-  "devDependencies": {
-    "@types/react": "^16.8.0",
-    "@types/react-dom": "^16.8.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.10"
-  }
+	"name": "@fly4react/benchmark",
+	"version": "1.0.0",
+	"description": "Performance benchmark for @fly4react/observer vs react-visibility-sensor",
+	"private": true,
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview",
+		"benchmark": "node benchmark.js"
+	},
+	"dependencies": {
+		"react": "^16.8.0",
+		"react-dom": "^16.8.0",
+		"@fly4react/observer": "workspace:*",
+		"intersection-observer": "^0.12.2",
+		"react-visibility-sensor": "^5.1.1"
+	},
+	"devDependencies": {
+		"@types/react": "^16.8.0",
+		"@types/react-dom": "^16.8.0",
+		"@vitejs/plugin-react": "^4.2.1",
+		"typescript": "^5.3.3",
+		"vite": "^5.0.10"
+	}
 }

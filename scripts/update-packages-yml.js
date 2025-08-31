@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("node:fs");
+const path = require("node:path");
 
 // 读取包版本
-const observerPackage = JSON.parse(fs.readFileSync('./packages/observer/package.json', 'utf8'));
-const memoPackage = JSON.parse(fs.readFileSync('./packages/memo/package.json', 'utf8'));
+const observerPackage = JSON.parse(
+	fs.readFileSync("./packages/observer/package.json", "utf8"),
+);
+const memoPackage = JSON.parse(
+	fs.readFileSync("./packages/memo/package.json", "utf8"),
+);
 
 // 生成packages.yml内容
 const packagesYml = `# GitHub Packages Configuration
@@ -26,8 +30,8 @@ packages:
 `;
 
 // 写入文件
-fs.writeFileSync('./.github/packages.yml', packagesYml);
+fs.writeFileSync("./.github/packages.yml", packagesYml);
 
-console.log('✅ packages.yml 已更新:');
+console.log("✅ packages.yml 已更新:");
 console.log(`  @fly4react/observer: ${observerPackage.version}`);
 console.log(`  @fly4react/memo: ${memoPackage.version}`);

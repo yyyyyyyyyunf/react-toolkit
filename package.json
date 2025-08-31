@@ -1,46 +1,43 @@
 {
-  "name": "@fly4react",
-  "version": "1.0.8",
-  "description": "React工具集合，包含 observer 和 memo 等工具库",
-  "private": true,
-  "packageManager": "pnpm@8.15.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yyyyyyyyyunf/react-toolkit.git"
-  },
-  "bugs": {
-    "url": "https://github.com/yyyyyyyyyunf/react-toolkit/issues"
-  },
-  "homepage": "https://github.com/yyyyyyyyyunf/react-toolkit#readme",
-  "author": "yyyyyyyyyunf",
-  "license": "MIT",
-  "scripts": {
-    "check": "pnpm -r check",
-    "build": "pnpm -r build",
-    "build:test": "pnpm build && pnpm test:run",
-    "format": "pnpm -r format",
-    "lint": "pnpm -r lint",
-    "test": "pnpm -r test",
-    "test:run": "pnpm -r test:run",
-    "test:ui": "pnpm -r test:ui",
-    "test:coverage": "pnpm -r test:coverage",
-    "clean": "pnpm -r clean",
-    "release": "./scripts/release.sh",
-    "release:auto": "./scripts/release.sh --auto",
-    "release:beta": "./scripts/release.sh --beta",
-    "release:version": "./scripts/release.sh"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.5.3",
-    "husky": "^9.0.11",
-    "lint-staged": "^15.2.2",
-    "typescript": "^5.3.3"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "biome format --write",
-      "biome lint --write"
-    ]
-  },
-  "prepare": "[ -d .git ] && husky || true"
+	"name": "@fly4react",
+	"version": "1.0.8",
+	"description": "React工具集合，包含 observer 和 memo 等工具库",
+	"private": true,
+	"packageManager": "pnpm@8.15.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/yyyyyyyyyunf/react-toolkit.git"
+	},
+	"bugs": {
+		"url": "https://github.com/yyyyyyyyyunf/react-toolkit/issues"
+	},
+	"homepage": "https://github.com/yyyyyyyyyunf/react-toolkit#readme",
+	"author": "yyyyyyyyyunf",
+	"license": "MIT",
+	"scripts": {
+		"check": "pnpm -r check",
+		"build": "pnpm -r build",
+		"build:test": "pnpm build && pnpm test:run",
+		"format": "pnpm -r format",
+		"lint": "pnpm -r lint",
+		"test": "pnpm -r test",
+		"test:run": "pnpm -r test:run",
+		"test:ui": "pnpm -r test:ui",
+		"test:coverage": "pnpm -r test:coverage",
+		"clean": "pnpm -r clean",
+		"release": "./scripts/release.sh",
+		"release:auto": "./scripts/release.sh --auto",
+		"release:beta": "./scripts/release.sh --beta",
+		"release:version": "./scripts/release.sh"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.5.3",
+		"husky": "^9.0.11",
+		"lint-staged": "^15.2.2",
+		"typescript": "^5.3.3"
+	},
+	"lint-staged": {
+		"*.{js,jsx,ts,tsx}": ["biome format --write", "biome lint --write"]
+	},
+	"prepare": "[ -d .git ] && husky || true"
 }

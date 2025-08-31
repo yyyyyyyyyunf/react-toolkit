@@ -118,17 +118,20 @@ if [ -f "./scripts/detect-changes.sh" ]; then
     ./scripts/detect-changes.sh main
     OBSERVER_CHANGED=$(echo "$(./scripts/detect-changes.sh main 2>&1)" | grep "OBSERVER_CHANGED=" | cut -d'=' -f2)
     MEMO_CHANGED=$(echo "$(./scripts/detect-changes.sh main 2>&1)" | grep "MEMO_CHANGED=" | cut -d'=' -f2)
+    IMAGE_CHANGED=$(echo "$(./scripts/detect-changes.sh main 2>&1)" | grep "IMAGE_CHANGED=" | cut -d'=' -f2)
     ROOT_CHANGED=$(echo "$(./scripts/detect-changes.sh main 2>&1)" | grep "ROOT_CHANGED=" | cut -d'=' -f2)
 else
     # 如果没有检测脚本，默认所有包都有变化
     OBSERVER_CHANGED=true
     MEMO_CHANGED=true
+    IMAGE_CHANGED=true
     ROOT_CHANGED=true
 fi
 
 echo "📊 变化检测结果:"
 echo "  Observer 变化: $OBSERVER_CHANGED"
 echo "  Memo 变化: $MEMO_CHANGED"
+echo "  Image 变化: $IMAGE_CHANGED"
 echo "  根目录变化: $ROOT_CHANGED"
 
 # 创建发布分支
@@ -164,10 +167,12 @@ echo "  自动升级: $([ "$AUTO_FLAG" = "--auto" ] && echo "是" || echo "否")
 echo ""
 if [ "$BETA_FLAG" = "--beta" ]; then
     echo "⚠️  Beta 版本安装命令:"
-    echo "   npm install @react-toolkit/observer@beta"
-    echo "   npm install @react-toolkit/memo@beta"
+    echo "   npm install @fly4react/observer@beta"
+    echo "   npm install @fly4react/memo@beta"
+    echo "   npm install @fly4react/image@beta"
 else
     echo "📦 正式版本安装命令:"
-    echo "   npm install @react-toolkit/observer@latest"
-    echo "   npm install @react-toolkit/memo@latest"
+    echo "   npm install @fly4react/observer@latest"
+    echo "   npm install @fly4react/memo@latest"
+    echo "   npm install @fly4react/image@latest"
 fi

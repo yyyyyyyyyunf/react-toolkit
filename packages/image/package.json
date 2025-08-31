@@ -1,0 +1,64 @@
+{
+	"name": "@fly4react/image",
+	"version": "1.0.0",
+	"description": "Image optimization and lazy loading utilities for React",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.cjs",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"files": ["dist"],
+	"scripts": {
+		"build": "rslib build",
+		"dev": "rslib build --watch",
+		"test": "vitest",
+		"test:run": "vitest run",
+		"test:coverage": "vitest run --coverage",
+		"check": "biome check src/",
+		"format": "biome format src/ --write",
+		"lint": "biome lint src/ --skip=a11y",
+		"lint:fix": "biome lint src/ --write --skip=a11y"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.5.3",
+		"@rsbuild/plugin-react": "^1.3.5",
+		"@rslib/core": "^0.12.2",
+		"@testing-library/jest-dom": "^5.17.0",
+		"@testing-library/react": "^12.1.5",
+		"@testing-library/react-hooks": "^8.0.1",
+		"@testing-library/user-event": "^14.6.1",
+		"@types/react": "^16.8.0",
+		"@vitest/ui": "^3.2.4",
+		"jsdom": "^26.1.0",
+		"react": "^16.8.0",
+		"react-dom": "^16.8.0",
+		"typescript": "^5.9.2",
+		"vitest": "^3.2.4",
+		"@fly4react/observer": "^1.5.0",
+		"@fly4react/memo": "^1.0.9"
+	},
+	"peerDependencies": {
+		"react": ">=16.8.0",
+		"react-dom": ">=16.8.0",
+		"@fly4react/observer": "^1.5.0",
+		"@fly4react/memo": "^1.0.9"
+	},
+	"keywords": ["react", "image", "lazy-loading", "optimization", "hooks"],
+	"author": "yunfeng",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/yyyyyyyyyunf/react-toolkit.git",
+		"directory": "packages/image"
+	},
+	"bugs": {
+		"url": "https://github.com/yyyyyyyyyunf/react-toolkit/issues"
+	},
+	"homepage": "https://github.com/yyyyyyyyyunf/react-toolkit#readme",
+	"dependencies": {}
+}
