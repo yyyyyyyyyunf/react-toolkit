@@ -222,10 +222,10 @@ jobs:
           MEMO_VERSION=$(node -p "require('./packages/memo/package.json').version")
           IMAGE_VERSION=$(node -p "require('./packages/image/package.json').version")
           
-          # 使用 sed 直接替换版本号
-          sed -i "s/latest_version: \".*\"/latest_version: \"$OBSERVER_VERSION\"/" .github/packages.yml
-          sed -i "s/latest_version: \".*\"/latest_version: \"$MEMO_VERSION\"/" .github/packages.yml
-          sed -i "s/latest_version: \".*\"/latest_version: \"$IMAGE_VERSION\"/" .github/packages.yml
+          # 使用 sed 直接替换版本号 - 为每个包指定精确的替换
+          sed -i "/@fly4react\/observer/,/latest_version:/ s/latest_version: \".*\"/latest_version: \"$OBSERVER_VERSION\"/" .github/packages.yml
+          sed -i "/@fly4react\/memo/,/latest_version:/ s/latest_version: \".*\"/latest_version: \"$MEMO_VERSION\"/" .github/packages.yml
+          sed -i "/@fly4react\/image/,/latest_version:/ s/latest_version: \".*\"/latest_version: \"$IMAGE_VERSION\"/" .github/packages.yml
           
           echo "✅ packages.yml 已更新:"
           echo "  @fly4react/observer: $OBSERVER_VERSION"
