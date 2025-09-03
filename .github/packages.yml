@@ -13,9 +13,3 @@ packages:
     repository: "https://github.com/yyyyyyyyyunf/react-toolkit"
     registry: "https://registry.npmjs.org/"
     latest_version: "1.1.0"
-    
-  - name: "@fly4react/image"
-    description: "一个基于 Intersection Observer API 的图片懒加载组件"
-    repository: "https://github.com/yyyyyyyyyunf/react-toolkit"
-    registry: "https://registry.npmjs.org/"
-    latest_version: "1.4.0"
