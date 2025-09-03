@@ -1,5 +1,7 @@
+import IntersectionLoad from "./components/IntersectionLoad";
+
 export { lazyloadManager as IntersectionObserverManager } from "./base/IntersectionObserverManager";
-export { default as IntersectionLoad } from "./components/IntersectionLoad";
+export { IntersectionLoad };
 export { useBoundingClientRect } from "./hooks/useBoundingClientRect";
 export { useElementPosition } from "./hooks/useElementPosition";
 export { useElementPositionRef } from "./hooks/useElementPositionRef";
@@ -12,3 +14,5 @@ export { useOneOffVisibility } from "./hooks/useOneOffVisibility";
 export { useScrollDirection } from "./hooks/useScrollDirection";
 export * from "./types";
 export * from "./utils";
+
+export default IntersectionLoad;
