@@ -2,13 +2,13 @@
 	"name": "@fly4react/image",
 	"version": "1.1.6",
 	"description": "Image optimization and lazy loading utilities for React",
-	"main": "./dist/index.cjs",
+	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
 			"import": "./dist/index.mjs",
-			"require": "./dist/index.cjs",
+			"require": "./dist/index.js",
 			"types": "./dist/index.d.ts"
 		}
 	},
@@ -41,14 +41,14 @@
 		"react-dom": "^16.8.0",
 		"typescript": "^5.9.2",
 		"vitest": "^3.2.4",
-		"@fly4react/observer": "^1.5.0",
-		"@fly4react/memo": "^1.0.9"
+		"@fly4react/observer": "^1.5.2",
+		"@fly4react/memo": "^1.0.10"
 	},
 	"peerDependencies": {
 		"react": ">=16.8.0",
 		"react-dom": ">=16.8.0",
-		"@fly4react/observer": "^1.5.0",
-		"@fly4react/memo": "^1.0.9"
+		"@fly4react/observer": "^1.5.2",
+		"@fly4react/memo": "^1.0.10"
 	},
 	"keywords": [
 		"react",

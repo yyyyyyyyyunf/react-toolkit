@@ -67,11 +67,11 @@ importers:
         specifier: ^1.5.3
         version: 1.9.4
       '@fly4react/memo':
-        specifier: ^1.0.9
+        specifier: ^1.0.10
         version: link:../memo
       '@fly4react/observer':
-        specifier: ^1.5.0
-        version: 1.5.0(intersection-observer@0.12.2)(react-dom@16.14.0)(react@16.14.0)
+        specifier: ^1.5.2
+        version: 1.5.2(intersection-observer@0.12.2)(react-dom@16.14.0)(react@16.14.0)
       '@rsbuild/plugin-react':
         specifier: ^1.3.5
         version: 1.3.5(@rsbuild/core@1.4.15)
@@ -870,8 +870,8 @@ packages:
     dev: true
     optional: true
 
-  /@fly4react/memo@1.0.9(react-dom@16.14.0)(react@16.14.0):
-    resolution: {integrity: sha512-9h8v8GPmibPwb6b1w4TYf7wccmwTw/a6JEb01c2iFu2Pf+pE1MqR5RBOA1fKgBaUtehZP+Ev5GWeK/Xo9LdYCg==}
+  /@fly4react/memo@1.0.11(react-dom@16.14.0)(react@16.14.0):
+    resolution: {integrity: sha512-MCGXFPCYJcx9usJpRnmtvin+3PlBhjfZDzxHS1R5TsCrzRpGY9aBC9k5vFF+ooubSQJv1SvU5yYk0mgcQ9E06A==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
@@ -880,14 +880,14 @@ packages:
       react-dom: 16.14.0(react@16.14.0)
     dev: true
 
-  /@fly4react/observer@1.5.0(intersection-observer@0.12.2)(react-dom@16.14.0)(react@16.14.0):
-    resolution: {integrity: sha512-A2RXp/tT0xDLe6JWk9Wc31DbGyuO/2esk9LI7M+zi7j9Mcq9AwKrj7/S4Ocg782LVSYb5aEoVUFRBT+WxxnoPA==}
+  /@fly4react/observer@1.5.2(intersection-observer@0.12.2)(react-dom@16.14.0)(react@16.14.0):
+    resolution: {integrity: sha512-TiFssaKUmvK7E44JLiWelLgv1pTEorndmpC1ohEJLeCta7GR4pw4nKRQlDC9O1YaB6OOy5ErlYXwrBTCl3Thnw==}
     peerDependencies:
       intersection-observer: ^0.12.0
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      '@fly4react/memo': 1.0.9(react-dom@16.14.0)(react@16.14.0)
+      '@fly4react/memo': 1.0.11(react-dom@16.14.0)(react@16.14.0)
       intersection-observer: 0.12.2
       react: 16.14.0
       react-dom: 16.14.0(react@16.14.0)
