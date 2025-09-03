@@ -44,7 +44,7 @@ export interface BackgroundImageProps {
 	src: string;
 	style: React.CSSProperties;
 	className?: string;
-	children: React.ReactNode;
+	children?: React.ReactNode;
 	/** 预加载配置 */
 	preload?: ImagePreloadOptions;
 	/** 图片 URL 转换函数 */
