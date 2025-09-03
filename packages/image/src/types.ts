@@ -31,7 +31,7 @@ export interface ImagePreloadOptions {
 export type ImageTransform = (src: string) => string;
 
 export interface ContentImageProps
-	extends Omit<React.ComponentProps<"img">, "ref"> {
+	extends Omit<React.ComponentProps<"img">, "ref" | "loading"> {
 	src: string;
 	lazyload?: boolean;
 	/** 预加载配置 */

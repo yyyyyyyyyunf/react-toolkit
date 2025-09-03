@@ -26,7 +26,7 @@ const ContentImage = React.forwardRef<HTMLImageElement, ContentImageProps>(
 				</IntersectionLoad>
 			);
 		}
-		return <img ref={ref} src={transformedSrc} {...rest} />;
+		return <img ref={ref} src={transformedSrc} {...rest} loading="eager" />;
 	},
 );
 
