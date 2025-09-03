@@ -1,5 +1,5 @@
 import createMemoComponent from "@fly4react/memo";
-import { IntersectionLoad } from "@fly4react/observer";
+import IntersectionLoad from "@fly4react/observer";
 import React from "react";
 import { useImagePreload } from "../hooks/useImagePreload";
 import type { ContentImageProps } from "../types";
