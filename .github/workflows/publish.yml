@@ -288,29 +288,58 @@ jobs:
           git add .
           git commit -m "chore: bump version via manual trigger"
           
-          # 创建新的版本标签
+          # 创建新的版本标签 - 使用包名前缀避免冲突
           SELECTED_PACKAGE="${{ github.event.inputs.package }}"
           if [[ "$SELECTED_PACKAGE" == "observer" ]]; then
             NEW_VERSION=$(node -p "require('./packages/observer/package.json').version")
-            git tag "v$NEW_VERSION"
+            git tag "observer-v$NEW_VERSION"
+            echo "🏷️  创建标签: observer-v$NEW_VERSION"
           elif [[ "$SELECTED_PACKAGE" == "memo" ]]; then
             NEW_VERSION=$(node -p "require('./packages/memo/package.json').version")
-            git tag "v$NEW_VERSION"
+            git tag "memo-v$NEW_VERSION"
+            echo "🏷️  创建标签: memo-v$NEW_VERSION"
           elif [[ "$SELECTED_PACKAGE" == "image" ]]; then
             NEW_VERSION=$(node -p "require('./packages/image/package.json').version")
-            git tag "v$NEW_VERSION"
+            git tag "image-v$NEW_VERSION"
+            echo "🏷️  创建标签: image-v$NEW_VERSION"
           else
-            # 使用observer版本作为主版本
-            NEW_VERSION=$(node -p "require('./packages/observer/package.json').version")
-            git tag "v$NEW_VERSION"
+            # 更新所有包时，为每个包创建独立的标签
+            OBSERVER_VERSION=$(node -p "require('./packages/observer/package.json').version")
+            MEMO_VERSION=$(node -p "require('./packages/memo/package.json').version")
+            IMAGE_VERSION=$(node -p "require('./packages/image/package.json').version")
+            
+            git tag "observer-v$OBSERVER_VERSION"
+            git tag "memo-v$MEMO_VERSION"
+            git tag "image-v$IMAGE_VERSION"
+            
+            echo "🏷️  创建标签: observer-v$OBSERVER_VERSION, memo-v$MEMO_VERSION, image-v$IMAGE_VERSION"
           fi
           
           git push origin ${{ github.ref }}
           git push origin --tags
           
-          # 为手动触发创建GitHub Release
+          # 为手动触发创建GitHub Release - 使用包名前缀的标签
           echo "📦 创建GitHub Release..."
-          gh release create "v$NEW_VERSION" --title "Release v$NEW_VERSION" --repo yyyyyyyyyunf/react-toolkit
+          SELECTED_PACKAGE="${{ github.event.inputs.package }}"
+          if [[ "$SELECTED_PACKAGE" == "observer" ]]; then
+            NEW_VERSION=$(node -p "require('./packages/observer/package.json').version")
+            gh release create "observer-v$NEW_VERSION" --title "Release @fly4react/observer v$NEW_VERSION" --repo yyyyyyyyyunf/react-toolkit
+          elif [[ "$SELECTED_PACKAGE" == "memo" ]]; then
+            NEW_VERSION=$(node -p "require('./packages/memo/package.json').version")
+            gh release create "memo-v$NEW_VERSION" --title "Release @fly4react/memo v$NEW_VERSION" --repo yyyyyyyyyunf/react-toolkit
+          elif [[ "$SELECTED_PACKAGE" == "image" ]]; then
+            NEW_VERSION=$(node -p "require('./packages/image/package.json').version")
+            gh release create "image-v$NEW_VERSION" --title "Release @fly4react/image v$NEW_VERSION" --repo yyyyyyyyyunf/react-toolkit
+          else
+            # 更新所有包时，为每个包创建独立的 Release
+            OBSERVER_VERSION=$(node -p "require('./packages/observer/package.json').version")
+            MEMO_VERSION=$(node -p "require('./packages/memo/package.json').version")
+            IMAGE_VERSION=$(node -p "require('./packages/image/package.json').version")
+            
+            gh release create "observer-v$OBSERVER_VERSION" --title "Release @fly4react/observer v$OBSERVER_VERSION" --repo yyyyyyyyyunf/react-toolkit
+            gh release create "memo-v$MEMO_VERSION" --title "Release @fly4react/memo v$MEMO_VERSION" --repo yyyyyyyyyunf/react-toolkit
+            gh release create "image-v$IMAGE_VERSION" --title "Release @fly4react/image v$IMAGE_VERSION" --repo yyyyyyyyyunf/react-toolkit
+          fi
       
       - name: Auto merge to main
         if: github.ref == 'refs/heads/release'
@@ -362,5 +391,11 @@ jobs:
             - Better TypeScript support
             - SSR (Server-Side Rendering) support
             - Image optimization and lazy loading utilities
+            
+            ### Tag Format
+            This release uses package-prefixed tags to avoid conflicts:
+            - observer-v* for @fly4react/observer releases
+            - memo-v* for @fly4react/memo releases  
+            - image-v* for @fly4react/image releases
           draft: false
           prerelease: false
