@@ -12,11 +12,19 @@ export default defineConfig({
 			bundle: true,
 			dts: true,
 			format: "esm",
+			autoExternal:{
+				peerDependencies:true,
+				devDependencies:true,
+			}
 		},
 		{
 			bundle: true,
 			dts: false,
 			format: "cjs",
+			autoExternal:{
+				peerDependencies:true,
+				devDependencies:true,
+			}
 		},
 	],
 	output: {

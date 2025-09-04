@@ -90,3 +90,7 @@ jspm_packages/
 
 # TernJS port file
 .tern-port
+
+packages/image/tsconfig.tsbuildinfo
+packages/memo/tsconfig.tsbuildinfo
+packages/observer/tsconfig.tsbuildinfo

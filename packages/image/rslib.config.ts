@@ -12,11 +12,19 @@ export default defineConfig({
 			bundle: true,
 			dts: true,
 			format: "esm",
+			autoExternal: {
+				peerDependencies: true,
+				devDependencies: true,
+			},
 		},
 		{
 			bundle: true,
 			dts: false, // CommonJS 不需要重复生成类型文件
 			format: "cjs",
+			autoExternal: {
+				peerDependencies: true,
+				devDependencies: true,
+			},
 		},
 	],
 	output: {

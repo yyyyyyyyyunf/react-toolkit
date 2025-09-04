@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 import type { MemoOptions, MemoizedComponent } from "../types";
 import { debugLog, shouldIgnoreProp } from "../utils/memoHelper";
 
@@ -49,7 +49,7 @@ export function createMemoComponent<P extends object>(
 ): MemoizedComponent<P> {
 	// 如果提供了自定义比较函数，则使用它
 	if (options?.compare) {
-		return React.memo(Component, options.compare);
+		return memo(Component, options.compare);
 	}
 
 	const displayName = Component.displayName || Component.name;
@@ -104,7 +104,7 @@ export function createMemoComponent<P extends object>(
 	};
 
 	// 使用我们的默认比较函数
-	const memoized = React.memo(Component, cusCompare);
+	const memoized = memo(Component, cusCompare);
 
 	// 设置显示名称，便于调试
 	memoized.displayName = `Memo-(${displayName})`;
