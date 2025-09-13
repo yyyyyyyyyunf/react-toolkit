@@ -94,7 +94,7 @@ export const useElementDetector = (
 ): boolean => {
 	const [isConditionMet, setIsConditionMet] = useState(false);
 	const isMountedRef = useIsMounted();
-	const lastConditionMetRef = useRef(false);
+	const lastConditionMetRef = useRef<boolean | null>(null);
 	/** 当前元素位置信息，用于智能计算策略 */
 	const positionRef = useRef<ElementPosition | null>(null);
 	/** 上次更新时间戳，用于节流控制 */
@@ -124,12 +124,18 @@ export const useElementDetector = (
 	}, [options]);
 
 	// 默认计算函数：检测元素是否贴顶（top <= 0）
-	const defaultCompute = (boundingClientRect: DOMRect): boolean => {
+	const defaultCompute = useCallback((boundingClientRect: DOMRect): boolean => {
 		return boundingClientRect.top <= 0;
-	};
+	}, []);
 
 	// 使用用户提供的计算函数或默认函数
-	const compute = options.compute ?? defaultCompute;
+	const compute = useCallback(
+		(boundingClientRect: DOMRect): boolean => {
+			const computeFn = options.compute ?? defaultCompute;
+			return computeFn(boundingClientRect);
+		},
+		[options.compute, defaultCompute],
+	);
 
 	/**
 	 * 节流更新条件状态
@@ -211,13 +217,8 @@ export const useElementDetector = (
 			// 使用计算函数判断元素是否满足条件
 			const newConditionMet = compute(entry.boundingClientRect);
 
-			// 只在状态改变时更新，避免频繁触发
-			if (newConditionMet !== lastConditionMetRef.current) {
-				throttledSetConditionRef.current(newConditionMet, newPosition);
-			} else {
-				// 即使条件状态没变，也要更新位置信息
-				throttledSetConditionRef.current(newConditionMet, newPosition);
-			}
+			// 更新条件状态和位置信息
+			throttledSetConditionRef.current(newConditionMet, newPosition);
 		},
 		[compute],
 	);
@@ -305,13 +306,8 @@ export const useElementDetector = (
 			// 使用计算函数判断元素是否满足条件
 			const newConditionMet = compute(newPosition.boundingClientRect);
 
-			// 只在状态改变时更新，避免频繁触发
-			if (newConditionMet !== lastConditionMetRef.current) {
-				throttledSetConditionRef.current(newConditionMet, newPosition);
-			} else {
-				// 即使条件状态没变，也要更新位置信息
-				throttledSetConditionRef.current(newConditionMet, newPosition);
-			}
+			// 更新条件状态和位置信息
+			throttledSetConditionRef.current(newConditionMet, newPosition);
 
 			scrollTimeoutRef.current = null;
 		}, throttle); // 使用相同的节流时间
