@@ -6,7 +6,7 @@ packages:
     description: "一个基于 Intersection Observer API 的现代 React 工具库"
     repository: "https://github.com/yyyyyyyyyunf/react-toolkit"
     registry: "https://registry.npmjs.org/"
-    latest_version: "1.9.1"
+    latest_version: "1.10.0"
     
   - name: "@fly4react/memo"
     description: "一个高级的 React 记忆化组件工具"
