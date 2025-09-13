@@ -83,8 +83,11 @@ pnpm run format
 - **useOneOffVisibility** - 一次性可见性检测
 - **useInViewport** - 简化的视口可见性检测
 - **useElementPosition** - 实时位置跟踪
+- **useElementPositionRef** - 位置跟踪 (Ref 版本，不触发重新渲染)
 - **useBoundingRectAndRatio** - 边界矩形和交叉比例
+- **useElementDetector** - 通用元素条件检测器
 - **useScrollDirection** - 滚动方向检测
+- **多 Hook 示例** - 演示多个 Hook 同时观察同一元素的功能
 
 ### 页面示例 (pages/)
 - **动画触发器** - 基于可见性触发动画
