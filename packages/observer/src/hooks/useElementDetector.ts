@@ -5,8 +5,8 @@ import type {
 	ElementPosition,
 	ObserverCallbackParamType,
 	ObserverOptions,
-	UseElementDetectorOptions,
 	UnSubscribeType,
+	UseElementDetectorOptions,
 } from "../types";
 import {
 	calculateFinalThreshold,
