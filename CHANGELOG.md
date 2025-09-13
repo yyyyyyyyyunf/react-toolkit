@@ -200,6 +200,62 @@ Not applicable - this is the initial release.
 
 2. 如果之前使用了 `throttle` 选项，请移除该选项（标准 polyfill 不支持）
 
+## [1.8.0] - 2025-09-13
+
+### @fly4react/observer
+
+#### Added
+- **🧠 智能位置同步策略**: 实现结合 Intersection Observer 和 scroll 事件的智能策略
+  - 元素部分可见时依赖 Intersection Observer 自动触发，避免复杂计算
+  - 元素完全可见/不可见时使用 scroll 事件进行精确位置计算
+  - 定期校准机制确保位置信息的准确性
+  - 智能判断何时需要复杂计算，提升性能
+- **⚡ 性能优化**: 
+  - 优化 `useIntersectionRatio` 直接使用 Intersection Observer，避免不必要的复杂计算
+  - 提取 `calculateFinalThreshold` 通用工具函数，统一所有 Hook 的 threshold 计算逻辑
+  - 优化 `useLayoutEffect` 依赖数组，移除不必要的依赖
+- **🔧 配置选项增强**:
+  - 新增 `forceCalibrate` 选项：强制启用校准机制
+  - 新增 `calibrateInterval` 选项：校准间隔时间配置
+  - 支持 `number` 类型的 `threshold` 参数，符合 Intersection Observer API 规范
+- **📝 类型系统完善**:
+  - 修复类型定义，使 `threshold` 支持 `number | number[]` 类型
+  - 限制智能位置同步选项，只有特定 Hook 支持 `forceCalibrate` 和 `calibrateInterval`
+  - 使用正确的 `Options` 类型，避免 inline 类型定义
+
+#### Changed
+- **代码重构**: 
+  - 重构 `calculateFinalThreshold` 函数，将解构步骤移到函数内部，简化各 Hook 代码
+  - 统一代码风格，修复 `useIntersectionRatio` 中 `observerOptions` 和 `finalThreshold` 的定义位置
+  - 统一所有 Hook 的代码结构和风格
+- **Hook 优化**:
+  - `useElementPositionRef`、`useElementPosition`、`useElementDetector` 采用智能位置同步策略
+  - `useIntersectionRatio` 重新实现，直接使用 Intersection Observer 而不是 `useElementPosition`
+  - 所有 Hook 的 `useLayoutEffect` 依赖数组优化
+
+#### Fixed
+- **Bug 修复**:
+  - 修复 scroll 事件处理中的 `scrollTimeoutRef` 清理问题
+  - 修复 pnpm workspace 依赖同步问题
+  - 修复类型定义不一致问题
+  - 修复 lint 错误和代码格式问题
+
+#### Technical Improvements
+- **代码质量**: 
+  - 移除所有调试 `console.log` 语句
+  - 统一代码格式和风格
+  - 优化依赖数组，提升性能
+- **测试覆盖**: 更新所有测试文件，确保新功能正常工作
+- **文档更新**: 更新所有文档，反映最新的设计和技术细节
+
+### Breaking Changes
+None - 所有更改都是向后兼容的。
+
+### Migration Guide
+1. **新配置选项**: 可以可选地使用新的 `forceCalibrate` 和 `calibrateInterval` 选项来启用智能位置同步策略
+2. **threshold 类型**: `threshold` 参数现在支持 `number` 类型，可以传入单个数字而不必是数组
+3. **性能优化**: 现有代码会自动受益于性能优化，无需修改
+
 ## [Unreleased]
 - Virtual scrolling support
 - More animation integration examples

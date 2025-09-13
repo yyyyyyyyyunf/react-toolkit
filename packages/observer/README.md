@@ -305,7 +305,9 @@ function MyComponent() {
   const ref = useRef<HTMLDivElement>(null);
   const position = useElementPosition(ref, {
     step: 0.1, // 每 10% 触发一次
-    throttle: 16 // 60fps
+    throttle: 16, // 60fps
+    forceCalibrate: true, // 强制校准
+    calibrateInterval: 5000 // 每5秒校准一次
   });
 
   return (
@@ -336,7 +338,9 @@ function MyComponent() {
   const ref = useRef<HTMLDivElement>(null);
   const positionRef = useElementPositionRef(ref, {
     step: 0.1, // 每 10% 触发一次
-    throttle: 16 // 60fps
+    throttle: 16, // 60fps
+    forceCalibrate: true, // 强制校准
+    calibrateInterval: 5000 // 每5秒校准一次
   });
 
   // 事件处理函数示例：获取实时位置信息
@@ -434,7 +438,9 @@ function MyComponent() {
     compute: (rect) => rect.top <= 50 && rect.bottom >= 100,
     step: 0.1, // 每 10% 触发一次
     throttle: 16, // 60fps
-    skipWhenOffscreen: true
+    skipWhenOffscreen: true,
+    forceCalibrate: true, // 强制校准
+    calibrateInterval: 3000 // 每3秒校准一次
   });
   
   // 使用自定义 threshold 数组
@@ -675,14 +681,21 @@ const hasBeenVisible = useOneOffVisibility(ref);
 
 ```tsx
 interface ElementPositionOptions {
-  threshold?: number[];
+  threshold?: number | number[];
   step?: number;
   throttle?: number;
   skipWhenOffscreen?: boolean;
   root?: RefObject<Element>;
   relativeToRoot?: boolean;
+  forceCalibrate?: boolean; // 强制启用校准机制
+  calibrateInterval?: number; // 校准间隔时间（毫秒）
 }
 ```
+
+**新增配置选项说明：**
+- **`forceCalibrate`**: 是否强制启用校准机制，确保位置信息的准确性
+- **`calibrateInterval`**: 校准间隔时间（毫秒），定期使用 Intersection Observer 校准位置
+- **`threshold`**: 现在支持 `number | number[]` 类型，更灵活的阈值配置
 
 ### UseScrollDirectionOptions
 
