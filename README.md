@@ -41,10 +41,13 @@
 | TypeScript | ✅ | ✅ | ✅ | ❌ |
 | SSR 支持 | ✅ | ✅ | ✅ | ❌ |
 | 浏览器兼容性 | ✅ (IE 11+) | ❌ | ❌ | ✅ (IE 9+) |
-| 性能优化 | ✅ 智能观察器复用 | ❌ | ❌ | ⚠️ 可配置节流 |
+| 性能优化 | ✅ 智能位置同步策略 | ❌ | ❌ | ⚠️ 可配置节流 |
 | 内存管理 | ✅ 自动清理 | ❌ | ❌ | ❌ 需要手动清理 |
 | 节流控制 | ✅ 内置节流 | ❌ | ❌ | ⚠️ 需手动配置 |
 | 降级策略 | ✅ 自动降级 | ❌ | ❌ | ✅ 基于scroll事件 |
+| 智能计算 | ✅ 避免重复计算 | ❌ | ❌ | ❌ 无智能策略 |
+| 校准机制 | ✅ 定期校准确保准确性 | ❌ | ❌ | ❌ 无校准机制 |
+| 配置灵活性 | ✅ 支持多种配置选项 | ❌ | ❌ | ⚠️ 基础配置 |
 
 ## 📦 包含的包
 
@@ -60,6 +63,9 @@
 - 🎮 滚动方向检测 (`useScrollDirection`)
 - 📌 元素条件检测 (`useElementDetector`)
 - 🖼️ 懒加载组件 (`IntersectionLoad`)
+- 🧠 **智能位置同步策略** (结合 Intersection Observer 和 scroll 事件)
+- ⚡ **性能优化** (智能计算策略，避免不必要的复杂计算)
+- 🔧 **灵活配置** (支持 `forceCalibrate` 和 `calibrateInterval` 选项)
 - 🌐 浏览器兼容性 (IE 11+)
 - 🔄 自动降级策略
 - 🧠 智能记忆化支持 (依赖 @fly4react/memo)
@@ -164,6 +170,27 @@ npm install @fly4react/image @fly4react/observer @fly4react/memo
 - **移动应用**: 移动端图片加载优化
 - **SSR 应用**: 服务端渲染的图片预加载
 
+## 🧠 智能位置同步策略
+
+我们的库采用了先进的智能位置同步策略，结合 Intersection Observer 和 scroll 事件，实现最佳性能：
+
+### 策略说明
+- **元素部分可见时**：依赖 Intersection Observer 自动触发，避免复杂计算
+- **元素完全可见/不可见时**：使用 scroll 事件进行精确位置计算
+- **定期校准**：使用 Intersection Observer 定期校准位置，确保数据准确性
+- **节流控制**：scroll 事件使用节流机制，避免过度计算
+
+### 配置选项
+- **`forceCalibrate`**: 是否强制启用校准机制
+- **`calibrateInterval`**: 校准间隔时间（毫秒）
+- **`throttle`**: scroll 事件节流时间（毫秒）
+
+### 性能优势
+- 减少不必要的计算，提升性能
+- 确保位置信息的实时性和准确性
+- 避免 Intersection Observer 的延迟更新问题
+- 智能判断何时需要复杂计算
+
 ## 🚀 快速开始
 
 ### Observer 包使用示例
@@ -180,10 +207,12 @@ function MyComponent() {
   // 检测元素是否贴顶
   const isCeiling = useElementDetector(ref);
   
-  // 获取元素的精确位置
+  // 获取元素的精确位置（智能位置同步策略）
   const position = useElementPosition(ref, {
     step: 0.1,
-    throttle: 16
+    throttle: 16,
+    forceCalibrate: true, // 强制校准
+    calibrateInterval: 5000 // 每5秒校准一次
   });
 
   return (

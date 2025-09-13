@@ -12,8 +12,8 @@ import { useIsMounted } from "./useIsMounted";
  *
  * 浏览器兼容性：
  * - 支持 IntersectionObserver 的浏览器：使用原生 API，性能最佳
- * - 不支持 IntersectionObserver 的浏览器：自动降级到 scroll 事件 + getBoundingClientRect
- * - 降级策略提供相同的 API 接口，确保功能一致性
+ * - 不支持 IntersectionObserver 的浏览器：使用标准的 intersection-observer polyfill
+ * - 使用标准的 intersection-observer polyfill，确保在所有浏览器中都能正常工作
  *
  * 特性：
  * - 返回元素是否在视口中可见（boolean）
@@ -21,7 +21,7 @@ import { useIsMounted } from "./useIsMounted";
  * - 类型安全：支持 null 值处理
  * - 性能优化：只关注可见性状态，无额外开销
  * - 简单易用：无需复杂配置，开箱即用
- * - 浏览器兼容性：自动降级支持旧版浏览器
+ * - 浏览器兼容性：使用标准 polyfill 支持所有浏览器
  *
  * @param ref 要检测可见性的元素的 ref
  * @returns 元素是否在视口中可见（boolean）

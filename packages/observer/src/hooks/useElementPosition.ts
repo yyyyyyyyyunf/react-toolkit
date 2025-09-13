@@ -4,31 +4,44 @@ import { lazyloadManager } from "../base/IntersectionObserverManager";
 import type {
 	ElementPosition,
 	ObserverCallbackParamType,
+	ObserverOptions,
 	Options,
+	UnSubscribeType,
 } from "../types";
-import { generateThresholdArray, getDefaultThresholdArray } from "../utils";
+import {
+	calculateFinalThreshold,
+	calculateScrollBasedPosition,
+	checkIfShouldSyncPosition,
+} from "../utils";
 import { useIsMounted } from "./useIsMounted";
 
 /**
- * 元素位置跟踪 Hook
+ * 元素位置跟踪 Hook (State 版本)
  *
- * 实时跟踪元素在视口中的位置变化，支持节流、自定义根元素和相对位置计算。
- * 适用于滚动动画、位置监控、性能分析等场景。
+ * 实时跟踪元素在视口中的位置变化，会触发组件重新渲染。
+ * 适用于需要根据元素位置变化更新 UI 的场景。
  * 
  * 浏览器兼容性：
  * - 支持 IntersectionObserver 的浏览器：使用原生 API，性能最佳
- * - 不支持 IntersectionObserver 的浏览器：自动降级到 scroll 事件 + getBoundingClientRect
- * - 降级策略提供相同的 API 接口，确保功能一致性
+ * - 不支持 IntersectionObserver 的浏览器：使用标准的 intersection-observer polyfill
+ * - 使用标准的 intersection-observer polyfill，确保在所有浏览器中都能正常工作
 
- * 特性：
+ * 核心特性：
+ * - 使用 useState 存储位置信息，会触发组件重新渲染
  * - 支持基于 viewport 和自定义 root 的位置跟踪
  * - 内置节流机制，可控制更新频率
  * - 支持 step 和 threshold 两种配置方式
  * - 提供相对位置计算功能
- * - 性能优化：元素完全不可见时跳过更新
  * - 自动处理组件挂载状态，防止内存泄漏
  * - 类型安全：支持 null 值处理
- * - 浏览器兼容性：自动降级支持旧版浏览器
+ * - 浏览器兼容性：使用标准 polyfill 支持所有浏览器
+ *
+ * 性能优化策略：
+ * - 智能计算策略：结合 Intersection Observer 和 scroll 事件
+ * - 避免重复计算：元素部分可见时，依赖 Intersection Observer 自动触发
+ * - 精确更新：元素完全可见/不可见时，使用 scroll 事件进行位置同步
+ * - 校准机制：定期使用 Intersection Observer 校准位置，确保数据准确性
+ * - 节流控制：scroll 事件使用节流机制，避免过度计算
  *
  * @param ref 要跟踪的元素的 ref
  * @param options 配置选项
@@ -40,13 +53,15 @@ import { useIsMounted } from "./useIsMounted";
  * const position = useElementPosition(ref, {
  *   step: 0.1, // 每 10% 触发一次
  *   throttle: 16, // 60fps
- *   skipWhenOffscreen: true
+ *   forceCalibrate: true, // 启用强制校准
+ *   calibrateInterval: 2500, // 校准间隔 2.5 秒
  * });
  *
  * if (position) {
  *   console.log('元素位置:', position.boundingClientRect);
  *   console.log('交叉比例:', position.intersectionRatio);
  *   console.log('是否相交:', position.isIntersecting);
+ *   console.log('滚动位置:', { x: position.scrollX, y: position.scrollY });
  *   console.log('时间戳:', position.time);
  * }
  * ```
@@ -55,56 +70,37 @@ export const useElementPosition = (
 	ref: React.RefObject<HTMLElement | null>,
 	options: Options = {},
 ) => {
-	/** 当前元素位置信息 */
+	/** 当前元素位置信息，使用 useState 会触发重新渲染 */
 	const [position, setPosition] = useState<ElementPosition | null>(null);
 	/** 上次更新时间戳，用于节流控制 */
 	const lastUpdateTimeRef = useRef(0);
-	/** 缓存的最新位置信息，确保最后一次更新被记录 */
-	const lastPositionRef = useRef<ElementPosition | null>(null);
+	/** 上次强制校准时间戳，用于控制校准频率 */
+	const lastCalibrateTimeRef = useRef(0);
 	/** 节流定时器引用 */
 	const timeoutRef = useRef<number | null>(null);
+	/** scroll 事件节流定时器引用 */
+	const scrollTimeoutRef = useRef<number | null>(null);
 	/** 组件挂载状态跟踪 */
 	const isMountedRef = useIsMounted();
 
 	// 解构配置选项，设置默认值，避免对象引用问题
 	const offset = options.offset ?? 0;
 	const throttle = options.throttle ?? 16; // 默认 60fps
-	const skipWhenOffscreen = options.skipWhenOffscreen ?? true; // 元素完全不可见时跳过更新
+	const forceCalibrate = options.forceCalibrate ?? true; // 元素完全不可见时跳过更新
+	const calibrateInterval = options.calibrateInterval ?? 2500; // 校准间隔
 
 	// 处理 root 和 relativeToRoot 选项
 	const root = "root" in options ? options.root : null;
 	const relativeToRoot =
 		root && "relativeToRoot" in options ? options.relativeToRoot : false;
 
-	// 解构 step 和 threshold 以避免对象引用问题
-	const step = "step" in options ? options.step : undefined;
-	const threshold = "threshold" in options ? options.threshold : undefined;
-
 	/**
 	 * 计算最终的 threshold 数组
 	 * 根据配置的 step 或 threshold 生成用于 Intersection Observer 的阈值数组
 	 */
 	const finalThreshold = useMemo(() => {
-		// 运行时检查：确保 step 和 threshold 不同时设置
-		if (step !== undefined && threshold !== undefined) {
-			console.warn(
-				"useElementPosition: step 和 threshold 不能同时设置，将使用 threshold",
-			);
-		}
-
-		// 如果明确指定了 threshold，优先使用
-		if (threshold !== undefined) {
-			return threshold;
-		}
-
-		// 如果指定了 step，根据 step 生成 threshold 数组
-		if (step !== undefined) {
-			return generateThresholdArray(step);
-		}
-
-		// 否则使用默认的 threshold 数组
-		return getDefaultThresholdArray();
-	}, [step, threshold]);
+		return calculateFinalThreshold(options, "useElementPosition");
+	}, [options]);
 
 	/**
 	 * 节流更新位置信息
@@ -118,7 +114,6 @@ export const useElementPosition = (
 			if (!isMountedRef.current) return;
 
 			const now = Date.now();
-			lastPositionRef.current = newPosition; // 总是缓存最新值
 
 			if (now - lastUpdateTimeRef.current >= throttle) {
 				// 立即更新
@@ -138,8 +133,8 @@ export const useElementPosition = (
 				timeoutRef.current = setTimeout(
 					() => {
 						// 再次检查组件是否仍然挂载
-						if (isMountedRef.current && lastPositionRef.current) {
-							setPosition(lastPositionRef.current);
+						if (isMountedRef.current) {
+							setPosition(newPosition);
 							lastUpdateTimeRef.current = Date.now();
 						}
 						timeoutRef.current = null;
@@ -157,20 +152,14 @@ export const useElementPosition = (
 	// 更新 ref 中的值
 	throttledSetPositionRef.current = throttledSetPosition;
 
-	// 设置 Intersection Observer
-	useLayoutEffect(() => {
-		if (!ref.current) return;
+	const unSubscribeRef = useRef<UnSubscribeType | undefined>(undefined);
 
-		/**
-		 * Intersection Observer 回调函数
-		 * 处理元素位置变化，计算相对位置并更新状态
-		 */
-		const callback = (entry: ObserverCallbackParamType) => {
-			// 如果元素完全不可见且启用了跳过选项，则不更新
-			if (skipWhenOffscreen && entry.intersectionRatio === 0) {
-				return;
-			}
-
+	/**
+	 * Intersection Observer 回调函数
+	 * 处理元素位置变化，计算相对位置并更新状态
+	 */
+	const callback = useCallback(
+		(entry: ObserverCallbackParamType) => {
 			/** 相对于 root 的位置信息 */
 			let relativeRect: DOMRect | undefined;
 
@@ -194,31 +183,145 @@ export const useElementPosition = (
 				isIntersecting: entry.isIntersecting,
 				time: entry.time,
 				relativeRect,
+				scrollX: window.scrollX,
+				scrollY: window.scrollY,
 			};
 
 			// 使用节流更新位置
 			throttledSetPositionRef.current(newPosition);
-		};
+		},
+		[relativeToRoot, root],
+	);
 
-		// 开始观察元素
-		const unSubscribe = lazyloadManager.observe(ref.current, callback, {
+	const observerOptions: ObserverOptions = useMemo(
+		() => ({
 			threshold: finalThreshold,
 			rootMargin: `${offset}px`,
 			root,
-		});
+		}),
+		[finalThreshold, offset, root],
+	);
+
+	/**
+	 * 节流的 scroll 事件处理函数
+	 *
+	 * 智能处理 scroll 事件，根据元素当前状态决定是否需要执行复杂计算：
+	 * - 元素部分可见时：依赖 Intersection Observer 自动触发，跳过计算
+	 * - 元素完全可见/不可见时：执行位置计算和校准检查
+	 *
+	 * 性能优化：
+	 * - 使用节流机制避免过度计算
+	 * - 智能判断是否需要复杂计算
+	 * - 定期校准确保数据准确性
+	 */
+	const throttledHandleScroll = useCallback(() => {
+		// 如果已经有待执行的 scroll 处理，直接返回
+		if (scrollTimeoutRef.current) return;
+
+		scrollTimeoutRef.current = setTimeout(() => {
+			// 检查组件是否仍然挂载
+			if (!isMountedRef.current) {
+				scrollTimeoutRef.current = null;
+				return;
+			}
+
+			if (!position) {
+				scrollTimeoutRef.current = null;
+				return;
+			}
+
+			// 智能判断当前状态下的处理策略
+			const { shouldCalibrate, shouldCalculateOnScroll } =
+				checkIfShouldSyncPosition(
+					position || {},
+					forceCalibrate,
+					lastCalibrateTimeRef.current,
+					calibrateInterval,
+				);
+
+			const now = Date.now();
+
+			// 执行校准：重新使用 Intersection Observer 获取准确位置
+			if (shouldCalibrate && ref.current) {
+				lastCalibrateTimeRef.current = now;
+				unSubscribeRef.current?.();
+				unSubscribeRef.current = lazyloadManager.observe(
+					ref.current,
+					callback,
+					observerOptions,
+				);
+				scrollTimeoutRef.current = null;
+				return;
+			}
+
+			// 跳过计算：元素部分可见时，依赖 Intersection Observer 自动触发
+			if (!shouldCalculateOnScroll) {
+				if (scrollTimeoutRef.current) {
+					clearTimeout(scrollTimeoutRef.current);
+					scrollTimeoutRef.current = null;
+				}
+				return;
+			}
+
+			// 执行复杂的位置计算：元素完全可见或完全不可见时
+			const currentScrollX = window.scrollX;
+			const currentScrollY = window.scrollY;
+			const newPosition = calculateScrollBasedPosition(
+				position,
+				currentScrollX,
+				currentScrollY,
+				now,
+			);
+
+			throttledSetPositionRef.current(newPosition);
+
+			scrollTimeoutRef.current = null;
+		}, throttle); // 使用相同的节流时间
+	}, [
+		throttle,
+		isMountedRef,
+		forceCalibrate,
+		calibrateInterval,
+		ref,
+		callback,
+		observerOptions,
+		position,
+	]);
+
+	// 设置 Intersection Observer
+	useLayoutEffect(() => {
+		if (!ref.current) return;
+
+		// 开始观察元素
+		unSubscribeRef.current = lazyloadManager.observe(
+			ref.current,
+			callback,
+			observerOptions,
+		);
+
+		window.addEventListener("scroll", throttledHandleScroll, { passive: true });
 
 		// 清理函数
 		return () => {
-			if (unSubscribe) {
-				unSubscribe();
+			if (unSubscribeRef.current) {
+				unSubscribeRef.current();
 			}
+
+			window.removeEventListener("scroll", throttledHandleScroll);
+
 			// 清理定时器
 			if (timeoutRef.current) {
 				clearTimeout(timeoutRef.current);
 				timeoutRef.current = null;
 			}
+
+			// 清理 scroll 节流定时器
+			if (scrollTimeoutRef.current) {
+				clearTimeout(scrollTimeoutRef.current);
+				scrollTimeoutRef.current = null;
+			}
 		};
-	}, [ref, finalThreshold, offset, root, relativeToRoot, skipWhenOffscreen]);
+	}, [ref, callback, observerOptions, throttledHandleScroll]);
 
 	return position;
 };

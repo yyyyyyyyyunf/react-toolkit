@@ -8,6 +8,7 @@
 
 - 🎯 **精确的位置跟踪**：实时监控元素在视口中的位置变化
 - ⚡ **性能优化**：内置节流机制，避免频繁更新
+- 🧠 **智能位置同步**：结合 Intersection Observer 和 scroll 事件的智能策略
 - 🔄 **滚动方向检测**：智能识别滚动方向变化
 - 🎨 **动画触发器**：支持基于位置的动画触发
 - 📱 **响应式支持**：适配各种屏幕尺寸和设备
@@ -304,7 +305,9 @@ function MyComponent() {
   const ref = useRef<HTMLDivElement>(null);
   const position = useElementPosition(ref, {
     step: 0.1, // 每 10% 触发一次
-    throttle: 16 // 60fps
+    throttle: 16, // 60fps
+    forceCalibrate: true, // 强制校准
+    calibrateInterval: 5000 // 每5秒校准一次
   });
 
   return (
@@ -335,7 +338,9 @@ function MyComponent() {
   const ref = useRef<HTMLDivElement>(null);
   const positionRef = useElementPositionRef(ref, {
     step: 0.1, // 每 10% 触发一次
-    throttle: 16 // 60fps
+    throttle: 16, // 60fps
+    forceCalibrate: true, // 强制校准
+    calibrateInterval: 5000 // 每5秒校准一次
   });
 
   // 事件处理函数示例：获取实时位置信息
@@ -433,7 +438,9 @@ function MyComponent() {
     compute: (rect) => rect.top <= 50 && rect.bottom >= 100,
     step: 0.1, // 每 10% 触发一次
     throttle: 16, // 60fps
-    skipWhenOffscreen: true
+    skipWhenOffscreen: true,
+    forceCalibrate: true, // 强制校准
+    calibrateInterval: 3000 // 每3秒校准一次
   });
   
   // 使用自定义 threshold 数组
@@ -627,6 +634,22 @@ function useIsMounted(): RefObject<boolean>
 
 ## ⚡ 重要行为说明
 
+### 智能位置同步策略
+
+库采用了先进的智能位置同步策略，结合 Intersection Observer 和 scroll 事件，实现最佳性能：
+
+**策略说明：**
+- **元素部分可见时**：依赖 Intersection Observer 自动触发，避免复杂计算
+- **元素完全可见/不可见时**：使用 scroll 事件进行精确位置计算
+- **定期校准**：使用 Intersection Observer 定期校准位置，确保数据准确性
+- **节流控制**：scroll 事件使用节流机制，避免过度计算
+
+**性能优势：**
+- 减少不必要的计算，提升性能
+- 确保位置信息的实时性和准确性
+- 避免 Intersection Observer 的延迟更新问题
+- 智能判断何时需要复杂计算
+
 ### 初始 Viewport 状态
 
 当组件一开始就在视口中时，所有基于 Intersection Observer 的 hooks 和组件会**立即触发回调**，而不需要等待滚动事件。这是 Intersection Observer API 的标准行为。
@@ -658,14 +681,21 @@ const hasBeenVisible = useOneOffVisibility(ref);
 
 ```tsx
 interface ElementPositionOptions {
-  threshold?: number[];
+  threshold?: number | number[];
   step?: number;
   throttle?: number;
   skipWhenOffscreen?: boolean;
   root?: RefObject<Element>;
   relativeToRoot?: boolean;
+  forceCalibrate?: boolean; // 强制启用校准机制
+  calibrateInterval?: number; // 校准间隔时间（毫秒）
 }
 ```
+
+**新增配置选项说明：**
+- **`forceCalibrate`**: 是否强制启用校准机制，确保位置信息的准确性
+- **`calibrateInterval`**: 校准间隔时间（毫秒），定期使用 Intersection Observer 校准位置
+- **`threshold`**: 现在支持 `number | number[]` 类型，更灵活的阈值配置
 
 ### UseScrollDirectionOptions
 

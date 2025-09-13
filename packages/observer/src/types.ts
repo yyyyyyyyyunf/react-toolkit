@@ -24,6 +24,11 @@ export interface ObserverCallbackParamType extends IntersectionObserverEntry {
 export type ObserverCallbackType = (entry: ObserverCallbackParamType) => void;
 
 /**
+ * 取消订阅函数类型
+ */
+export type UnSubscribeType = () => void;
+
+/**
  * Intersection Observer 配置选项
  * 扩展了原生的 IntersectionObserverInit 接口
  */
@@ -44,13 +49,9 @@ export type SerializableObserverOptions = Omit<ObserverOptions, "root"> & {
 
 /**
  * useOneOffVisibility 选项配置
+ * 使用普通版本的选项，不包含智能位置同步策略
  */
-export interface OneOffVisibilityOptions {
-	/** 可见性阈值（0-1之间），元素达到此比例时触发，默认 0.1 */
-	threshold?: number;
-	/** 提前触发的偏移量（像素），默认 0 */
-	offset?: number;
-}
+export type OneOffVisibilityOptions = UseOneOffVisibilityOptions;
 
 /**
  * 基础选项
@@ -61,8 +62,17 @@ interface BaseOptions {
 	offset?: number;
 	/** 节流时间（毫秒），控制更新频率 */
 	throttle?: number;
-	/** 元素完全不可见时跳过更新，提升性能 */
-	skipWhenOffscreen?: boolean;
+}
+
+/**
+ * 智能位置同步选项
+ * 包含智能位置同步策略的配置选项
+ */
+interface SmartSyncOptions {
+	/** 是否强制校准，每次更新都强制校准，默认 true */
+	forceCalibrate?: boolean;
+	/** 校准间隔（毫秒），默认 2500 */
+	calibrateInterval?: number;
 }
 
 /**
@@ -81,8 +91,8 @@ interface StepOptions extends BaseOptions {
  * 手动指定 threshold 数组
  */
 interface ThresholdOptions extends BaseOptions {
-	/** 手动指定的 threshold 数组 */
-	threshold: number[];
+	/** 手动指定的 threshold 值，可以是单个数字或数字数组 */
+	threshold: number | number[];
 	/** 不能同时使用 step */
 	step?: never;
 }
@@ -99,31 +109,97 @@ interface DefaultOptions extends BaseOptions {
 }
 
 /**
- * 基于 viewport 的选项
- * 使用浏览器视口作为根元素
+ * 智能位置同步的 step 选项
+ * 包含智能位置同步策略的 step 配置
  */
-export type ViewportOptions = StepOptions | ThresholdOptions | DefaultOptions;
+interface SmartSyncStepOptions extends BaseOptions, SmartSyncOptions {
+	/** 步长值（0-1之间），用于自动生成 threshold 数组 */
+	step: number;
+	/** 不能同时使用 threshold */
+	threshold?: never;
+}
 
 /**
- * 基于自定义 root 的选项
- * 使用自定义元素作为根元素
+ * 智能位置同步的 threshold 选项
+ * 包含智能位置同步策略的 threshold 配置
  */
-interface CustomRootOptions extends BaseOptions {
+interface SmartSyncThresholdOptions extends BaseOptions, SmartSyncOptions {
+	/** 手动指定的 threshold 值，可以是单个数字或数字数组 */
+	threshold: number | number[];
+	/** 不能同时使用 step */
+	step?: never;
+}
+
+/**
+ * 智能位置同步的默认选项
+ * 包含智能位置同步策略的默认配置
+ */
+interface SmartSyncDefaultOptions extends BaseOptions, SmartSyncOptions {
+	/** 不能使用 step */
+	step?: never;
+	/** 不能使用 threshold */
+	threshold?: never;
+}
+
+/**
+ * 基于 viewport 的选项（智能位置同步）
+ * 使用浏览器视口作为根元素，包含智能位置同步策略
+ */
+export type ViewportOptions =
+	| SmartSyncStepOptions
+	| SmartSyncThresholdOptions
+	| SmartSyncDefaultOptions;
+
+/**
+ * 基于 viewport 的选项（普通版本）
+ * 使用浏览器视口作为根元素，不包含智能位置同步策略
+ */
+export type ViewportOptionsBasic =
+	| StepOptions
+	| ThresholdOptions
+	| DefaultOptions;
+
+/**
+ * 基于自定义 root 的选项（智能位置同步）
+ * 使用自定义元素作为根元素，包含智能位置同步策略
+ */
+interface CustomRootOptions extends BaseOptions, SmartSyncOptions {
 	/** 自定义根元素 */
 	root: Element;
 	/** 是否提供相对于 root 的位置信息，默认为 true */
 	relativeToRoot?: boolean;
 	/** 步长值，用于自动生成 threshold 数组 */
 	step?: number;
-	/** 手动指定的 threshold 数组 */
-	threshold?: number[];
+	/** 手动指定的 threshold 值，可以是单个数字或数字数组 */
+	threshold?: number | number[];
 }
 
 /**
- * 通用选项类型
- * 支持基于 viewport 和自定义 root 两种模式
+ * 基于自定义 root 的选项（普通版本）
+ * 使用自定义元素作为根元素，不包含智能位置同步策略
+ */
+interface CustomRootOptionsBasic extends BaseOptions {
+	/** 自定义根元素 */
+	root: Element;
+	/** 是否提供相对于 root 的位置信息，默认为 true */
+	relativeToRoot?: boolean;
+	/** 步长值，用于自动生成 threshold 数组 */
+	step?: number;
+	/** 手动指定的 threshold 值，可以是单个数字或数字数组 */
+	threshold?: number | number[];
+}
+
+/**
+ * 通用选项类型（智能位置同步）
+ * 支持基于 viewport 和自定义 root 两种模式，包含智能位置同步策略
  */
 export type Options = ViewportOptions | CustomRootOptions;
+
+/**
+ * 通用选项类型（普通版本）
+ * 支持基于 viewport 和自定义 root 两种模式，不包含智能位置同步策略
+ */
+export type OptionsBasic = ViewportOptionsBasic | CustomRootOptionsBasic;
 
 /**
  * 元素位置信息
@@ -140,6 +216,10 @@ export interface ElementPosition {
 	time: number;
 	/** 相对于 root 的位置信息，仅在设置了自定义 root 时提供 */
 	relativeRect?: DOMRect;
+	/** 滚动 X 轴位置 */
+	scrollX: number;
+	/** 滚动 Y 轴位置 */
+	scrollY: number;
 }
 
 /**
@@ -204,8 +284,8 @@ interface CustomRootScrollDirectionOptions extends BaseScrollDirectionOptions {
 	root: Element;
 	/** 步长值，用于自动生成 threshold 数组 */
 	step?: number;
-	/** 手动指定的 threshold 数组 */
-	threshold?: number[];
+	/** 手动指定的 threshold 值，可以是单个数字或数字数组 */
+	threshold?: number | number[];
 }
 
 /**
@@ -278,4 +358,33 @@ export type IntersectionLoadProps =
 export type UseElementDetectorOptions = Options & {
 	/** 自定义计算函数，接受 boundingClientRect 参数，返回 boolean */
 	compute?: (boundingClientRect: DOMRect) => boolean;
+};
+
+/**
+ * useInViewport Hook 选项类型
+ * 使用普通版本的选项，不包含智能位置同步策略
+ */
+export type UseInViewportOptions = OptionsBasic;
+
+/**
+ * useBoundingClientRect Hook 选项类型
+ * 基于 useElementPosition 实现，支持智能位置同步策略
+ */
+export type UseBoundingClientRectOptions = Options;
+
+/**
+ * useIntersectionRatio Hook 选项类型
+ * 直接使用 Intersection Observer，不需要智能位置同步策略
+ */
+export type UseIntersectionRatioOptions = OptionsBasic;
+
+/**
+ * useOneOffVisibility Hook 选项类型
+ * 使用普通版本的选项，不包含智能位置同步策略
+ */
+export type UseOneOffVisibilityOptions = OptionsBasic;
+
+export type CheckIfShouldSyncPositionResult = {
+	shouldCalibrate: boolean;
+	shouldCalculateOnScroll: boolean;
 };

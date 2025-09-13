@@ -15,8 +15,8 @@ import { useIsMounted } from "./useIsMounted";
  *
  * 浏览器兼容性：
  * - 支持 IntersectionObserver 的浏览器：使用原生 API，性能最佳
- * - 不支持 IntersectionObserver 的浏览器：自动降级到 scroll 事件 + getBoundingClientRect
- * - 降级策略提供相同的 API 接口，确保功能一致性
+ * - 不支持 IntersectionObserver 的浏览器：使用标准的 intersection-observer polyfill
+ * - 使用标准的 intersection-observer polyfill，确保在所有浏览器中都能正常工作
  *
  * 特性：
  * - 一旦元素可见，状态永久保持为 true
@@ -25,7 +25,7 @@ import { useIsMounted } from "./useIsMounted";
  * - 简单易用，无需手动管理状态
  * - 类型安全：支持 null 值处理
  * - 使用 threshold 参数设置触发阈值
- * - 浏览器兼容性：自动降级支持旧版浏览器
+ * - 浏览器兼容性：使用标准 polyfill 支持所有浏览器
  *
  * @param ref 要检测可见性的元素的 ref
  * @param options 配置参数，包含可选的 threshold 和 offset

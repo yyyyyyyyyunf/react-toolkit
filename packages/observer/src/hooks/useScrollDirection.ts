@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import type { ScrollDirection, UseScrollDirectionOptions } from "../types";
-import { generateThresholdArray } from "../utils";
+import { calculateFinalThreshold } from "../utils";
 import { useIntersectionObserver } from "./useIntersectionObserver";
 
 /**
@@ -11,8 +11,8 @@ import { useIntersectionObserver } from "./useIntersectionObserver";
  *
  * 浏览器兼容性：
  * - 支持 IntersectionObserver 的浏览器：使用原生 API，性能最佳
- * - 不支持 IntersectionObserver 的浏览器：自动降级到 scroll 事件 + getBoundingClientRect
- * - 降级策略提供相同的 API 接口，确保功能一致性
+ * - 不支持 IntersectionObserver 的浏览器：使用标准的 intersection-observer polyfill
+ * - 使用标准的 intersection-observer polyfill，确保在所有浏览器中都能正常工作
  *
  * 特性：
  * - 实时检测滚动方向（上、下、左、右、无）
@@ -21,7 +21,7 @@ import { useIntersectionObserver } from "./useIntersectionObserver";
  * - 提供滚动状态指示器
  * - 支持 step 和 threshold 两种配置方式
  * - 类型安全：支持 null 值处理
- * - 浏览器兼容性：自动降级支持旧版浏览器
+ * - 浏览器兼容性：使用标准 polyfill 支持所有浏览器
  *
  * @param ref 要检测滚动方向的元素的 ref
  * @param options 配置选项
@@ -70,35 +70,13 @@ export const useScrollDirection = (
 	// 处理 root 选项
 	const root = "root" in options ? options.root : null;
 
-	// 解构 step 和 threshold 以避免对象引用问题
-	const step = "step" in options ? options.step : undefined;
-	const threshold = "threshold" in options ? options.threshold : undefined;
-
 	/**
 	 * 计算最终的 threshold 数组
 	 * 根据配置的 step 或 threshold 生成用于 Intersection Observer 的阈值数组
 	 */
 	const finalThreshold = useMemo(() => {
-		// 运行时检查：确保 step 和 threshold 不同时设置
-		if (step !== undefined && threshold !== undefined) {
-			console.warn(
-				"useScrollDirection: step 和 threshold 不能同时设置，将使用 threshold",
-			);
-		}
-
-		// 如果明确指定了 threshold，优先使用
-		if (threshold !== undefined) {
-			return threshold;
-		}
-
-		// 如果指定了 step，根据 step 生成 threshold 数组
-		if (step !== undefined) {
-			return generateThresholdArray(step);
-		}
-
-		// 否则使用默认的 threshold 数组
-		return [0, 0.25, 0.5, 0.75, 1];
-	}, [step, threshold]);
+		return calculateFinalThreshold(options, "useScrollDirection");
+	}, [options]);
 
 	/**
 	 * 节流更新滚动方向

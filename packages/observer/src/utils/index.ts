@@ -1,5 +1,10 @@
 import "intersection-observer";
-import type { ObserverOptions } from "../types";
+import type {
+	CheckIfShouldSyncPositionResult,
+	ElementPosition,
+	ObserverOptions,
+	Options,
+} from "../types";
 
 /**
  * 检查浏览器是否支持 Intersection Observer API
@@ -13,7 +18,7 @@ import type { ObserverOptions } from "../types";
  * if (isSupportIntersectionObserver()) {
  *   // 使用 Intersection Observer
  * } else {
- *   // 降级处理
+ *   // 使用 polyfill
  * }
  * ```
  */
@@ -95,6 +100,71 @@ export const generateThresholdArray = (step: number): number[] => {
  */
 export const getDefaultThresholdArray = (): number[] => {
 	return [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
+};
+
+/**
+ * 计算最终的 threshold 数组
+ *
+ * 根据配置的 step 或 threshold 生成用于 Intersection Observer 的阈值数组。
+ * 这是一个通用的工具函数，用于统一处理各个 Hook 中的 threshold 计算逻辑。
+ *
+ * 计算逻辑：
+ * 1. 如果同时设置了 step 和 threshold，会发出警告并使用 threshold
+ * 2. 如果明确指定了 threshold，优先使用
+ * 3. 如果指定了 step，根据 step 生成 threshold 数组
+ * 4. 否则使用默认的 threshold 数组
+ *
+ * @param options 包含 step 和 threshold 的选项对象
+ * @param hookName Hook 名称，用于警告信息
+ * @returns 最终的 threshold 数组
+ *
+ * @example
+ * ```tsx
+ * // 使用 step
+ * const thresholds1 = calculateFinalThreshold({ step: 0.1 }, 'useElementPosition');
+ * // [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+ *
+ * // 使用单个数字 threshold
+ * const thresholds2 = calculateFinalThreshold({ threshold: 0.5 }, 'useElementPosition');
+ * // [0.5]
+ *
+ * // 使用数组 threshold
+ * const thresholds3 = calculateFinalThreshold({ threshold: [0, 0.5, 1] }, 'useElementPosition');
+ * // [0, 0.5, 1]
+ *
+ * // 使用默认值
+ * const thresholds4 = calculateFinalThreshold({}, 'useElementPosition');
+ * // [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+ * ```
+ */
+export const calculateFinalThreshold = (
+	options: Options,
+	hookName: string,
+): number[] => {
+	// 解构 step 和 threshold 以避免对象引用问题
+	const step = "step" in options ? options.step : undefined;
+	const threshold = "threshold" in options ? options.threshold : undefined;
+
+	// 运行时检查：确保 step 和 threshold 不同时设置
+	if (step !== undefined && threshold !== undefined) {
+		console.warn(
+			`${hookName}: step 和 threshold 不能同时设置，将使用 threshold`,
+		);
+	}
+
+	// 如果明确指定了 threshold，优先使用
+	if (threshold !== undefined) {
+		// 如果是单个数字，转换为数组
+		return Array.isArray(threshold) ? threshold : [threshold];
+	}
+
+	// 如果指定了 step，根据 step 生成 threshold 数组
+	if (step !== undefined) {
+		return generateThresholdArray(step);
+	}
+
+	// 否则使用默认的 threshold 数组
+	return getDefaultThresholdArray();
 };
 
 /**
@@ -202,7 +272,7 @@ export const calculateScrollDirection = (
  * 创建 IntersectionObserver 实例的工厂函数
  *
  * 根据浏览器支持情况自动选择原生 API 或 polyfill 实现。
- * 为不支持 IntersectionObserver 的浏览器提供降级方案。
+ * 使用标准的 intersection-observer polyfill 支持所有浏览器。
  *
  * @param callback IntersectionObserver 回调函数
  * @param options 配置选项，支持标准的 IntersectionObserverInit
@@ -226,4 +296,148 @@ export const createIntersectionObserver = (
 	options?: ObserverOptions,
 ): IntersectionObserver => {
 	return new IntersectionObserver(callback, options);
+};
+
+/**
+ * 检查是否需要同步位置
+ * 根据元素的位置信息和配置选项，判断是否需要同步位置。
+ * 支持强制校准和滚动计算。
+ *
+ * @param position 位置信息
+ * @param forceCalibrate 是否强制校准
+ * @param lastCalibrateTime 上次校准时间
+ * @param calibrateInterval 校准间隔
+ * @returns 是否需要同步位置
+ */
+export const checkIfShouldSyncPosition = (
+	position: ElementPosition,
+	forceCalibrate: boolean,
+	lastCalibrateTime: number,
+	calibrateInterval: number,
+): CheckIfShouldSyncPositionResult => {
+	const { intersectionRatio, isIntersecting } = position;
+
+	/** 如果元素正在部分可见，则不需要同步位置，IntersectionObserver会自动触发回调 */
+	if (isIntersecting && intersectionRatio !== 1) {
+		return { shouldCalibrate: false, shouldCalculateOnScroll: false };
+	}
+
+	/** 如果不需要强制校准，则需要计算位置 */
+	if (!forceCalibrate) {
+		return { shouldCalibrate: false, shouldCalculateOnScroll: true };
+	}
+
+	/** 如果元素完全不可见，则需要计算位置 */
+	if (!isIntersecting) {
+		return { shouldCalibrate: false, shouldCalculateOnScroll: true };
+	}
+
+	/** 如果距离上次校准时间小于校准间隔，则需要计算位置 */
+	const now = Date.now();
+	if (now - lastCalibrateTime < calibrateInterval) {
+		return { shouldCalibrate: false, shouldCalculateOnScroll: true };
+	}
+
+	/** 如果距离上次校准时间大于校准间隔，则需要校准位置 */
+	return { shouldCalibrate: true, shouldCalculateOnScroll: false };
+};
+
+/**
+ * 计算基于滚动的位置信息
+ *
+ * 通过比较当前滚动位置与上次记录的位置，计算元素的新位置信息。
+ * 这个函数是智能位置同步策略的核心，用于在元素完全可见或完全不可见时
+ * 进行精确的位置计算，避免依赖 Intersection Observer 的延迟更新。
+ *
+ * 计算逻辑：
+ * 1. 计算滚动差值 (deltaX, deltaY)
+ * 2. 估算新的元素矩形位置
+ * 3. 计算新的交叉状态和比例
+ * 4. 返回完整的位置信息对象
+ *
+ * 性能优化：
+ * - 只在元素完全可见/不可见时使用
+ * - 避免在元素部分可见时进行复杂计算
+ * - 与 Intersection Observer 形成互补策略
+ *
+ * @param currentPosition 当前位置信息，包含上次的滚动位置和矩形信息
+ * @param currentScrollX 当前滚动 X 位置
+ * @param currentScrollY 当前滚动 Y 位置
+ * @param now 当前时间戳
+ * @returns 计算后的新位置信息，包含估算的矩形、交叉状态和比例
+ *
+ * @example
+ * ```tsx
+ * const newPosition = calculateScrollBasedPosition(
+ *   currentPosition,
+ *   window.scrollX,
+ *   window.scrollY,
+ *   Date.now()
+ * );
+ *
+ * // 使用新位置信息
+ * console.log('估算位置:', newPosition.boundingClientRect);
+ * console.log('交叉比例:', newPosition.intersectionRatio);
+ * ```
+ */
+export const calculateScrollBasedPosition = (
+	currentPosition: ElementPosition,
+	currentScrollX: number,
+	currentScrollY: number,
+	now: number,
+): ElementPosition => {
+	const { scrollX = 0, scrollY = 0 } = currentPosition;
+	const {
+		top = 0,
+		left = 0,
+		width = 0,
+		height = 0,
+		right = 0,
+		bottom = 0,
+	} = currentPosition.boundingClientRect || {};
+
+	const deltaX = currentScrollX - scrollX;
+	const deltaY = currentScrollY - scrollY;
+
+	const estimatedRect: DOMRect = {
+		top: top - deltaY,
+		left: left - deltaX,
+		width,
+		height,
+		right: right - deltaX,
+		bottom: bottom - deltaY,
+		x: left - deltaX,
+		y: top - deltaY,
+		toJSON: () => {},
+	};
+
+	const isIntersecting =
+		(estimatedRect.top >= 0 && estimatedRect.top <= window.innerHeight) ||
+		(estimatedRect.bottom >= 0 && estimatedRect.bottom <= window.innerHeight);
+
+	let intersectionRatio = 0;
+	if (isIntersecting) {
+		const intersectingTop = Math.max(0, estimatedRect.top);
+		const intersectingBottom = Math.min(
+			window.innerHeight,
+			estimatedRect.bottom,
+		);
+		const intersectingLeft = Math.max(0, estimatedRect.left);
+		const intersectingRight = Math.min(window.innerWidth, estimatedRect.right);
+		const intersectingArea =
+			(intersectingBottom - intersectingTop) *
+			(intersectingRight - intersectingLeft);
+		const boundingArea = width * height;
+		intersectionRatio = intersectingArea / boundingArea;
+	}
+
+	return {
+		boundingClientRect: estimatedRect,
+		intersectionRatio: intersectionRatio,
+		isIntersecting: isIntersecting,
+		time: now,
+		relativeRect: undefined,
+		scrollX: currentScrollX,
+		scrollY: currentScrollY,
+	};
 };
