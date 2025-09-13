@@ -28,7 +28,7 @@ class IntersectionObserverManager {
 	/** 存储不同配置的 Intersection Observer 实例 */
 	private observers: Map<string, IntersectionObserver>;
 	/** 存储每个元素的回调函数 */
-	private callbacks: Map<string, ObserverCallbackType>;
+	private callbacks: Map<string, Map<string, Set<ObserverCallbackType>>>;
 	/** 存储每个元素的前一次位置信息，用于计算滚动方向 */
 	private previousRects: Map<string, DOMRect>;
 	/** 默认配置选项 */
@@ -40,7 +40,7 @@ class IntersectionObserverManager {
 	 */
 	constructor(options: ObserverOptions = {}) {
 		this.observers = new Map<string, IntersectionObserver>();
-		this.callbacks = new Map<string, ObserverCallbackType>();
+		this.callbacks = new Map<string, Map<string, Set<ObserverCallbackType>>>();
 		this.previousRects = new Map<string, DOMRect>();
 		this.defaultOptions = {
 			rootMargin: "200px 0px",
@@ -68,7 +68,7 @@ class IntersectionObserverManager {
 				// 为 root 元素设置唯一标识符
 				const rootId = options.root.getAttribute("data-intersection-root-id");
 				if (!rootId) {
-					const uniqueRootId = `root_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+					const uniqueRootId = uniqueId(`root_${Date.now()}`);
 					options.root.setAttribute("data-intersection-root-id", uniqueRootId);
 					safeOptions.rootId = uniqueRootId;
 				} else {
@@ -102,39 +102,57 @@ class IntersectionObserverManager {
 					const elementUniqueId =
 						entry.target.getAttribute("data-intersection-unique-id") ||
 						"intersection_element_void";
-					const callback = this.callbacks.get(elementUniqueId);
+					const observerCallbacks = this.callbacks.get(key);
+					const callbackSet = observerCallbacks?.get(elementUniqueId);
 
-					if (callback && typeof callback === "function") {
-						// 计算滚动方向
-						const previousRect = this.previousRects.get(elementUniqueId);
-						const currentRect = entry.boundingClientRect;
-						const scrollDirection = previousRect
-							? calculateScrollDirection(currentRect, previousRect)
-							: "none";
+					if (callbackSet && callbackSet.size > 0) {
+						for (const callback of callbackSet) {
+							if (typeof callback === "function") {
+								// 计算滚动方向
+								const previousRect = this.previousRects.get(elementUniqueId);
+								const currentRect = entry.boundingClientRect;
+								const scrollDirection = previousRect
+									? calculateScrollDirection(currentRect, previousRect)
+									: "none";
 
-						// 创建扩展的 entry 对象
-						const extendedEntry: ObserverCallbackParamType = {
-							// 手动复制 IntersectionObserverEntry 的属性
-							target: entry.target,
-							rootBounds: entry.rootBounds,
-							boundingClientRect: entry.boundingClientRect,
-							intersectionRect: entry.intersectionRect,
-							intersectionRatio: entry.intersectionRatio,
-							isIntersecting: entry.isIntersecting,
-							time: entry.time,
-							// 添加扩展属性
-							scrollDirection,
-							previousRect,
-						};
+								// 创建扩展的 entry 对象
+								const extendedEntry: ObserverCallbackParamType = {
+									// 手动复制 IntersectionObserverEntry 的属性
+									target: entry.target,
+									rootBounds: entry.rootBounds,
+									boundingClientRect: entry.boundingClientRect,
+									intersectionRect: entry.intersectionRect,
+									intersectionRatio: entry.intersectionRatio,
+									isIntersecting: entry.isIntersecting,
+									time: entry.time,
+									// 添加扩展属性
+									scrollDirection,
+									previousRect,
+								};
 
-						// 更新前一次位置
-						this.previousRects.set(elementUniqueId, currentRect);
+								// 更新前一次位置
+								this.previousRects.set(elementUniqueId, currentRect);
 
-						callback(extendedEntry);
-					}
+								// 获取或创建该 observer 配置下的回调映射
+								if (!this.callbacks.has(key)) {
+									this.callbacks.set(key, new Map());
+								}
+								const observerCallbacks = this.callbacks.get(key);
+								if (!observerCallbacks?.size) continue;
 
-					if (options.once && entry.isIntersecting) {
-						this.unobserve(entry.target, options);
+								// 获取或创建该元素的回调集合
+								if (!observerCallbacks.has(elementUniqueId)) {
+									observerCallbacks.set(elementUniqueId, new Set());
+								}
+								observerCallbacks.get(elementUniqueId)?.add(callback);
+
+								callback(extendedEntry);
+
+								if (mergedOptions.once && entry.isIntersecting) {
+									this.unobserve(entry.target, mergedOptions);
+								}
+							}
+						}
 					}
 				}
 			}, mergedOptions);
@@ -162,13 +180,27 @@ class IntersectionObserverManager {
 			target.getAttribute("data-intersection-unique-id") ||
 			uniqueId("intersection_element");
 		target.setAttribute("data-intersection-unique-id", elementUniqueId);
-		this.callbacks.set(elementUniqueId, callback);
+
+		const key = this.getObserverKey(options);
+		// 获取或创建该 observer 配置下的回调映射
+		if (!this.callbacks.has(key)) {
+			this.callbacks.set(key, new Map());
+		}
+		const observerCallbacks = this.callbacks.get(key);
+		if (!observerCallbacks) return;
+
+		// 获取或创建该元素的回调集合
+		if (!observerCallbacks.has(elementUniqueId)) {
+			observerCallbacks.set(elementUniqueId, new Set());
+		}
+		observerCallbacks.get(elementUniqueId)?.add(callback);
+
 		const observer = this.getObserver(options);
 		if (observer) {
 			observer.observe(target);
 		}
 		return () => {
-			this.unobserve(target, options);
+			this.unobserve(target, options, callback);
 		};
 	}
 
@@ -177,7 +209,11 @@ class IntersectionObserverManager {
 	 * @param target 要停止观察的目标元素
 	 * @param options 配置选项
 	 */
-	unobserve(target: Element, options: ObserverOptions = {}): void {
+	unobserve(
+		target: Element,
+		options: ObserverOptions = {},
+		callback?: ObserverCallbackType,
+	): void {
 		if (!target) return;
 
 		const elementUniqueId =
@@ -185,11 +221,47 @@ class IntersectionObserverManager {
 			"intersection_element_void";
 
 		const key = this.getObserverKey(options);
-		const observer = this.observers.get(key);
-		if (observer) {
-			observer.unobserve(target);
-			this.callbacks.delete(elementUniqueId);
-			this.previousRects.delete(elementUniqueId); // 清理位置跟踪数据
+		const observerCallbacks = this.callbacks.get(key);
+		const callbackSet = observerCallbacks?.get(elementUniqueId);
+
+		if (callbackSet) {
+			if (callback) {
+				// 移除特定的回调函数
+				callbackSet.delete(callback);
+
+				// 如果该 observer 配置下没有回调了，停止观察
+				if (callbackSet.size === 0) {
+					const observer = this.observers.get(key);
+					if (observer) {
+						observer.unobserve(target);
+					}
+					observerCallbacks?.delete(elementUniqueId);
+				}
+			} else {
+				// 移除该 observer 配置下的所有回调
+				const observer = this.observers.get(key);
+				if (observer) {
+					observer.unobserve(target);
+				}
+				observerCallbacks?.delete(elementUniqueId);
+			}
+		}
+
+		// 检查该元素是否还有其他 observer 配置在观察
+		let hasAnyCallbacks = false;
+		for (const [_, callbacks] of this.callbacks) {
+			if (
+				callbacks.has(elementUniqueId) &&
+				callbacks.get(elementUniqueId)?.size
+			) {
+				hasAnyCallbacks = true;
+				break;
+			}
+		}
+
+		// 只有当元素完全没有回调时才清理数据和移除属性
+		if (!hasAnyCallbacks) {
+			this.previousRects.delete(elementUniqueId);
 			target.removeAttribute("data-intersection-unique-id");
 		}
 	}

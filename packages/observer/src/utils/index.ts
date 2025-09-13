@@ -45,7 +45,7 @@ export const isSupportIntersectionObserver = () => {
  * ```
  */
 export const uniqueId = (prefix: string) =>
-	`${prefix}_${Math.random().toString(36).substr(2, 9)}`;
+	`${prefix}_${Math.random().toString(36).slice(2, 11)}`;
 
 /**
  * 根据步长生成阈值数组
