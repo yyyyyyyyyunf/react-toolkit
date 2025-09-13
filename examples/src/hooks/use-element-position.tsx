@@ -14,25 +14,29 @@ export function UseElementPositionExample() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const element3Ref = useRef<HTMLDivElement>(null);
 
-	// 基于 viewport 的位置跟踪
+	// 基于 viewport 的位置跟踪 - 启用智能位置同步策略
 	const position1 = useElementPosition(element1Ref, {
 		step: 0.1, // 每 10% 触发一次
 		throttle: 16, // 60fps
-		skipWhenOffscreen: true,
+		forceCalibrate: true, // 启用强制校准
+		calibrateInterval: 2500, // 校准间隔 2.5 秒
 	});
 
-	// 高频率位置跟踪
+	// 高频率位置跟踪 - 禁用校准，纯滚动计算
 	const position2 = useElementPosition(element2Ref, {
 		step: 0.05, // 每 5% 触发一次，更精确
 		throttle: 8, // 120fps，更流畅
-		skipWhenOffscreen: false, // 即使不可见也跟踪
+		forceCalibrate: false, // 禁用校准，依赖滚动计算
+		calibrateInterval: 0, // 不进行校准
 	});
 
-	// 基于自定义容器的位置跟踪
+	// 基于自定义容器的位置跟踪 - 中等频率校准
 	const position3 = useElementPosition(element3Ref, {
 		root: containerRef.current || undefined,
 		step: 0.25, // 每 25% 触发一次
 		throttle: 50, // 20fps，降低频率
+		forceCalibrate: true, // 启用校准
+		calibrateInterval: 5000, // 校准间隔 5 秒
 	});
 
 	const formatPosition = (position: ElementPosition | null) => {
@@ -45,6 +49,8 @@ export function UseElementPositionExample() {
 				height: "0",
 				isIntersecting: false,
 				time: "未检测到",
+				scrollX: "0",
+				scrollY: "0",
 			};
 
 		return {
@@ -55,6 +61,8 @@ export function UseElementPositionExample() {
 			height: position.boundingClientRect.height.toFixed(1),
 			isIntersecting: position.isIntersecting,
 			time: new Date(position.time).toLocaleTimeString(),
+			scrollX: position.scrollX.toFixed(0),
+			scrollY: position.scrollY.toFixed(0),
 		};
 	};
 
@@ -139,6 +147,10 @@ export function UseElementPositionExample() {
 								{formatPosition(position1).top})
 							</div>
 							<div>
+								滚动: ({formatPosition(position1).scrollX},{" "}
+								{formatPosition(position1).scrollY})
+							</div>
+							<div>
 								状态:{" "}
 								{formatPosition(position1).isIntersecting
 									? "✅ 可见"
@@ -164,6 +176,10 @@ export function UseElementPositionExample() {
 								{formatPosition(position2).top})
 							</div>
 							<div>
+								滚动: ({formatPosition(position2).scrollX},{" "}
+								{formatPosition(position2).scrollY})
+							</div>
+							<div>
 								状态:{" "}
 								{formatPosition(position2).isIntersecting
 									? "✅ 可见"
@@ -187,6 +203,10 @@ export function UseElementPositionExample() {
 							<div>
 								位置: ({formatPosition(position3).left},{" "}
 								{formatPosition(position3).top})
+							</div>
+							<div>
+								滚动: ({formatPosition(position3).scrollX},{" "}
+								{formatPosition(position3).scrollY})
 							</div>
 							<div>
 								状态:{" "}
@@ -250,9 +270,10 @@ export function UseElementPositionExample() {
 
 			{/* 元素 1: 基础位置跟踪 */}
 			<section style={{ marginBottom: "80px" }}>
-				<h3>🎯 元素 1: 基础位置跟踪</h3>
+				<h3>🎯 元素 1: 智能位置同步策略</h3>
 				<p style={{ color: "#666", fontSize: "14px" }}>
-					配置: step=0.1, throttle=16ms, skipWhenOffscreen=true
+					配置: step=0.1, throttle=16ms, forceCalibrate=true,
+					calibrateInterval=2500ms
 				</p>
 				<div
 					ref={element1Ref}
@@ -287,9 +308,10 @@ export function UseElementPositionExample() {
 
 			{/* 元素 2: 高频率跟踪 */}
 			<section style={{ marginBottom: "80px" }}>
-				<h3>⚡ 元素 2: 高频率跟踪</h3>
+				<h3>⚡ 元素 2: 纯滚动计算模式</h3>
 				<p style={{ color: "#666", fontSize: "14px" }}>
-					配置: step=0.05, throttle=8ms, skipWhenOffscreen=false
+					配置: step=0.05, throttle=8ms, forceCalibrate=false,
+					calibrateInterval=0ms
 				</p>
 				<div
 					ref={element2Ref}
@@ -329,7 +351,8 @@ export function UseElementPositionExample() {
 			<section style={{ marginBottom: "80px" }}>
 				<h3>📦 基于自定义容器的位置跟踪</h3>
 				<p style={{ color: "#666", fontSize: "14px" }}>
-					配置: 自定义容器, step=0.25, throttle=50ms
+					配置: 自定义容器, step=0.25, throttle=50ms, forceCalibrate=true,
+					calibrateInterval=5000ms
 				</p>
 
 				<div

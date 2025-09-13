@@ -15,12 +15,13 @@ export const UseElementDetectorExample: React.FC = () => {
 	// 默认贴顶检测
 	const isCeiling = useElementDetector(basicRef);
 
-	// 自定义条件检测：检测元素是否在指定范围内，使用细致的 threshold 配置
+	// 自定义条件检测：检测元素是否在指定范围内，使用智能位置同步策略
 	const isInRange = useElementDetector(customRef, {
 		compute: (rect) => rect.top <= 50 && rect.bottom >= 100,
 		step: 0.1, // 每 10% 触发一次
 		throttle: 16, // 60fps
-		skipWhenOffscreen: true,
+		forceCalibrate: true, // 启用强制校准
+		calibrateInterval: 2000, // 校准间隔 2 秒
 	});
 
 	// 复杂条件检测：检测元素是否在视口中心区域，使用自定义 threshold 数组
@@ -34,6 +35,8 @@ export const UseElementDetectorExample: React.FC = () => {
 		},
 		threshold: [0, 0.25, 0.5, 0.75, 1], // 自定义阈值
 		throttle: 32, // 30fps
+		forceCalibrate: true, // 启用校准
+		calibrateInterval: 3000, // 校准间隔 3 秒
 	});
 
 	return (
@@ -125,8 +128,13 @@ export const UseElementDetectorExample: React.FC = () => {
 							<strong>自定义检测：</strong>传入 compute 函数实现自定义检测逻辑
 						</li>
 						<li>
+							<strong>智能位置同步：</strong>支持 forceCalibrate 和
+							calibrateInterval 配置
+						</li>
+						<li>
 							<strong>细致配置：</strong>支持
-							step、threshold、throttle、skipWhenOffscreen、offset 等配置选项
+							step、threshold、throttle、forceCalibrate、calibrateInterval、offset
+							等配置选项
 						</li>
 						<li>
 							<strong>灵活配置：</strong>支持任何基于 boundingClientRect
@@ -144,15 +152,16 @@ export const UseElementDetectorExample: React.FC = () => {
 						{`// 默认贴顶检测
 const isCeiling = useElementDetector(ref);
 
-// 自定义条件检测，使用细致的 threshold 配置
+// 自定义条件检测，使用智能位置同步策略
 const isInRange = useElementDetector(ref, {
   compute: (rect) => rect.top <= 50 && rect.bottom >= 100,
   step: 0.1, // 每 10% 触发一次
   throttle: 16, // 60fps
-  skipWhenOffscreen: true
+  forceCalibrate: true, // 启用强制校准
+  calibrateInterval: 2000, // 校准间隔 2 秒
 });
 
-// 使用自定义 threshold 数组
+// 使用自定义 threshold 数组和校准策略
 const isInCenter = useElementDetector(ref, {
   compute: (rect) => {
     const viewportHeight = window.innerHeight;
@@ -162,7 +171,9 @@ const isInCenter = useElementDetector(ref, {
     return Math.abs(elementCenter - centerY) <= tolerance;
   },
   threshold: [0, 0.25, 0.5, 0.75, 1], // 自定义阈值
-  throttle: 32 // 30fps
+  throttle: 32, // 30fps
+  forceCalibrate: true, // 启用校准
+  calibrateInterval: 3000, // 校准间隔 3 秒
 });`}
 					</pre>
 				</div>

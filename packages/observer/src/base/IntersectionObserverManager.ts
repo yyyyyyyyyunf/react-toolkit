@@ -15,14 +15,14 @@ import {
  *
  * 负责管理 Intersection Observer 实例，提供统一的观察和取消观察接口。
  * 支持滚动方向检测、位置跟踪和性能优化。
- * 为不支持 IntersectionObserver 的浏览器提供降级方案。
+ * 使用标准的 intersection-observer polyfill 支持所有浏览器。
  *
  * 主要功能：
  * - 复用 Intersection Observer 实例，避免重复创建
  * - 跟踪元素位置变化，计算滚动方向
  * - 提供统一的回调接口，支持扩展的 entry 对象
  * - 自动清理资源，防止内存泄漏
- * - 降级支持：在不支持 IntersectionObserver 的浏览器中使用标准 polyfill
+ * - 使用标准的 intersection-observer polyfill 支持所有浏览器
  */
 class IntersectionObserverManager {
 	/** 存储不同配置的 Intersection Observer 实例 */

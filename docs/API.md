@@ -162,8 +162,19 @@ interface ElementPosition {
   isIntersecting: boolean;
   time: number;
   relativeRect?: DOMRect;
+  scrollX: number;
+  scrollY: number;
 }
 ```
+
+**字段说明：**
+- `boundingClientRect`: 元素的边界矩形信息
+- `intersectionRatio`: 元素与视口的交叉比例 (0-1)
+- `isIntersecting`: 元素是否与视口相交
+- `time`: 位置信息的时间戳
+- `relativeRect`: 相对于根元素的位置信息（可选）
+- `scrollX`: 记录位置信息时的水平滚动位置
+- `scrollY`: 记录位置信息时的垂直滚动位置
 
 ### MemoOptions
 

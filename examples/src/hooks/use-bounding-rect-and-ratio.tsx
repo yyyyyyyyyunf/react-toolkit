@@ -17,26 +17,28 @@ export function UseBoundingRectAndRatioExample() {
 	const ratio1Ref = useRef<HTMLDivElement>(null);
 	const ratio2Ref = useRef<HTMLDivElement>(null);
 
-	// 边界矩形检测
+	// 边界矩形检测 - 启用智能位置同步策略
 	const boundingRect1 = useBoundingClientRect(rect1Ref, {
 		step: 0.1,
 		throttle: 16,
+		forceCalibrate: true, // 启用强制校准
+		calibrateInterval: 2500, // 校准间隔 2.5 秒
 	});
 
 	const boundingRect2 = useBoundingClientRect(rect2Ref, {
 		threshold: [0, 0.5, 1], // 自定义阈值
 		throttle: 33, // 30fps
+		forceCalibrate: true, // 启用校准
+		calibrateInterval: 3000, // 校准间隔 3 秒
 	});
 
 	// 交叉比例检测
 	const intersectionRatio1 = useIntersectionRatio(ratio1Ref, {
 		step: 0.05, // 更精确的比例检测
-		throttle: 8,
 	});
 
 	const intersectionRatio2 = useIntersectionRatio(ratio2Ref, {
 		step: 0.2, // 较大的步长
-		throttle: 100,
 	});
 
 	// 格式化坐标显示
@@ -219,9 +221,9 @@ export function UseBoundingRectAndRatioExample() {
 
 			{/* 边界矩形示例 1 */}
 			<section style={{ marginBottom: "60px" }}>
-				<h3>📐 边界矩形检测 1 (高频更新)</h3>
+				<h3>📐 边界矩形检测 1 (智能位置同步)</h3>
 				<p style={{ color: "#666", fontSize: "14px" }}>
-					step=0.1, throttle=16ms
+					step=0.1, throttle=16ms, forceCalibrate=true, calibrateInterval=2500ms
 				</p>
 
 				<div
@@ -291,9 +293,7 @@ export function UseBoundingRectAndRatioExample() {
 			{/* 交叉比例示例 1 */}
 			<section style={{ marginBottom: "60px" }}>
 				<h3>📊 交叉比例检测 1 (精确检测)</h3>
-				<p style={{ color: "#666", fontSize: "14px" }}>
-					step=0.05, throttle=8ms
-				</p>
+				<p style={{ color: "#666", fontSize: "14px" }}>step=0.05</p>
 
 				<div
 					ref={ratio1Ref}
@@ -349,9 +349,10 @@ export function UseBoundingRectAndRatioExample() {
 
 			{/* 边界矩形示例 2 */}
 			<section style={{ marginBottom: "60px" }}>
-				<h3>📐 边界矩形检测 2 (自定义阈值)</h3>
+				<h3>📐 边界矩形检测 2 (自定义阈值 + 校准)</h3>
 				<p style={{ color: "#666", fontSize: "14px" }}>
-					threshold=[0, 0.5, 1], throttle=33ms
+					threshold=[0, 0.5, 1], throttle=33ms, forceCalibrate=true,
+					calibrateInterval=3000ms
 				</p>
 
 				<div
@@ -400,9 +401,7 @@ export function UseBoundingRectAndRatioExample() {
 			{/* 交叉比例示例 2 */}
 			<section style={{ marginBottom: "60px" }}>
 				<h3>📊 交叉比例检测 2 (低频更新)</h3>
-				<p style={{ color: "#666", fontSize: "14px" }}>
-					step=0.2, throttle=100ms
-				</p>
+				<p style={{ color: "#666", fontSize: "14px" }}>step=0.2</p>
 
 				<div
 					ref={ratio2Ref}

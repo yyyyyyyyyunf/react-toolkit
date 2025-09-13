@@ -13,6 +13,23 @@ vi.mock("../src/base/IntersectionObserverManager", () => ({
 vi.mock("../src/utils", () => ({
 	generateThresholdArray: vi.fn((step: number) => [0, step, 1]),
 	getDefaultThresholdArray: vi.fn(() => [0, 0.25, 0.5, 0.75, 1]),
+	calculateFinalThreshold: vi.fn(
+		(
+			options: { step?: number; threshold?: number | number[] },
+			hookName?: string,
+		) => {
+			const step = "step" in options ? options.step : undefined;
+			const threshold = "threshold" in options ? options.threshold : undefined;
+
+			if (threshold !== undefined) {
+				return Array.isArray(threshold) ? threshold : [threshold];
+			}
+			if (step !== undefined) {
+				return [0, step, 1];
+			}
+			return [0, 0.25, 0.5, 0.75, 1];
+		},
+	),
 }));
 
 // 模拟 IntersectionObserver

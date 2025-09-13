@@ -142,9 +142,9 @@ export function UseInViewportExample() {
 				</p>
 			</div>
 
-			{/* 示例 2：自定义配置 */}
+			{/* 示例 2：默认配置 */}
 			<div style={{ marginBottom: "60px" }}>
-				<h3>示例 2：自定义配置 (step: 0.1, throttle: 16)</h3>
+				<h3>示例 2：默认配置</h3>
 				<p style={{ color: "#666", marginBottom: "20px" }}>
 					继续向下滚动查看元素状态变化
 				</p>
@@ -174,13 +174,13 @@ export function UseInViewportExample() {
 					<strong>状态</strong>：{isInViewport2 ? "🟢 可见" : "🔴 不可见"}
 				</p>
 				<p style={{ color: "#666" }}>
-					<strong>配置</strong>：每 10% 触发一次，60fps 节流
+					<strong>配置</strong>：使用默认配置
 				</p>
 			</div>
 
-			{/* 示例 3：更敏感的配置 */}
+			{/* 示例 3：默认配置 */}
 			<div style={{ marginBottom: "60px" }}>
-				<h3>示例 3：更敏感的配置 (step: 0.05, throttle: 8)</h3>
+				<h3>示例 3：默认配置</h3>
 				<p style={{ color: "#666", marginBottom: "20px" }}>
 					继续向下滚动查看元素状态变化
 				</p>
@@ -210,7 +210,7 @@ export function UseInViewportExample() {
 					<strong>状态</strong>：{isInViewport3 ? "🟢 可见" : "🔴 不可见"}
 				</p>
 				<p style={{ color: "#666" }}>
-					<strong>配置</strong>：每 5% 触发一次，120fps 节流（更敏感）
+					<strong>配置</strong>：使用默认配置
 				</p>
 			</div>
 
@@ -277,11 +277,7 @@ const MyComponent = () => {
 							fontSize: "14px",
 						}}
 					>
-						{`const isInViewport = useInViewport(ref, {
-  step: 0.1,        // 每 10% 触发一次
-  throttle: 16,     // 60fps 节流
-  rootMargin: '50px' // 50px 的边距
-});`}
+						{"const isInViewport = useInViewport(ref);"}
 					</pre>
 				</div>
 
@@ -300,45 +296,18 @@ const MyComponent = () => {
 									borderRadius: "4px",
 								}}
 							>
-								step
+								useInViewport
 							</code>
-							：触发阈值步长（0-1）
+							：使用默认配置，无需额外参数
 						</li>
 						<li style={{ marginBottom: "8px" }}>
-							<code
-								style={{
-									backgroundColor: "rgba(255, 255, 255, 0.2)",
-									padding: "2px 6px",
-									borderRadius: "4px",
-								}}
-							>
-								throttle
-							</code>
-							：节流时间（毫秒）
+							<strong>特点：</strong>简单易用，开箱即用，无需复杂配置
 						</li>
 						<li style={{ marginBottom: "8px" }}>
-							<code
-								style={{
-									backgroundColor: "rgba(255, 255, 255, 0.2)",
-									padding: "2px 6px",
-									borderRadius: "4px",
-								}}
-							>
-								rootMargin
-							</code>
-							：根元素边距
+							<strong>性能：</strong>基于 IntersectionObserver，性能优异
 						</li>
 						<li style={{ marginBottom: "8px" }}>
-							<code
-								style={{
-									backgroundColor: "rgba(255, 255, 255, 0.2)",
-									padding: "2px 6px",
-									borderRadius: "4px",
-								}}
-							>
-								threshold
-							</code>
-							：自定义阈值数组
+							<strong>兼容性：</strong>使用标准 polyfill，支持所有浏览器
 						</li>
 					</ul>
 				</div>

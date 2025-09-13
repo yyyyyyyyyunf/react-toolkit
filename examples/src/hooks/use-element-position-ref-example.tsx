@@ -1,5 +1,6 @@
 import { useElementPositionRef } from "@fly4react/observer";
-import React, { useRef } from "react";
+import type React from "react";
+import { useRef } from "react";
 
 /**
  * useElementPositionRef 示例
@@ -12,7 +13,8 @@ export const UseElementPositionRefExample: React.FC = () => {
 	const positionRef = useElementPositionRef(elementRef, {
 		step: 0.1, // 每 10% 触发一次
 		throttle: 16, // 60fps
-		skipWhenOffscreen: true,
+		forceCalibrate: true, // 启用强制校准
+		calibrateInterval: 2500, // 校准间隔 2.5 秒
 	});
 
 	// 事件处理函数示例：获取实时位置信息
@@ -24,24 +26,12 @@ export const UseElementPositionRefExample: React.FC = () => {
 			console.log("是否相交:", positionRef.current.isIntersecting);
 			console.log("时间戳:", positionRef.current.time);
 			console.log("相对位置:", positionRef.current.relativeRect);
+			console.log("滚动位置 X:", positionRef.current.scrollX);
+			console.log("滚动位置 Y:", positionRef.current.scrollY);
 		} else {
 			console.log("元素位置信息尚未可用");
 		}
 	};
-
-	// 定时器示例：定期检查位置信息
-	React.useEffect(() => {
-		const interval = setInterval(() => {
-			if (positionRef.current?.isIntersecting) {
-				console.log(
-					"元素当前可见，位置:",
-					positionRef.current.boundingClientRect,
-				);
-			}
-		}, 1000);
-
-		return () => clearInterval(interval);
-	}, [positionRef]);
 
 	return (
 		<div className="example-container">
@@ -88,11 +78,18 @@ export const UseElementPositionRefExample: React.FC = () => {
 							可以在事件处理函数、定时器等地方实时获取元素位置
 						</li>
 						<li>
+							<strong>智能位置同步：</strong>
+							结合 Intersection Observer 和 scroll 事件的智能策略
+						</li>
+						<li>
 							<strong>性能优化：</strong>
 							适合需要频繁检查元素位置但不想影响渲染性能的场景
 						</li>
 						<li>
 							<strong>节流控制：</strong>支持自定义节流时间，控制位置更新的频率
+						</li>
+						<li>
+							<strong>校准机制：</strong>支持定期校准，确保位置数据的准确性
 						</li>
 					</ul>
 				</div>
@@ -103,8 +100,9 @@ export const UseElementPositionRefExample: React.FC = () => {
 						{`const elementRef = useRef<HTMLDivElement>(null);
 const positionRef = useElementPositionRef(elementRef, {
   step: 0.1,
-  throttle: 16,
-  skipWhenOffscreen: true,
+  throttle: 16, // 60fps
+  forceCalibrate: true, // 启用强制校准
+  calibrateInterval: 2500, // 校准间隔 2.5 秒
 });
 
 // 在事件处理函数中获取位置
@@ -112,6 +110,7 @@ const handleClick = () => {
   if (positionRef.current) {
     console.log('位置:', positionRef.current.boundingClientRect);
     console.log('交叉比例:', positionRef.current.intersectionRatio);
+    console.log('滚动位置:', { x: positionRef.current.scrollX, y: positionRef.current.scrollY });
   }
 };`}
 					</pre>

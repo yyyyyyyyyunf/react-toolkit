@@ -19,19 +19,19 @@ export function ParallaxScrollExample() {
 	const hero1Position = useElementPosition(hero1Ref, {
 		step: 0.02, // 高频更新，更流畅的视差效果
 		throttle: 8,
-		skipWhenOffscreen: false, // 即使不可见也要跟踪，用于视差计算
+		forceCalibrate: false, // 即使不可见也要跟踪，用于视差计算
 	});
 
 	const hero2Position = useElementPosition(hero2Ref, {
 		step: 0.02,
 		throttle: 8,
-		skipWhenOffscreen: false,
+		forceCalibrate: false,
 	});
 
 	const hero3Position = useElementPosition(hero3Ref, {
 		step: 0.02,
 		throttle: 8,
-		skipWhenOffscreen: false,
+		forceCalibrate: false,
 	});
 
 	// 滚动方向检测
