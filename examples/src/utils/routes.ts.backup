@@ -91,20 +91,9 @@ const MemoConfigDemo = lazy(() =>
 		default: module.default,
 	})),
 );
-const MultiHookExample = lazy(() =>
-	import("../hooks/multi-hook-example").then((module) => ({
-		default: module.MultiHookExample,
-	})),
-);
 
 // 路由配置
 export const routes = [
-	{
-		path: "/multi-hook-example",
-		name: "多 Hook 示例",
-		component: MultiHookExample,
-		description: "演示多个 hook 同时观察同一元素的功能",
-	},
 	{
 		path: "/memo-config-demo",
 		name: "Memo 配置管理",

@@ -262,3 +262,36 @@ None - 所有更改都是向后兼容的。
 - Performance analytics tools
 - Additional semantic threshold values
 - More memo optimization strategies
+
+## [1.8.1] - 2025-01-XX
+
+### Examples
+
+#### Added
+- **🎨 MultiHookExample 重新设计**: 全新的多 Hook 示例界面
+  - 现代化 UI 设计：渐变背景、毛玻璃效果、卡片式布局
+  - 交互式控制面板：可以单独启用/禁用每个 Hook 进行测试
+  - 增强的日志系统：分类日志、过滤功能、更好的视觉呈现
+  - 性能统计功能：实时显示每个 Hook 的执行次数
+  - 实时状态指示器：使用图标和颜色编码的状态显示
+  - 响应式设计：支持桌面端和移动端的自适应布局
+
+#### Changed
+- **代码优化**: 
+  - 使用 `useMemo` 优化 Hook 选项配置，避免不必要的重新创建
+  - 改进状态管理，使用更清晰的类型定义
+  - 优化性能统计和日志记录逻辑
+
+#### Technical Improvements
+- **用户体验**: 
+  - 添加动画效果和过渡效果
+  - 改进颜色编码和视觉反馈
+  - 优化移动端体验
+- **代码质量**: 
+  - 移除调试代码
+  - 统一代码风格
+  - 改进类型安全
+
+### Documentation
+- **示例文档更新**: 更新 README.md 和 USAGE.md，添加新的多 Hook 示例说明
+- **功能说明**: 详细说明新示例的功能特性和使用方法
