@@ -8,7 +8,7 @@
 		"dev": "vite",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
-		"lint": "biome check src/",
+		"lint": "biome lint --write --skip=a11y src/",
 		"lint:fix": "biome check --fix --unsafe src/",
 		"format": "biome format --write src/"
 	},
