@@ -72,6 +72,8 @@ export const useElementPosition = (
 ) => {
 	/** 当前元素位置信息，使用 useState 会触发重新渲染 */
 	const [position, setPosition] = useState<ElementPosition | null>(null);
+	/** 使用 ref 存储最新的 position 值，避免依赖问题 */
+	const positionRef = useRef<ElementPosition | null>(null);
 	/** 上次更新时间戳，用于节流控制 */
 	const lastUpdateTimeRef = useRef(0);
 	/** 上次强制校准时间戳，用于控制校准频率 */
@@ -118,6 +120,7 @@ export const useElementPosition = (
 			if (now - lastUpdateTimeRef.current >= throttle) {
 				// 立即更新
 				setPosition(newPosition);
+				positionRef.current = newPosition; // 同时更新 ref
 				lastUpdateTimeRef.current = now;
 
 				// 清除之前的延迟更新
@@ -135,6 +138,7 @@ export const useElementPosition = (
 						// 再次检查组件是否仍然挂载
 						if (isMountedRef.current) {
 							setPosition(newPosition);
+							positionRef.current = newPosition; // 同时更新 ref
 							lastUpdateTimeRef.current = Date.now();
 						}
 						timeoutRef.current = null;
@@ -151,6 +155,11 @@ export const useElementPosition = (
 
 	// 更新 ref 中的值
 	throttledSetPositionRef.current = throttledSetPosition;
+
+	// 同步 position 到 positionRef，确保 ref 中始终有最新值
+	useLayoutEffect(() => {
+		positionRef.current = position;
+	}, [position]);
 
 	const unSubscribeRef = useRef<UnSubscribeType | undefined>(undefined);
 
@@ -225,7 +234,9 @@ export const useElementPosition = (
 				return;
 			}
 
-			if (!position) {
+			// 使用 ref 获取最新的 position 值，避免依赖问题
+			const currentPosition = positionRef.current;
+			if (!currentPosition) {
 				scrollTimeoutRef.current = null;
 				return;
 			}
@@ -233,7 +244,7 @@ export const useElementPosition = (
 			// 智能判断当前状态下的处理策略
 			const { shouldCalibrate, shouldCalculateOnScroll } =
 				checkIfShouldSyncPosition(
-					position || {},
+					currentPosition,
 					forceCalibrate,
 					lastCalibrateTimeRef.current,
 					calibrateInterval,
@@ -267,7 +278,7 @@ export const useElementPosition = (
 			const currentScrollX = window.scrollX;
 			const currentScrollY = window.scrollY;
 			const newPosition = calculateScrollBasedPosition(
-				position,
+				currentPosition,
 				currentScrollX,
 				currentScrollY,
 				now,
@@ -285,7 +296,7 @@ export const useElementPosition = (
 		ref,
 		callback,
 		observerOptions,
-		position,
+		// 移除 position 依赖，使用 positionRef.current 获取最新值
 	]);
 
 	// 设置 Intersection Observer
