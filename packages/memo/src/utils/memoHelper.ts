@@ -1,7 +1,7 @@
 import {
+	getComponentIgnoreProps,
 	getDebugComponents,
 	getIgnoreProps,
-	getComponentIgnoreProps,
 } from "../config";
 
 /**
