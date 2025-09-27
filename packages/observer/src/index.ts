@@ -11,6 +11,7 @@ export { useIntersectionRatio } from "./hooks/useIntersectionRatio";
 export { useInViewport } from "./hooks/useInViewport";
 export { useIsMounted } from "./hooks/useIsMounted";
 export { useOneOffVisibility } from "./hooks/useOneOffVisibility";
+export { useOneOffVisibilityEffect } from "./hooks/useOneOffVisibilityEffect";
 export { useScrollDirection } from "./hooks/useScrollDirection";
 export * from "./types";
 export * from "./utils";

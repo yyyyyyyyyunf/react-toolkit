@@ -60,6 +60,11 @@ const UseOneOffVisibility = lazy(() =>
 		default: module.UseOneOffVisibilityExample,
 	})),
 );
+const UseOneOffVisibilityEffect = lazy(() =>
+	import("../pages/use-one-off-visibility-effect").then((module) => ({
+		default: module.default,
+	})),
+);
 const UseBoundingRectAndRatio = lazy(() =>
 	import("../hooks/use-bounding-rect-and-ratio").then((module) => ({
 		default: module.UseBoundingRectAndRatioExample,
@@ -184,6 +189,12 @@ export const routes = [
 		name: "useOneOffVisibility",
 		component: UseOneOffVisibility,
 		description: "一次性可见性检测",
+	},
+	{
+		path: "/use-one-off-visibility-effect",
+		name: "useOneOffVisibilityEffect",
+		component: UseOneOffVisibilityEffect,
+		description: "一次性可见性检测 Effect - 执行用户指定的回调",
 	},
 	{
 		path: "/use-bounding-rect-and-ratio",
