@@ -1,10 +1,10 @@
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { lazyloadManager } from "../base/IntersectionObserverManager";
 import type {
 	ObserverCallbackParamType,
 	ObserverOptions,
 	OneOffVisibilityOptions,
 } from "../types";
-import { lazyloadManager } from "../base/IntersectionObserverManager";
 import { useIsMounted } from "./useIsMounted";
 
 /**

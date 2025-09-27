@@ -1,6 +1,6 @@
 import { useLayoutEffect, useMemo, useRef } from "react";
-import type { ObserverOptions, OneOffVisibilityOptions } from "../types";
 import { lazyloadManager } from "../base/IntersectionObserverManager";
+import type { ObserverOptions, OneOffVisibilityOptions } from "../types";
 import { useIsMounted } from "./useIsMounted";
 
 /**
