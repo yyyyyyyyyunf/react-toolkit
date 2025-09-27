@@ -58,6 +58,7 @@
 - 🔍 元素可见性检测 (`useInViewport`)
 - 📍 精确位置跟踪 (`useElementPosition`, `useElementPositionRef`)
 - 🎯 一次性可见性检测 (`useOneOffVisibility`)
+- 🎯 一次性可见性效果 (`useOneOffVisibilityEffect`) - 执行用户指定的回调
 - 📊 交叉比例监控 (`useIntersectionRatio`)
 - 📐 边界矩形获取 (`useBoundingClientRect`)
 - 🎮 滚动方向检测 (`useScrollDirection`)
@@ -99,6 +100,7 @@ pnpm add @fly4react/observer intersection-observer
 - 🧠 智能 props 比较
 - 🎛️ 可配置的调试模式
 - 🚫 灵活的忽略策略
+- 🎯 组件特定忽略属性
 - ⚡ 高性能记忆化
 - 🔧 全局配置管理
 

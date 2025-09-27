@@ -273,6 +273,39 @@ function MyComponent() {
 }
 ```
 
+#### useOneOffVisibilityEffect
+
+```tsx
+import { useOneOffVisibilityEffect } from '@fly4react/observer';
+import { useRef } from 'react';
+
+function MyComponent() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  // 懒加载数据
+  useOneOffVisibilityEffect(ref, () => {
+    console.log('元素已可见，开始加载数据');
+    loadData();
+  }, { threshold: 0.5 });
+
+  // 触发动画
+  useOneOffVisibilityEffect(ref, () => {
+    elementRef.current?.classList.add('animate-in');
+  });
+
+  // 发送分析事件
+  useOneOffVisibilityEffect(ref, () => {
+    analytics.track('element_viewed', { elementId: 'hero-section' });
+  }, { threshold: 0.8, offset: 200 });
+
+  return (
+    <div ref={ref} style={{ height: '200px', background: 'lightblue' }}>
+      内容
+    </div>
+  );
+}
+```
+
 #### useScrollDirection
 
 ```tsx
@@ -556,6 +589,16 @@ function useOneOffVisibility(
   ref: RefObject<HTMLElement | null>,
   options?: OneOffVisibilityOptions
 ): boolean
+```
+
+#### useOneOffVisibilityEffect
+
+```tsx
+function useOneOffVisibilityEffect(
+  ref: RefObject<HTMLElement | null>,
+  callback: () => void,
+  options?: OneOffVisibilityOptions
+): void
 ```
 
 #### useScrollDirection

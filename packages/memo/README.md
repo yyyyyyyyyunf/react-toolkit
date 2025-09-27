@@ -66,17 +66,23 @@ const MyComponent = createMemoComponent(
 ```tsx
 import { 
   registerDebugComponent, 
-  registerIgnoreProp 
+  registerIgnoreProp,
+  registerComponentIgnoreProp 
 } from '@fly4react/memo';
 
 // 注册调试组件
 registerDebugComponent('MyComponent');
 registerDebugComponent('UserCard');
 
-// 注册忽略属性
+// 全局忽略属性 - 所有组件都忽略
 registerIgnoreProp('onClick');
 registerIgnoreProp('style');
 registerIgnoreProp('className');
+
+// 组件特定忽略属性 - 只忽略特定组件的特定属性
+registerComponentIgnoreProp('UserCard', 'lastLogin');
+registerComponentIgnoreProp('ProductCard', 'description');
+registerComponentIgnoreProp('ProductCard', 'image');
 ```
 
 
@@ -106,13 +112,19 @@ registerIgnoreProp('className');
 注册调试组件
 
 #### `registerIgnoreProp(prop: string)`
-注册忽略属性
+注册全局忽略属性
+
+#### `registerComponentIgnoreProp(componentName: string, prop: string)`
+注册组件特定的忽略属性
 
 #### `getDebugComponents()`
 获取当前调试组件列表
 
 #### `getIgnoreProps()`
-获取当前忽略属性列表
+获取当前全局忽略属性列表
+
+#### `getComponentIgnoreProps(componentName: string)`
+获取指定组件的忽略属性列表
 
 
 
@@ -132,16 +144,35 @@ registerDebugComponent('UserCard');
 
 ### 忽略属性
 
+#### 全局忽略属性
+
 在比较 props 时，这些属性会被自动忽略，不会触发重新渲染。
 
 ```tsx
 import { registerIgnoreProp } from '@fly4react/memo';
 
-// 添加要忽略的属性
+// 添加要忽略的属性 - 所有组件都忽略
 registerIgnoreProp('onClick');
 registerIgnoreProp('style');
 registerIgnoreProp('className');
 ```
+
+#### 组件特定忽略属性
+
+为特定组件忽略特定属性，其他组件仍会比较这些属性。
+
+```tsx
+import { registerComponentIgnoreProp } from '@fly4react/memo';
+
+// 只有 UserCard 组件忽略 lastLogin 属性
+registerComponentIgnoreProp('UserCard', 'lastLogin');
+
+// 只有 ProductCard 组件忽略 description 和 image 属性
+registerComponentIgnoreProp('ProductCard', 'description');
+registerComponentIgnoreProp('ProductCard', 'image');
+```
+
+**优先级：** 全局忽略 > 组件特定忽略
 
 ## 📄 许可证
 
