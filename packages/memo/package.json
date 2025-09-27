@@ -1,6 +1,6 @@
 {
 	"name": "@fly4react/memo",
-	"version": "1.4.0",
+	"version": "1.5.0",
 	"description": "一个高级的 React 记忆化组件工具，提供灵活的 props 比较策略",
 	"type": "module",
 	"exports": {
