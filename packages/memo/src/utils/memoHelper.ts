@@ -1,4 +1,8 @@
-import { getDebugComponents, getIgnoreProps } from "../config";
+import {
+	getDebugComponents,
+	getIgnoreProps,
+	getComponentIgnoreProps,
+} from "../config";
 
 /**
  * 调试日志函数
@@ -26,9 +30,24 @@ export const debugLog = (displayName: string, ...args: unknown[]) => {
  * 检查属性是否应该被忽略
  *
  * @param propName 属性名称
+ * @param componentName 组件名称（可选）
  * @returns 是否应该忽略该属性
  */
-export const shouldIgnoreProp = (propName: string): boolean => {
+export const shouldIgnoreProp = (
+	propName: string,
+	componentName?: string,
+): boolean => {
+	// 首先检查全局忽略属性
 	const currentIgnoreProps = getIgnoreProps();
-	return currentIgnoreProps.indexOf(propName) !== -1;
+	if (currentIgnoreProps.indexOf(propName) !== -1) {
+		return true;
+	}
+
+	// 如果提供了组件名称，检查组件特定的忽略属性
+	if (componentName) {
+		const componentIgnoreProps = getComponentIgnoreProps(componentName);
+		return componentIgnoreProps.indexOf(propName) !== -1;
+	}
+
+	return false;
 };

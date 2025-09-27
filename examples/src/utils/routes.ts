@@ -96,6 +96,11 @@ const MemoConfigDemo = lazy(() =>
 		default: module.default,
 	})),
 );
+const ComponentSpecificIgnoreDemo = lazy(() =>
+	import("../components/component-specific-ignore-demo").then((module) => ({
+		default: module.default,
+	})),
+);
 const MultiHookExample = lazy(() =>
 	import("../hooks/multi-hook-example").then((module) => ({
 		default: module.MultiHookExample,
@@ -115,6 +120,12 @@ export const routes = [
 		name: "Memo 配置管理",
 		component: MemoConfigDemo,
 		description: "动态配置 memo 组件的调试和忽略属性",
+	},
+	{
+		path: "/component-specific-ignore",
+		name: "组件特定忽略属性",
+		component: ComponentSpecificIgnoreDemo,
+		description: "演示如何为特定组件忽略特定属性",
 	},
 	{
 		path: "/initial-viewport-test",

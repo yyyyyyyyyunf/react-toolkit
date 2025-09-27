@@ -8,8 +8,10 @@ export type { MemoOptions, MemoizedComponent } from "./types";
 export {
 	getDebugComponents,
 	getIgnoreProps,
+	getComponentIgnoreProps,
 	registerDebugComponent,
 	registerIgnoreProp,
+	registerComponentIgnoreProp,
 } from "./config";
 
 // 默认导出

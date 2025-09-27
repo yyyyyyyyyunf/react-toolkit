@@ -75,11 +75,11 @@ export function createMemoComponent<P extends object>(
 
 		// 否则比较所有键，但忽略某些常见属性
 		const prevKeys = Object.keys(prevProps).filter(
-			(key) => !shouldIgnoreProp(key),
+			(key) => !shouldIgnoreProp(key, displayName),
 		) as Array<keyof P>;
 
 		const nextKeys = Object.keys(nextProps).filter(
-			(key) => !shouldIgnoreProp(key),
+			(key) => !shouldIgnoreProp(key, displayName),
 		) as Array<keyof P>;
 
 		const keys = new Set([...prevKeys, ...nextKeys]);
