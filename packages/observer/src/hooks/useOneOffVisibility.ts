@@ -1,10 +1,10 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type {
 	ObserverCallbackParamType,
 	ObserverOptions,
 	OneOffVisibilityOptions,
 } from "../types";
-import { useIntersectionObserver } from "./useIntersectionObserver";
+import { lazyloadManager } from "../base/IntersectionObserverManager";
 import { useIsMounted } from "./useIsMounted";
 
 /**
@@ -28,19 +28,27 @@ import { useIsMounted } from "./useIsMounted";
  * - 浏览器兼容性：使用标准 polyfill 支持所有浏览器
  *
  * @param ref 要检测可见性的元素的 ref
- * @param options 配置参数，包含可选的 threshold 和 offset
+ * @param options 配置参数，包含可选的 threshold、offset 和 enable
  *
  * @returns 元素是否曾经可见过
  *
  * @example
  * ```tsx
  * const ref = useRef<HTMLDivElement>(null);
+ * const [shouldObserve, setShouldObserve] = useState(true);
  *
  * // 使用自定义 threshold
  * const isVisible1 = useOneOffVisibility(ref, { threshold: 0.5, offset: 100 });
  *
+ * // 使用 enable 控制是否观察
+ * const isVisible2 = useOneOffVisibility(ref, {
+ *   threshold: 0.1,
+ *   offset: 100,
+ *   enable: shouldObserve
+ * });
+ *
  * // 使用默认配置
- * const isVisible2 = useOneOffVisibility(ref); // 默认 { threshold: 0.1, offset: 100 }
+ * const isVisible3 = useOneOffVisibility(ref); // 默认 { threshold: 0.1, offset: 100, enable: true }
  *
  * if (isVisible) {
  *   // 元素已经可见过，执行一次性逻辑
@@ -60,7 +68,7 @@ export const useOneOffVisibility = (
 	const isMountedRef = useIsMounted();
 
 	// 解构 options 以避免对象引用问题
-	const { threshold = 0.1, offset = 100 } = options;
+	const { threshold = 0.1, offset = 100, enable = true } = options;
 
 	// 构建稳定的 observer options 对象
 	const observerOptions: ObserverOptions = useMemo(() => {
@@ -71,19 +79,53 @@ export const useOneOffVisibility = (
 		};
 	}, [threshold, offset]);
 
-	// 使用 useCallback 稳定回调函数，内部处理挂载状态
-	const callback = useCallback(
+	// 使用 useRef 来存储最新的 callback，避免依赖问题
+	const callbackRef = useRef<(entry: ObserverCallbackParamType) => void>();
+	const hasTriggeredRef = useRef(false);
+
+	// 更新 ref 中的回调函数
+	callbackRef.current = useCallback(
 		(entry: ObserverCallbackParamType) => {
-			// 只有在组件仍然挂载时才更新状态
-			if (entry.isIntersecting && isMountedRef.current) {
+			// 只有在组件仍然挂载且元素可见时才更新状态
+			if (
+				entry.isIntersecting &&
+				isMountedRef.current &&
+				!hasTriggeredRef.current
+			) {
+				hasTriggeredRef.current = true;
 				setIsVisible(true);
 			}
 		},
 		[isMountedRef],
 	);
 
-	// 使用 Intersection Observer 检测可见性
-	useIntersectionObserver(ref, callback, observerOptions);
+	// 使用 useLayoutEffect 确保在浏览器绘制前开始观察
+	useLayoutEffect(() => {
+		if (!ref.current || !enable) return;
+
+		// 如果已经触发过，就不再观察
+		if (hasTriggeredRef.current) {
+			return;
+		}
+
+		// 开始观察元素，返回清理函数
+		const unSubscribe = lazyloadManager.observe(
+			ref.current,
+			(entry) => {
+				if (entry && callbackRef.current) {
+					callbackRef.current(entry);
+				}
+			},
+			observerOptions,
+		);
+
+		// 清理函数：取消观察
+		return () => {
+			if (unSubscribe) {
+				unSubscribe();
+			}
+		};
+	}, [ref, enable, observerOptions]);
 
 	return isVisible;
 };

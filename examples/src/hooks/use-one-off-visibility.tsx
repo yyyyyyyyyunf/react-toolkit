@@ -7,12 +7,14 @@ import React, { useRef, useState } from "react";
  */
 export function UseOneOffVisibilityExample() {
 	const [triggerCount, setTriggerCount] = useState(0);
+	const [enableObserving, setEnableObserving] = useState(true);
 
 	// 多个观察元素的 refs
 	const trigger1Ref = useRef<HTMLDivElement>(null);
 	const trigger2Ref = useRef<HTMLDivElement>(null);
 	const trigger3Ref = useRef<HTMLDivElement>(null);
 	const trigger4Ref = useRef<HTMLDivElement>(null);
+	const trigger5Ref = useRef<HTMLDivElement>(null);
 
 	// 使用不同的配置检测可见性
 	const isVisible1 = useOneOffVisibility(trigger1Ref, {
@@ -29,6 +31,11 @@ export function UseOneOffVisibilityExample() {
 
 	const isVisible4 = useOneOffVisibility(trigger4Ref, {
 		offset: 100, // 提前 100px 触发
+	});
+
+	const isVisible5 = useOneOffVisibility(trigger5Ref, {
+		threshold: 0.3,
+		enable: enableObserving, // 使用 enable 控制是否观察
 	});
 
 	// 模拟动画效果
@@ -54,10 +61,10 @@ export function UseOneOffVisibilityExample() {
 
 	// 计数触发器
 	React.useEffect(() => {
-		if (isVisible1 || isVisible2 || isVisible3 || isVisible4) {
+		if (isVisible1 || isVisible2 || isVisible3 || isVisible4 || isVisible5) {
 			setTriggerCount((prev) => prev + 1);
 		}
-	}, [isVisible1, isVisible2, isVisible3, isVisible4]);
+	}, [isVisible1, isVisible2, isVisible3, isVisible4, isVisible5]);
 
 	return (
 		<div style={{ padding: "20px" }}>
@@ -124,9 +131,35 @@ export function UseOneOffVisibilityExample() {
 					>
 						触发器 4 (提前): {isVisible4 ? "✅ 已触发" : "⏳ 等待中"}
 					</div>
+					<div
+						style={{
+							padding: "8px",
+							background: isVisible5 ? "#d4edda" : "#f8d7da",
+							borderRadius: "4px",
+							fontSize: "14px",
+						}}
+					>
+						触发器 5 (enable控制): {isVisible5 ? "✅ 已触发" : "⏳ 等待中"}
+					</div>
 				</div>
 				<div style={{ marginTop: "10px", fontSize: "12px", color: "#666" }}>
 					总触发次数: {triggerCount}
+				</div>
+				<div style={{ marginTop: "10px" }}>
+					<button
+						onClick={() => setEnableObserving(!enableObserving)}
+						style={{
+							padding: "8px 16px",
+							background: enableObserving ? "#dc3545" : "#28a745",
+							color: "white",
+							border: "none",
+							borderRadius: "4px",
+							cursor: "pointer",
+							fontSize: "14px",
+						}}
+					>
+						{enableObserving ? "停止观察触发器5" : "开始观察触发器5"}
+					</button>
 				</div>
 			</div>
 
@@ -287,6 +320,45 @@ export function UseOneOffVisibilityExample() {
 							</div>
 							<div style={{ fontSize: "12px", opacity: 0.8 }}>
 								(rootMargin: 100px)
+							</div>
+						</div>
+					</AnimatedElement>
+				</div>
+			</section>
+
+			{/* 触发器 5: enable 控制 */}
+			<section style={{ marginBottom: "100px" }}>
+				<h3>🎛️ 触发器 5: enable 字段控制</h3>
+				<div
+					ref={trigger5Ref}
+					style={{
+						height: "200px",
+						background: isVisible5
+							? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+							: "#e9ecef",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						borderRadius: "12px",
+						transition: "all 0.3s ease",
+						border: isVisible5 ? "3px solid #667eea" : "3px solid transparent",
+					}}
+				>
+					<AnimatedElement isVisible={isVisible5} delay={800}>
+						<div
+							style={{
+								textAlign: "center",
+								color: isVisible5 ? "white" : "#6c757d",
+							}}
+						>
+							<div style={{ fontSize: "32px", marginBottom: "10px" }}>
+								{isVisible5 ? "🎛️" : "⏳"}
+							</div>
+							<div style={{ fontSize: "18px", fontWeight: "bold" }}>
+								{isVisible5 ? "enable 控制触发！" : "等待 enable 控制触发"}
+							</div>
+							<div style={{ fontSize: "12px", opacity: 0.8 }}>
+								(enable: {enableObserving ? "true" : "false"})
 							</div>
 						</div>
 					</AnimatedElement>

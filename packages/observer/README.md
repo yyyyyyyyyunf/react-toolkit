@@ -259,15 +259,30 @@ function MyComponent() {
 
 ```tsx
 import { useOneOffVisibility } from '@fly4react/observer';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 function MyComponent() {
   const ref = useRef<HTMLDivElement>(null);
+  const [shouldObserve, setShouldObserve] = useState(true);
+  
+  // 基本用法
   const isVisible = useOneOffVisibility(ref);
+  
+  // 使用 enable 控制是否观察
+  const isVisible2 = useOneOffVisibility(ref, { 
+    threshold: 0.5, 
+    offset: 100, 
+    enable: shouldObserve 
+  });
 
   return (
-    <div ref={ref} style={{ height: '200px', background: 'lightblue' }}>
-      {isVisible ? '已可见' : '未可见'}
+    <div>
+      <button onClick={() => setShouldObserve(!shouldObserve)}>
+        {shouldObserve ? '停止观察' : '开始观察'}
+      </button>
+      <div ref={ref} style={{ height: '200px', background: 'lightblue' }}>
+        {isVisible ? '已可见' : '未可见'}
+      </div>
     </div>
   );
 }
@@ -277,10 +292,11 @@ function MyComponent() {
 
 ```tsx
 import { useOneOffVisibilityEffect } from '@fly4react/observer';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 function MyComponent() {
   const ref = useRef<HTMLDivElement>(null);
+  const [shouldObserve, setShouldObserve] = useState(true);
 
   // 懒加载数据
   useOneOffVisibilityEffect(ref, () => {
@@ -288,9 +304,13 @@ function MyComponent() {
     loadData();
   }, { threshold: 0.5 });
 
-  // 触发动画
+  // 使用 enable 控制是否观察
   useOneOffVisibilityEffect(ref, () => {
     elementRef.current?.classList.add('animate-in');
+  }, { 
+    threshold: 0.1, 
+    offset: 100, 
+    enable: shouldObserve 
   });
 
   // 发送分析事件
@@ -299,8 +319,13 @@ function MyComponent() {
   }, { threshold: 0.8, offset: 200 });
 
   return (
-    <div ref={ref} style={{ height: '200px', background: 'lightblue' }}>
-      内容
+    <div>
+      <button onClick={() => setShouldObserve(!shouldObserve)}>
+        {shouldObserve ? '停止观察' : '开始观察'}
+      </button>
+      <div ref={ref} style={{ height: '200px', background: 'lightblue' }}>
+        内容
+      </div>
     </div>
   );
 }
@@ -739,6 +764,25 @@ interface ElementPositionOptions {
 - **`forceCalibrate`**: 是否强制启用校准机制，确保位置信息的准确性
 - **`calibrateInterval`**: 校准间隔时间（毫秒），定期使用 Intersection Observer 校准位置
 - **`threshold`**: 现在支持 `number | number[]` 类型，更灵活的阈值配置
+
+### OneOffVisibilityOptions
+
+```tsx
+interface OneOffVisibilityOptions {
+  threshold?: number | number[];
+  step?: number;
+  offset?: number;
+  throttle?: number;
+  enable?: boolean; // 是否启用观察，默认为 true
+}
+```
+
+**配置选项说明：**
+- **`threshold`**: 触发阈值，可以是单个数字或数字数组
+- **`step`**: 步长值（0-1之间），用于自动生成 threshold 数组
+- **`offset`**: 偏移量（像素），用于提前触发
+- **`throttle`**: 节流时间（毫秒），控制更新频率
+- **`enable`**: 是否启用观察，默认为 `true`。当设置为 `false` 时，不会进行观察
 
 ### UseScrollDirectionOptions
 

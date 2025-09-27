@@ -48,12 +48,6 @@ export type SerializableObserverOptions = Omit<ObserverOptions, "root"> & {
 };
 
 /**
- * useOneOffVisibility 选项配置
- * 使用普通版本的选项，不包含智能位置同步策略
- */
-export type OneOffVisibilityOptions = UseOneOffVisibilityOptions;
-
-/**
  * 基础选项
  * 所有位置相关 Hook 的通用配置
  */
@@ -382,7 +376,9 @@ export type UseIntersectionRatioOptions = OptionsBasic;
  * useOneOffVisibility Hook 选项类型
  * 使用普通版本的选项，不包含智能位置同步策略
  */
-export type UseOneOffVisibilityOptions = OptionsBasic;
+export type OneOffVisibilityOptions = OptionsBasic & {
+	enable?: boolean;
+};
 
 export type CheckIfShouldSyncPositionResult = {
 	shouldCalibrate: boolean;
