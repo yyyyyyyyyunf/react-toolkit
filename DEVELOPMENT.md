@@ -6,6 +6,7 @@
 
 - `@fly4react/observer` - Intersection Observer 工具库
 - `@fly4react/memo` - React 记忆化组件工具
+- `@fly4react/image` - 图片优化和懒加载工具库
 
 ## 代码格式化
 

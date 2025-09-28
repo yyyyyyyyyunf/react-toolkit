@@ -1,34 +1,34 @@
 # @fly4react/image
 
-Image optimization and lazy loading utilities for React applications with SSR support.
+为 React 应用程序提供图片优化和懒加载工具，支持 SSR。
 
-> 📖 **中文文档**: [查看中文版本](README.zh.md)
+> 📖 **English Documentation**: [View English Version](README.md)
 
-## Installation
+## 安装
 
 ```bash
 npm install @fly4react/image
-# or
+# 或
 yarn add @fly4react/image
-# or
+# 或
 pnpm add @fly4react/image
 ```
 
-## Features
+## 特性
 
-- 🖼️ **Image lazy loading** - Load images only when they enter the viewport
-- 🚀 **Performance optimization** - Reduce initial page load time
-- 📱 **Responsive images** - Support for different screen sizes
-- 🎯 **Intersection Observer** - Modern browser API for efficient detection
-- 🔧 **TypeScript support** - Full type safety
-- 🌐 **SSR Support** - Server-side rendering with preload optimization
-- ⚡ **Image Preloading** - Preload critical images for better performance
-- 🔄 **Context-based Architecture** - Flexible preload queue management
-- 📦 **Custom Queue Implementation** - Provide your own preload queue logic
+- 🖼️ **图片懒加载** - 仅在图片进入视口时加载
+- 🚀 **性能优化** - 减少初始页面加载时间
+- 📱 **响应式图片** - 支持不同屏幕尺寸
+- 🎯 **Intersection Observer** - 现代浏览器 API 高效检测
+- 🔧 **TypeScript 支持** - 完整的类型安全
+- 🌐 **SSR 支持** - 服务端渲染与预加载优化
+- ⚡ **图片预加载** - 预加载关键图片提升性能
+- 🔄 **基于 Context 的架构** - 灵活的预加载队列管理
+- 📦 **自定义队列实现** - 提供你自己的预加载队列逻辑
 
-## Usage
+## 使用方法
 
-### Basic Image Loading
+### 基础图片加载
 
 ```tsx
 import { ImageLoader } from '@fly4react/image';
@@ -36,28 +36,28 @@ import { ImageLoader } from '@fly4react/image';
 function MyComponent() {
   return (
     <div>
-      {/* Content Image */}
+      {/* 内容图片 */}
       <ImageLoader 
         type="content"
         src="https://example.com/image.jpg" 
-        alt="My image"
+        alt="我的图片"
         lazyload={true}
       />
       
-      {/* Background Image */}
+      {/* 背景图片 */}
       <ImageLoader 
         type="background"
         src="https://example.com/background.jpg"
         style={{ width: '100%', height: '200px' }}
       >
-        <h1>Content over background</h1>
+        <h1>背景上的内容</h1>
       </ImageLoader>
     </div>
   );
 }
 ```
 
-### Image Preloading with Context-based Architecture
+### 基于 Context 架构的图片预加载
 
 ```tsx
 import { 
@@ -68,7 +68,7 @@ import {
   ContentImage
 } from '@fly4react/image';
 
-// Custom preload queue implementation
+// 自定义预加载队列实现
 class MyPreloadQueue {
   private images = [];
 
@@ -97,10 +97,10 @@ function MyComponent() {
           type: 'image/jpeg',
           ssr: true,
         }}
-        alt="Critical image"
+        alt="关键图片"
       />
       
-      {/* Or use individual components */}
+      {/* 或使用独立组件 */}
       <ContentImage
         src="https://example.com/content.jpg"
         preloadConfig={{
@@ -108,7 +108,7 @@ function MyComponent() {
           priority: 'auto',
           ssr: true,
         }}
-        alt="Content image"
+        alt="内容图片"
       />
       
       <BackgroundImage
@@ -120,19 +120,19 @@ function MyComponent() {
         }}
         style={{ width: '100%', height: '200px' }}
       >
-        <h1>Background content</h1>
+        <h1>背景内容</h1>
       </BackgroundImage>
       
-      {/* Render preload links */}
+      {/* 渲染预加载链接 */}
       <ImagePreloadConsumer />
     </PreloadQueueProvider>
   );
 }
 ```
 
-### Advanced Context Configuration
+### 高级 Context 配置
 
-The new Context-based architecture allows you to provide custom preload queue implementations for different scenarios:
+新的基于 Context 的架构允许你为不同场景提供自定义预加载队列实现：
 
 ```tsx
 import { 
@@ -145,7 +145,7 @@ import {
   useClearPreloadQueue
 } from '@fly4react/image';
 
-// Memory-based queue (default)
+// 基于内存的队列（默认）
 class MemoryQueue {
   private images = [];
 
@@ -162,7 +162,7 @@ class MemoryQueue {
   }
 }
 
-// Request-scoped queue for SSR
+// 请求作用域队列（用于 SSR）
 class RequestQueue {
   constructor(requestId) {
     this.requestId = requestId;
@@ -182,7 +182,7 @@ class RequestQueue {
   }
 }
 
-// Custom queue with persistence
+// 带持久化的自定义队列
 class PersistentQueue {
   constructor(storage) {
     this.storage = storage;
@@ -203,15 +203,15 @@ class PersistentQueue {
   }
 }
 
-// Usage with different queue types
+// 使用不同队列类型
 function App() {
-  // Memory queue (default)
+  // 内存队列（默认）
   const memoryQueue = new MemoryQueue();
   
-  // Request-scoped queue for SSR
+  // 请求作用域队列（用于 SSR）
   const requestQueue = new RequestQueue(req.id);
   
-  // Persistent queue
+  // 持久化队列
   const persistentQueue = new PersistentQueue(localStorage);
 
   return (
@@ -222,82 +222,65 @@ function App() {
 }
 ```
 
-### Image URL Transformation
+### 图片 URL 转换
 
 ```tsx
 import { ImageLoader } from '@fly4react/image';
 
 function MyComponent() {
-  // Custom transformation functions - implement according to your CDN provider
+  // 自定义转换函数 - 根据你的 CDN 提供商实现
   const toWebP = (src: string) => src.replace(/\.(jpg|jpeg|png)$/i, '.webp');
   const addSize = (width: number, height?: number) => (src: string) => 
     `${src}?w=${width}${height ? `&h=${height}` : ''}`;
   
   return (
     <div>
-      {/* Convert to WebP format */}
+      {/* 转换为 WebP 格式 */}
       <ImageLoader 
         type="content"
         src="https://example.com/image.jpg"
         transform={toWebP}
-        alt="WebP image"
+        alt="WebP 图片"
       />
       
-      {/* Add size parameters */}
+      {/* 添加尺寸参数 */}
       <ImageLoader 
         type="background"
         src="https://example.com/background.png"
         transform={addSize(800, 600)}
         style={{ width: '100%', height: '200px' }}
       >
-        <h1>Resized Background</h1>
+        <h1>调整尺寸的背景</h1>
       </ImageLoader>
       
-      {/* Combined transformations */}
+      {/* 组合转换 */}
       <ImageLoader 
         type="content"
         src="https://example.com/image.jpg"
         transform={(src) => addSize(800)(toWebP(src))}
-        alt="Transformed image"
+        alt="转换后的图片"
       />
     </div>
   );
 }
 ```
 
-// Render preload links in the root component
-function App() {
-  return (
-    <html>
-      <head>
-        <title>My App</title>
-        {/* Render preload links in head */}
-        <ImagePreloadConsumer />
-      </head>
-      <body>
-        <MyComponent />
-      </body>
-    </html>
-  );
-}
-```
-
-### Flexible Preload Rendering
+### 灵活的预加载渲染
 
 ```tsx
 import { ImagePreloadConsumer } from '@fly4react/image';
 
-// Method 1: Render in head
+// 方法 1: 在 head 中渲染
 function HeadPreload() {
   return (
     <head>
-      <title>My App</title>
+      <title>我的应用</title>
       <ImagePreloadConsumer />
     </head>
   );
 }
 
-// Method 2: Render in body
+// 方法 2: 在 body 中渲染
 function BodyPreload() {
   return (
     <body>
@@ -307,7 +290,7 @@ function BodyPreload() {
   );
 }
 
-// Method 3: Render anywhere
+// 方法 3: 在任何地方渲染
 function CustomPreload() {
   return (
     <div>
@@ -317,7 +300,7 @@ function CustomPreload() {
   );
 }
 
-// Method 4: Conditional rendering
+// 方法 4: 条件渲染
 function ConditionalPreload() {
   return (
     <div>
@@ -330,7 +313,7 @@ function ConditionalPreload() {
 }
 ```
 
-### Next.js Integration
+### Next.js 集成
 
 ```tsx
 // pages/_document.tsx
@@ -342,7 +325,7 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          {/* Render preload links in head */}
+          {/* 在 head 中渲染预加载链接 */}
           <ImagePreloadConsumer />
         </Head>
         <body>
@@ -357,88 +340,36 @@ class MyDocument extends Document {
 export default MyDocument;
 ```
 
-### Express.js Integration
-
-```tsx
-import express from 'express';
-import { clearImagePreloadQueue } from '@fly4react/image';
-
-const app = express();
-
-app.get('/', (req, res) => {
-  // Clear previous preload queue
-  clearImagePreloadQueue();
-  
-  // Render React components
-  const html = renderToString(<App />);
-  
-  // Return complete HTML
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>My App</title>
-      </head>
-      <body>
-        <div id="root">${html}</div>
-      </body>
-    </html>
-  `);
-});
-```
-
 ## API
 
 ### ImageLoader
 
-A component that renders different image types based on the `type` prop.
+根据 `type` 属性渲染不同类型图片的组件。
 
 ```tsx
 <ImageLoader 
-  type="content" | "background"  // Image type
-  {...props}                     // Props for corresponding type
+  type="content" | "background"  // 图片类型
+  {...props}                     // 对应类型的属性
 />
 
-// Using forwardRef
+// 使用 forwardRef
 const imageRef = useRef<HTMLImageElement | HTMLDivElement>(null);
 
 <ImageLoader 
   ref={imageRef}
   type="content"
   src="https://example.com/image.jpg"
-  alt="My image"
-/>
-```
-
-### ImageLoader
-
-A component that renders different image types based on the `type` prop.
-
-```tsx
-<ImageLoader 
-  type="content" | "background"  // Image type
-  {...props}                     // Props for corresponding type
-/>
-
-// Using forwardRef
-const imageRef = useRef<HTMLImageElement | HTMLDivElement>(null);
-
-<ImageLoader 
-  ref={imageRef}
-  type="content"
-  src="https://example.com/image.jpg"
-  alt="My image"
+  alt="我的图片"
 />
 ```
 
 ### ImagePreloadConsumer
 
-A component that renders preload `<link>` tags in SSR environment.
+在 SSR 环境中渲染预加载 `<link>` 标签的组件。
 
 ```tsx
 <ImagePreloadConsumer 
-  ssr={boolean}                    // Whether to render in SSR
-  compatibilityMode="modern" | "legacy"  // Compatibility mode, defaults to "modern"
+  ssr={boolean}                    // 是否在 SSR 中渲染
 />
 ```
 
@@ -446,7 +377,7 @@ A component that renders preload `<link>` tags in SSR environment.
 
 #### PreloadQueueProvider
 
-The main provider that combines all preload functionality.
+组合所有预加载功能的主提供者。
 
 ```tsx
 <PreloadQueueProvider preloadQueue={yourQueue}>
@@ -454,9 +385,9 @@ The main provider that combines all preload functionality.
 </PreloadQueueProvider>
 ```
 
-#### Individual Providers
+#### 独立提供者
 
-For performance optimization, you can use individual providers:
+为了性能优化，你可以使用独立的提供者：
 
 ```tsx
 <AddToPreloadProvider addImage={addImageFunction}>
@@ -472,12 +403,12 @@ For performance optimization, you can use individual providers:
 
 #### useAddToPreloadQueue
 
-Hook to add images to the preload queue.
+用于向预加载队列添加图片的 Hook。
 
 ```tsx
 const addToPreloadQueue = useAddToPreloadQueue();
 
-// Add image to queue
+// 向队列添加图片
 addToPreloadQueue({
   src: 'https://example.com/image.jpg',
   priority: 'high',
@@ -488,46 +419,44 @@ addToPreloadQueue({
 
 #### useGetPreloadImages
 
-Hook to get images from the preload queue.
+用于从预加载队列获取图片的 Hook。
 
 ```tsx
 const getPreloadImages = useGetPreloadImages();
 
-// Get all images in queue
+// 获取队列中的所有图片
 const images = getPreloadImages();
 ```
 
 #### useClearPreloadQueue
 
-Hook to clear the preload queue.
+用于清空预加载队列的 Hook。
 
 ```tsx
 const clearPreloadQueue = useClearPreloadQueue();
 
-// Clear all images from queue
+// 清空队列中的所有图片
 clearPreloadQueue();
 ```
 
-### Preload Configuration
+### 预加载配置
 
 ```tsx
 interface PreloadConfig {
-  preload?: boolean;              // Whether to enable preloading
-  priority?: 'high' | 'low' | 'auto'; // Preload priority
-  type?: string;                  // Image type
-  ssr?: boolean;                  // Whether to preload in SSR
-  sizes?: string;                 // Image size information
-  media?: string;                 // Media query
+  preload?: boolean;              // 是否启用预加载
+  priority?: 'high' | 'low' | 'auto'; // 预加载优先级
+  type?: string;                  // 图片类型
+  ssr?: boolean;                  // 是否在 SSR 中预加载
+  sizes?: string;                 // 图片尺寸信息
+  media?: string;                 // 媒体查询
 }
 ```
 
-
-
-### Individual Components
+### 独立组件
 
 #### BackgroundImage
 
-A component for background images with preload support.
+支持预加载的背景图片组件。
 
 ```tsx
 <BackgroundImage
@@ -539,13 +468,13 @@ A component for background images with preload support.
   }}
   style={{ width: '100%', height: '200px' }}
 >
-  <h1>Content over background</h1>
+  <h1>背景上的内容</h1>
 </BackgroundImage>
 ```
 
 #### ContentImage
 
-A component for content images with preload and lazy loading support.
+支持预加载和懒加载的内容图片组件。
 
 ```tsx
 <ContentImage
@@ -556,37 +485,37 @@ A component for content images with preload and lazy loading support.
     ssr: true,
   }}
   lazyload={true}
-  alt="Content image"
+  alt="内容图片"
 />
 ```
 
-## Migration from v1.x
+## 从 v1.x 迁移
 
-If you're upgrading from v1.x, here are the key changes:
+如果你正在从 v1.x 升级，以下是主要变更：
 
-### Breaking Changes
+### 破坏性变更
 
-1. **Removed compatibility modes**: The `compatibilityMode` prop is no longer supported
-2. **New Context architecture**: Preload functionality now requires Context providers
-3. **Renamed props**: `preload` prop is now `preloadConfig`
-4. **New type names**: `ImagePreloadOptions` is now `PreloadConfig`
+1. **移除了兼容模式**：不再支持 `compatibilityMode` 属性
+2. **新的 Context 架构**：预加载功能现在需要 Context 提供者
+3. **重命名属性**：`preload` 属性现在是 `preloadConfig`
+4. **新的类型名称**：`ImagePreloadOptions` 现在是 `PreloadConfig`
 
-### Migration Steps
+### 迁移步骤
 
-1. **Wrap your app with PreloadQueueProvider**:
+1. **用 PreloadQueueProvider 包装你的应用**：
 ```tsx
-// Before
+// 之前
 <MyApp />
 
-// After
+// 之后
 <PreloadQueueProvider preloadQueue={new MyPreloadQueue()}>
   <MyApp />
 </PreloadQueueProvider>
 ```
 
-2. **Update prop names**:
+2. **更新属性名称**：
 ```tsx
-// Before
+// 之前
 <ImageLoader 
   preload={{
     priority: 'high',
@@ -594,7 +523,7 @@ If you're upgrading from v1.x, here are the key changes:
   }}
 />
 
-// After
+// 之后
 <ImageLoader 
   preloadConfig={{
     preload: true,
@@ -604,15 +533,15 @@ If you're upgrading from v1.x, here are the key changes:
 />
 ```
 
-3. **Update ImagePreloadConsumer**:
+3. **更新 ImagePreloadConsumer**：
 ```tsx
-// Before
+// 之前
 <ImagePreloadConsumer compatibilityMode="legacy" />
 
-// After
+// 之后
 <ImagePreloadConsumer />
 ```
 
-## License
+## 许可证
 
 MIT

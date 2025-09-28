@@ -243,7 +243,7 @@ const ImageLoadingExample = () => {
 							type="content"
 							src="https://picsum.photos/400/300?random=10"
 							alt="高优先级预加载"
-							preload={{ priority: "high", ssr: true }}
+							preloadConfig={{ preload: true, priority: "high", ssr: true }}
 							style={{ width: "100%", height: "auto" }}
 						/>
 					</div>
@@ -254,7 +254,8 @@ const ImageLoadingExample = () => {
 							type="content"
 							src="https://picsum.photos/400/300?random=11"
 							alt="带尺寸的预加载"
-							preload={{
+							preloadConfig={{
+								preload: true,
 								priority: "high",
 								ssr: true,
 								sizes: "(max-width: 768px) 100vw, 50vw",

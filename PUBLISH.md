@@ -6,6 +6,7 @@
 
 - `@fly4react/observer`
 - `@fly4react/memo`
+- `@fly4react/image`
 
 ## 🚀 发布方式
 

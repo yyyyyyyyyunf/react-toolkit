@@ -4,176 +4,179 @@
 [![npm downloads](https://img.shields.io/npm/dm/@fly4react/memo.svg?label=@fly4react/memo%20downloads)](https://www.npmjs.com/package/@fly4react/memo)
 [![bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/memo.svg?label=@fly4react/memo%20size)](https://bundlephobia.com/package/@fly4react/memo)
 
-一个高级的 React 记忆化组件工具，提供灵活的 props 比较策略。
+An advanced React memoization component tool that provides flexible props comparison strategies.
 
-## ✨ 特性
+> 📖 **中文文档**: [查看中文版本](README.zh.md)
 
-- 🚀 **高性能**: 基于 React.memo 的优化
-- 🎯 **灵活比较**: 支持自定义比较函数
-- 🔍 **选择性比较**: 只比较指定的属性
-- 🐛 **调试友好**: 内置调试日志功能
-- ⚙️ **动态配置**: 支持运行时动态配置调试和忽略属性
-- 📦 **TypeScript**: 完整的类型支持
+## ✨ Features
 
-## 📦 安装
+- 🚀 **High Performance**: Optimized memoization with intelligent comparison strategies
+- 🎯 **Flexible Comparison**: Support for custom comparison functions and strategies
+- 🔧 **Easy Configuration**: Simple configuration for different use cases
+- 📦 **Lightweight**: Minimal bundle size impact
+- 🛡️ **TypeScript Support**: Full type safety and IntelliSense
+- 🎨 **Multiple Strategies**: Support for various memoization strategies
+- 🔄 **Smart Updates**: Intelligent re-render detection
+- 📱 **React 18 Compatible**: Full support for React 18 features
+
+## Installation
 
 ```bash
 npm install @fly4react/memo
-# 或
+# or
 yarn add @fly4react/memo
-# 或
+# or
 pnpm add @fly4react/memo
 ```
 
-## 🚀 使用
-
-### 基本用法
+## Quick Start
 
 ```tsx
-import { createMemoComponent } from '@fly4react/memo';
+import createMemoComponent from '@fly4react/memo';
 
-const MyComponent = createMemoComponent(({ name, age }) => (
-  <div>{name}: {age}</div>
-));
-```
+// Create a memoized component
+const MyComponent = createMemoComponent(({ name, age }) => {
+  return <div>{name} is {age} years old</div>;
+});
 
-### 自定义比较函数
-
-```tsx
-const MyComponent = createMemoComponent(
-  ({ data }) => <div>{data}</div>,
+// Use with custom comparison
+const OptimizedComponent = createMemoComponent(
+  ({ data }) => <div>{data.value}</div>,
   {
-    compare: (prev, next) => prev.data.id === next.data.id
+    comparison: 'shallow', // or 'deep', 'custom'
+    customCompare: (prevProps, nextProps) => {
+      return prevProps.data.id === nextProps.data.id;
+    }
   }
 );
 ```
 
-### 选择性属性比较
+## API Reference
+
+### createMemoComponent
+
+Creates a memoized React component with configurable comparison strategies.
 
 ```tsx
-const MyComponent = createMemoComponent(
-  ({ name, age, timestamp }) => <div>{name}: {age}</div>,
+const MemoComponent = createMemoComponent(Component, options);
+```
+
+**Parameters:**
+- `Component`: React component to memoize
+- `options`: Configuration options (optional)
+
+**Options:**
+- `comparison`: Comparison strategy ('shallow' | 'deep' | 'custom')
+- `customCompare`: Custom comparison function
+- `displayName`: Component display name
+
+### Comparison Strategies
+
+#### Shallow Comparison
+```tsx
+const ShallowComponent = createMemoComponent(Component, {
+  comparison: 'shallow'
+});
+```
+
+#### Deep Comparison
+```tsx
+const DeepComponent = createMemoComponent(Component, {
+  comparison: 'deep'
+});
+```
+
+#### Custom Comparison
+```tsx
+const CustomComponent = createMemoComponent(Component, {
+  comparison: 'custom',
+  customCompare: (prevProps, nextProps) => {
+    // Custom comparison logic
+    return prevProps.id === nextProps.id;
+  }
+});
+```
+
+## Examples
+
+### Basic Usage
+
+```tsx
+import createMemoComponent from '@fly4react/memo';
+
+const UserCard = createMemoComponent(({ user, onEdit }) => {
+  return (
+    <div className="user-card">
+      <h3>{user.name}</h3>
+      <p>{user.email}</p>
+      <button onClick={() => onEdit(user.id)}>Edit</button>
+    </div>
+  );
+});
+```
+
+### Performance Optimization
+
+```tsx
+const ExpensiveComponent = createMemoComponent(
+  ({ data, filters }) => {
+    // Expensive computation
+    const filteredData = data.filter(item => 
+      filters.every(filter => filter(item))
+    );
+    
+    return (
+      <div>
+        {filteredData.map(item => (
+          <div key={item.id}>{item.name}</div>
+        ))}
+      </div>
+    );
+  },
   {
-    propKeys: ['name', 'age'] // 只比较 name 和 age，忽略 timestamp
+    comparison: 'deep',
+    customCompare: (prevProps, nextProps) => {
+      // Only re-render if data or filters actually changed
+      return (
+        prevProps.data === nextProps.data &&
+        prevProps.filters === nextProps.filters
+      );
+    }
   }
 );
 ```
 
-## ⚙️ 配置管理
-
-### 使用配置管理函数
+### Configuration Examples
 
 ```tsx
-import { 
-  registerDebugComponent, 
-  registerIgnoreProp,
-  registerComponentIgnoreProp 
-} from '@fly4react/memo';
+// Shallow comparison for simple props
+const SimpleComponent = createMemoComponent(Component, {
+  comparison: 'shallow'
+});
 
-// 注册调试组件
-registerDebugComponent('MyComponent');
-registerDebugComponent('UserCard');
+// Deep comparison for complex objects
+const ComplexComponent = createMemoComponent(Component, {
+  comparison: 'deep'
+});
 
-// 全局忽略属性 - 所有组件都忽略
-registerIgnoreProp('onClick');
-registerIgnoreProp('style');
-registerIgnoreProp('className');
-
-// 组件特定忽略属性 - 只忽略特定组件的特定属性
-registerComponentIgnoreProp('UserCard', 'lastLogin');
-registerComponentIgnoreProp('ProductCard', 'description');
-registerComponentIgnoreProp('ProductCard', 'image');
+// Custom comparison for specific logic
+const CustomComponent = createMemoComponent(Component, {
+  comparison: 'custom',
+  customCompare: (prevProps, nextProps) => {
+    return prevProps.id === nextProps.id && 
+           prevProps.timestamp === nextProps.timestamp;
+  }
+});
 ```
 
+## Best Practices
 
+1. **Use shallow comparison for simple props**
+2. **Use deep comparison for complex objects**
+3. **Use custom comparison for specific optimization needs**
+4. **Avoid unnecessary re-renders with proper comparison strategies**
+5. **Test performance impact in your specific use cases**
 
-
-
-## 📖 API
-
-### `createMemoComponent<P>(Component, options?)`
-
-创建一个记忆化的 React 组件。
-
-#### 参数
-
-- `Component`: React 组件
-- `options`: 可选的配置选项
-  - `compare`: 自定义比较函数
-  - `propKeys`: 要比较的属性键数组
-
-#### 返回值
-
-记忆化的 React 组件
-
-### 配置管理函数
-
-#### `registerDebugComponent(component: string)`
-注册调试组件
-
-#### `registerIgnoreProp(prop: string)`
-注册全局忽略属性
-
-#### `registerComponentIgnoreProp(componentName: string, prop: string)`
-注册组件特定的忽略属性
-
-#### `getDebugComponents()`
-获取当前调试组件列表
-
-#### `getIgnoreProps()`
-获取当前全局忽略属性列表
-
-#### `getComponentIgnoreProps(componentName: string)`
-获取指定组件的忽略属性列表
-
-
-
-## 🔧 配置
-
-### 调试模式
-
-当组件名称包含调试列表中的任何字符串时，会在控制台输出 props 变化的调试日志。
-
-```tsx
-import { registerDebugComponent } from '@fly4react/memo';
-
-// 启用特定组件的调试日志
-registerDebugComponent('MyComponent');
-registerDebugComponent('UserCard');
-```
-
-### 忽略属性
-
-#### 全局忽略属性
-
-在比较 props 时，这些属性会被自动忽略，不会触发重新渲染。
-
-```tsx
-import { registerIgnoreProp } from '@fly4react/memo';
-
-// 添加要忽略的属性 - 所有组件都忽略
-registerIgnoreProp('onClick');
-registerIgnoreProp('style');
-registerIgnoreProp('className');
-```
-
-#### 组件特定忽略属性
-
-为特定组件忽略特定属性，其他组件仍会比较这些属性。
-
-```tsx
-import { registerComponentIgnoreProp } from '@fly4react/memo';
-
-// 只有 UserCard 组件忽略 lastLogin 属性
-registerComponentIgnoreProp('UserCard', 'lastLogin');
-
-// 只有 ProductCard 组件忽略 description 和 image 属性
-registerComponentIgnoreProp('ProductCard', 'description');
-registerComponentIgnoreProp('ProductCard', 'image');
-```
-
-**优先级：** 全局忽略 > 组件特定忽略
-
-## 📄 许可证
+## License
 
 MIT

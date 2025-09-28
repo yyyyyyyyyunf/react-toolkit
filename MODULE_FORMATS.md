@@ -1,18 +1,16 @@
 # 模块格式支持说明
 
-`@fly4react/observer` 和 `@fly4react/memo` 都同时支持 ESM (ES Modules) 和 CommonJS 两种模块格式，确保在不同环境下都能正常使用。
+`@fly4react/observer`、`@fly4react/memo` 和 `@fly4react/image` 都支持 ESM (ES Modules) 格式，确保在现代环境下都能正常使用。
+
+> 📖 **English Documentation**: [View English Version](README.md)
 
 ## 支持的模块格式
 
-### ESM (ES Modules)
+### ESM (ES Modules) - 主要支持
 - **文件扩展名**: `.js`
 - **导入方式**: `import` 语句
-- **适用环境**: 现代浏览器、Node.js 12+、打包工具
-
-### CommonJS
-- **文件扩展名**: `.cjs`
-- **导入方式**: `require()` 函数
-- **适用环境**: Node.js、旧版打包工具
+- **适用环境**: 现代浏览器、Node.js 12+、所有现代打包工具
+- **优势**: 更好的 Tree Shaking、更小的包体积、更好的开发体验
 
 ## 使用方式
 
@@ -47,35 +45,73 @@ import {
 import { createMemoComponent } from '@fly4react/memo';
 ```
 
-### CommonJS 导入
+#### @fly4react/image
 
-#### @fly4react/observer
-
-```jsx
+```tsx
 // 完整导入
-const { 
-  IntersectionLoad, 
-  useElementPosition, 
-  useOneOffVisibility 
-} = require('@fly4react/observer');
+import { 
+  ImageLoader,
+  BackgroundImage,
+  ContentImage,
+  PreloadQueueProvider,
+  ImagePreloadConsumer,
+  useAddToPreloadQueue,
+  useGetPreloadImages,
+  useClearPreloadQueue
+} from '@fly4react/image';
 
 // 按需导入
-const { IntersectionLoad } = require('@fly4react/observer');
-const { useElementPosition } = require('@fly4react/observer');
+import { ImageLoader, PreloadQueueProvider } from '@fly4react/image';
+import { BackgroundImage, ContentImage } from '@fly4react/image';
 ```
 
-#### @fly4react/memo
+## 实际使用示例
 
-```jsx
-// 完整导入
-const { 
-  createMemoComponent,
-  debugComponentList,
-  ignorePropsList 
-} = require('@fly4react/memo');
+### 基础使用
 
-// 按需导入
-const { createMemoComponent } = require('@fly4react/memo');
+```tsx
+// @fly4react/observer - 元素可见性检测
+import { useIntersectionObserver } from '@fly4react/observer';
+
+function LazyComponent() {
+  const [ref, inView] = useIntersectionObserver({
+    threshold: 0.1,
+    triggerOnce: true
+  });
+
+  return (
+    <div ref={ref}>
+      {inView ? 'Content loaded!' : 'Loading...'}
+    </div>
+  );
+}
+
+// @fly4react/memo - 组件记忆化
+import createMemoComponent from '@fly4react/memo';
+
+const MemoComponent = createMemoComponent(({ data }) => {
+  return <div>{data.value}</div>;
+});
+
+// @fly4react/image - 图片加载和预加载
+import { ImageLoader, PreloadQueueProvider } from '@fly4react/image';
+
+function App() {
+  return (
+    <PreloadQueueProvider preloadQueue={new MyPreloadQueue()}>
+      <ImageLoader 
+        type="content"
+        src="https://example.com/image.jpg"
+        preloadConfig={{
+          preload: true,
+          priority: 'high',
+          ssr: true,
+        }}
+        alt="My image"
+      />
+    </PreloadQueueProvider>
+  );
+}
 ```
 
 ### TypeScript 使用
@@ -103,6 +139,25 @@ import type {
 import { createMemoComponent } from '@fly4react/memo';
 ```
 
+#### @fly4react/image
+
+```tsx
+// TypeScript 会自动选择正确的模块格式
+import type { 
+  PreloadConfig,
+  BackgroundImageProps,
+  ContentImageProps,
+  PreloadQueueContext
+} from '@fly4react/image';
+
+import { 
+  ImageLoader, 
+  PreloadQueueProvider,
+  BackgroundImage,
+  ContentImage 
+} from '@fly4react/image';
+```
+
 ## 包配置说明
 
 ### package.json 配置
@@ -113,11 +168,9 @@ import { createMemoComponent } from '@fly4react/memo';
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",    // ESM 入口
-      "require": "./dist/index.cjs"   // CommonJS 入口
+      "import": "./dist/index.js"     // ESM 入口
     }
   },
-  "main": "./dist/index.cjs",         // CommonJS 默认入口
   "module": "./dist/index.js",        // ESM 入口
   "types": "./dist/index.d.ts"        // TypeScript 类型定义
 }
@@ -125,9 +178,9 @@ import { createMemoComponent } from '@fly4react/memo';
 
 ### 模块解析优先级
 
-1. **ESM 环境**: 优先使用 `import` 字段 (`./dist/index.js`)
-2. **CommonJS 环境**: 使用 `main` 字段 (`./dist/index.cjs`)
-3. **TypeScript**: 使用 `types` 字段 (`./dist/index.d.ts`)
+1. **ESM 环境**: 使用 `import` 字段 (`./dist/index.js`)
+2. **TypeScript**: 使用 `types` 字段 (`./dist/index.d.ts`)
+3. **向后兼容**: 使用 `module` 字段作为 ESM 入口
 
 ## 不同环境的使用
 
@@ -148,9 +201,8 @@ import { createMemoComponent } from '@fly4react/memo';
 ```js
 // ESM 模式 (package.json 中 "type": "module")
 import { useElementPosition } from '@fly4react/observer';
-
-// CommonJS 模式
-const { useElementPosition } = require('@fly4react/observer');
+import { ImageLoader, PreloadQueueProvider } from '@fly4react/image';
+import createMemoComponent from '@fly4react/memo';
 ```
 
 ### 打包工具
@@ -160,7 +212,7 @@ const { useElementPosition } = require('@fly4react/observer');
 // webpack.config.js
 module.exports = {
   resolve: {
-    mainFields: ['module', 'main'], // 优先使用 ESM
+    mainFields: ['module'], // 优先使用 ESM
   },
 };
 ```
@@ -171,7 +223,7 @@ module.exports = {
 export default {
   external: ['react', 'react-dom'],
   output: {
-    format: 'esm', // 或 'cjs'
+    format: 'esm', // 使用 ESM 格式
   },
 };
 ```
@@ -205,19 +257,18 @@ dist/
 └── ...
 ```
 
-### 文件大小对比
+### 文件大小
 - **ESM**: ~17.4KB (gzipped: ~5.8KB)
-- **CommonJS**: ~40.5KB (包含 webpack 运行时)
+- **优势**: 更小的包体积，更好的 Tree Shaking 支持
 
 ## 最佳实践
 
-### 1. 优先使用 ESM
+### 1. 使用 ESM 导入
 ```tsx
 // ✅ 推荐
 import { IntersectionLoad } from '@fly4react/observer';
-
-// ❌ 不推荐（除非必要）
-const { IntersectionLoad } = require('@fly4react/observer');
+import { ImageLoader, PreloadQueueProvider } from '@fly4react/image';
+import createMemoComponent from '@fly4react/memo';
 ```
 
 ### 2. 按需导入
@@ -277,7 +328,7 @@ import { IntersectionLoad } from '@fly4react/observer/dist/index.js';
 
 ## 兼容性
 
-- **Node.js**: 12+ (ESM), 8+ (CommonJS)
+- **Node.js**: 12+ (ESM)
 - **浏览器**: 支持 ES modules 的现代浏览器
 - **打包工具**: Webpack 4+, Rollup, Vite, Parcel
 - **TypeScript**: 4.5+

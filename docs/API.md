@@ -224,3 +224,276 @@ interface MemoOptions {
 4. 使用 `useOneOffVisibility` 进行一次性检测
 5. 合理使用 `createMemoComponent` 避免不必要的重新渲染
 6. 启用 `forceCalibrate` 和设置合适的 `calibrateInterval` 确保位置准确性
+
+## @fly4react/image
+
+### Components
+
+#### ImageLoader
+
+图片加载器组件，支持懒加载和预加载。
+
+```tsx
+import { ImageLoader } from '@fly4react/image';
+
+<ImageLoader
+  type="content" // 或 "background"
+  src="https://example.com/image.jpg"
+  alt="My image"
+  preloadConfig={{
+    preload: true,
+    priority: 'high',
+    ssr: true,
+  }}
+/>
+```
+
+**Props:**
+- `type`: 图片类型，`'content'` 或 `'background'`
+- `src`: 图片源地址
+- `alt`: 图片替代文本
+- `preloadConfig`: 预加载配置（可选）
+  - `preload`: 是否预加载
+  - `priority`: 优先级，`'high'` | `'low'` | `'auto'`
+  - `ssr`: 是否在服务端渲染时预加载
+
+#### BackgroundImage
+
+背景图片组件。
+
+```tsx
+import { BackgroundImage } from '@fly4react/image';
+
+<BackgroundImage
+  src="https://example.com/bg.jpg"
+  preloadConfig={{
+    preload: true,
+    priority: 'low',
+  }}
+  style={{ width: '100%', height: '200px' }}
+/>
+```
+
+#### ContentImage
+
+内容图片组件。
+
+```tsx
+import { ContentImage } from '@fly4react/image';
+
+<ContentImage
+  src="https://example.com/content.jpg"
+  alt="Content image"
+  preloadConfig={{
+    preload: true,
+    priority: 'high',
+  }}
+/>
+```
+
+#### ImagePreloadConsumer
+
+预加载链接生成器组件。
+
+```tsx
+import { ImagePreloadConsumer } from '@fly4react/image';
+
+<ImagePreloadConsumer />
+```
+
+### Context Providers
+
+#### PreloadQueueProvider
+
+预加载队列提供者，用于管理图片预加载。
+
+```tsx
+import { PreloadQueueProvider } from '@fly4react/image';
+
+function App() {
+  const preloadQueue = new MyPreloadQueue();
+  
+  return (
+    <PreloadQueueProvider preloadQueue={preloadQueue}>
+      {/* 你的应用组件 */}
+    </PreloadQueueProvider>
+  );
+}
+```
+
+#### AddToPreloadProvider
+
+添加图片到预加载队列的提供者。
+
+```tsx
+import { AddToPreloadProvider } from '@fly4react/image';
+
+<AddToPreloadProvider addImage={addImageFunction}>
+  {/* 你的组件 */}
+</AddToPreloadProvider>
+```
+
+#### GetPreloadImagesProvider
+
+获取预加载图片的提供者。
+
+```tsx
+import { GetPreloadImagesProvider } from '@fly4react/image';
+
+<GetPreloadImagesProvider getImages={getImagesFunction}>
+  {/* 你的组件 */}
+</GetPreloadImagesProvider>
+```
+
+#### ClearPreloadProvider
+
+清空预加载队列的提供者。
+
+```tsx
+import { ClearPreloadProvider } from '@fly4react/image';
+
+<ClearPreloadProvider clearImages={clearImagesFunction}>
+  {/* 你的组件 */}
+</ClearPreloadProvider>
+```
+
+### Hooks
+
+#### useAddToPreloadQueue
+
+添加图片到预加载队列的 Hook。
+
+```tsx
+import { useAddToPreloadQueue } from '@fly4react/image';
+
+function MyComponent() {
+  const addToPreloadQueue = useAddToPreloadQueue();
+  
+  const handlePreload = () => {
+    addToPreloadQueue({
+      src: 'https://example.com/image.jpg',
+      type: 'image',
+      ssr: true,
+      priority: 'high',
+    });
+  };
+  
+  return <button onClick={handlePreload}>Preload Image</button>;
+}
+```
+
+#### useGetPreloadImages
+
+获取预加载图片列表的 Hook。
+
+```tsx
+import { useGetPreloadImages } from '@fly4react/image';
+
+function PreloadStatus() {
+  const getPreloadImages = useGetPreloadImages();
+  
+  const images = getPreloadImages?.() || [];
+  
+  return <div>Preloaded {images.length} images</div>;
+}
+```
+
+#### useClearPreloadQueue
+
+清空预加载队列的 Hook。
+
+```tsx
+import { useClearPreloadQueue } from '@fly4react/image';
+
+function ClearButton() {
+  const clearPreloadQueue = useClearPreloadQueue();
+  
+  const handleClear = () => {
+    clearPreloadQueue?.();
+  };
+  
+  return <button onClick={handleClear}>Clear Queue</button>;
+}
+```
+
+#### useImagePreload
+
+预加载单个图片的 Hook。
+
+```tsx
+import { useImagePreload } from '@fly4react/image';
+
+function MyComponent() {
+  useImagePreload({
+    src: 'https://example.com/image.jpg',
+    type: 'image',
+    ssr: true,
+    priority: 'high',
+  });
+  
+  return <div>Component with preloaded image</div>;
+}
+```
+
+#### useImagesPreload
+
+预加载多个图片的 Hook。
+
+```tsx
+import { useImagesPreload } from '@fly4react/image';
+
+function MyComponent() {
+  useImagesPreload([
+    {
+      src: 'https://example.com/image1.jpg',
+      type: 'image',
+      ssr: true,
+      priority: 'high',
+    },
+    {
+      src: 'https://example.com/image2.jpg',
+      type: 'image',
+      ssr: true,
+      priority: 'low',
+    },
+  ]);
+  
+  return <div>Component with preloaded images</div>;
+}
+```
+
+### Types
+
+#### PreloadConfig
+
+预加载配置类型。
+
+```tsx
+interface PreloadConfig {
+  preload: boolean;
+  priority?: 'high' | 'low' | 'auto';
+  ssr?: boolean;
+  sizes?: string;
+  media?: string;
+}
+```
+
+#### PreloadQueueContext
+
+预加载队列上下文类型。
+
+```tsx
+interface PreloadQueueContext {
+  addImage: (options: PreloadOptions) => void;
+  getImages?: () => PreloadOptions[];
+  clearImages?: () => void;
+}
+```
+
+### 最佳实践
+
+1. 使用 `PreloadQueueProvider` 包装应用以启用预加载功能
+2. 合理设置图片优先级，重要图片使用 `high` 优先级
+3. 在服务端渲染时启用 `ssr: true` 选项
+4. 使用 `ImagePreloadConsumer` 生成预加载链接
+5. 根据实际需求选择合适的预加载策略
