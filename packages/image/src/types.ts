@@ -1,6 +1,11 @@
 import type React from "react";
 
 /**
+ * 兼容模式类型
+ */
+export type CompatibilityMode = "modern" | "legacy";
+
+/**
  * 图片预加载配置
  */
 export interface ImagePreloadOptions {
@@ -23,6 +28,8 @@ export interface ImagePreloadOptions {
 	sizes?: string;
 	/** 媒体查询 */
 	media?: string;
+	/** 兼容模式：modern 使用模块级队列，legacy 使用全局队列 */
+	compatibilityMode?: CompatibilityMode;
 }
 
 /**
@@ -67,4 +74,6 @@ export type ImageLoaderProps =
 export interface ImagePreloadConsumerProps {
 	/** 是否在服务端渲染时显示预加载链接 */
 	ssr?: boolean;
+	/** 兼容模式：modern 使用模块级队列，legacy 使用全局队列 */
+	compatibilityMode?: CompatibilityMode;
 }

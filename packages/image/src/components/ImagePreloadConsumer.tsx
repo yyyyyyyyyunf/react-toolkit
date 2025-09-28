@@ -1,13 +1,16 @@
 import { type PreloadOptions, getPreloadQueue } from "../utils/preload";
 import type { ImagePreloadConsumerProps } from "../types";
 
-const ImagePreloadConsumer = ({ ssr = false }: ImagePreloadConsumerProps) => {
+const ImagePreloadConsumer = ({ 
+	ssr = false, 
+	compatibilityMode = "modern" 
+}: ImagePreloadConsumerProps) => {
 	// 只在服务端渲染时生成预加载 HTML
 	if (typeof window !== "undefined" || !ssr) {
 		return null;
 	}
 
-	const preloadQueue = getPreloadQueue();
+	const preloadQueue = getPreloadQueue(compatibilityMode);
 
 	if (preloadQueue.length === 0) {
 		return null;

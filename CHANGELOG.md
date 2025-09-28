@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `@fly4react/observer` - Intersection Observer 工具库
 - `@fly4react/memo` - React 记忆化组件工具
+- `@fly4react/image` - 图片优化和懒加载工具库
+
+## [1.8.0] - 2025-01-28
+
+### @fly4react/image
+
+#### Added
+
+- **Compatibility Modes**: 新增兼容模式支持 ESM/CJS 混用场景
+  - `modern` 模式：使用模块级队列，适合纯 ESM 环境，性能更好
+  - `legacy` 模式：使用全局队列，支持跨模块格式数据共享
+- **Cross-module Data Sharing**: 支持在不同模块格式之间共享预加载数据
+- **Enhanced Type Safety**: 改进的类型定义和全局对象类型扩展
+- **Comprehensive Testing**: 添加兼容模式测试用例
+
+#### Changed
+
+- **API Enhancement**: 所有预加载相关 API 现在支持 `compatibilityMode` 参数
+- **Documentation**: 更新文档，添加兼容模式使用指南和迁移指南
+- **Performance**: 优化全局队列访问性能
+
+#### Fixed
+
+- **Module Resolution**: 修复 ESM 和 CJS 混用环境下的数据共享问题
+- **Type Definitions**: 修复全局对象类型定义问题
 
 ## [1.0.0] - 2025-08-23
 
