@@ -21,8 +21,8 @@ pnpm add @fly4react/image
 - 🔧 **TypeScript support** - Full type safety
 - 🌐 **SSR Support** - Server-side rendering with preload optimization
 - ⚡ **Image Preloading** - Preload critical images for better performance
-- 🔄 **Compatibility Modes** - Support for ESM/CJS mixed environments
-- 📦 **Cross-module Sharing** - Share preload data across different module formats
+- 🔄 **Context-based Architecture** - Flexible preload queue management
+- 📦 **Custom Queue Implementation** - Provide your own preload queue logic
 
 ## Usage
 
@@ -55,123 +55,167 @@ function MyComponent() {
 }
 ```
 
-### Image Preloading with SSR
+### Image Preloading with Context-based Architecture
 
 ```tsx
 import { 
   ImageLoader, 
-  useImagePreload, 
-  ImagePreloadConsumer 
+  PreloadQueueProvider,
+  ImagePreloadConsumer,
+  BackgroundImage,
+  ContentImage
 } from '@fly4react/image';
 
-function MyComponent() {
-  // Add images to preload queue on server side
-  useImagePreload({
-    src: 'https://example.com/critical-image.jpg',
-    priority: 'high',
-    type: 'image/jpeg',
-  });
+// Custom preload queue implementation
+class MyPreloadQueue {
+  private images = [];
 
-  return (
-    <ImageLoader 
-      type="content"
-      src="https://example.com/critical-image.jpg"
-      preload={{
-        priority: 'high',
-        type: 'image/jpeg',
-        ssr: true,
-      }}
-      alt="Critical image"
-    />
-  );
+  addImage(options) {
+    this.images.push(options);
+  }
+
+  getImages() {
+    return this.images;
+  }
+
+  clearImages() {
+    this.images.length = 0;
+  }
 }
-```
-
-### Compatibility Modes for ESM/CJS Mixed Environments
-
-When using `@fly4react/image` in mixed module environments (ESM + CJS), you can configure compatibility modes to ensure preload data is shared correctly across different module formats.
-
-```tsx
-import { ImageLoader, ImagePreloadConsumer } from '@fly4react/image';
 
 function MyComponent() {
   return (
-    <div>
-      {/* Modern mode (default) - for pure ESM environments */}
+    <PreloadQueueProvider preloadQueue={new MyPreloadQueue()}>
       <ImageLoader 
         type="content"
-        src="https://example.com/image1.jpg"
-        preload={{
+        src="https://example.com/critical-image.jpg"
+        preloadConfig={{
+          preload: true,
+          priority: 'high',
+          type: 'image/jpeg',
           ssr: true,
-          compatibilityMode: "modern", // Use module-level queue for better performance
         }}
-        alt="Modern mode image"
+        alt="Critical image"
       />
       
-      {/* Legacy mode - for ESM/CJS mixed environments */}
-      <ImageLoader 
-        type="content"
-        src="https://example.com/image2.jpg"
-        preload={{
+      {/* Or use individual components */}
+      <ContentImage
+        src="https://example.com/content.jpg"
+        preloadConfig={{
+          preload: true,
+          priority: 'auto',
           ssr: true,
-          compatibilityMode: "legacy", // Use global queue for cross-module data sharing
         }}
-        alt="Legacy mode image"
+        alt="Content image"
       />
-    </div>
-  );
-}
-
-// Configure compatibility mode in the root component
-function App() {
-  return (
-    <html>
-      <head>
-        <title>My App</title>
-        {/* Use legacy mode to ensure cross-module data sharing */}
-        <ImagePreloadConsumer compatibilityMode="legacy" />
-      </head>
-      <body>
-        <MyComponent />
-      </body>
-    </html>
+      
+      <BackgroundImage
+        src="https://example.com/background.jpg"
+        preloadConfig={{
+          preload: true,
+          priority: 'low',
+          ssr: true,
+        }}
+        style={{ width: '100%', height: '200px' }}
+      >
+        <h1>Background content</h1>
+      </BackgroundImage>
+      
+      {/* Render preload links */}
+      <ImagePreloadConsumer />
+    </PreloadQueueProvider>
   );
 }
 ```
 
-#### Compatibility Mode Details
+### Advanced Context Configuration
 
-- **`modern`** (default): Uses module-level queue, better performance for pure ESM environments
-- **`legacy`**: Uses global queue, supports data sharing across ESM and CJS modules
+The new Context-based architecture allows you to provide custom preload queue implementations for different scenarios:
 
 ```tsx
-// In component library (ESM format)
-import { ImageLoader } from '@fly4react/image';
+import { 
+  PreloadQueueProvider,
+  AddToPreloadProvider,
+  GetPreloadImagesProvider,
+  ClearPreloadProvider,
+  useAddToPreloadQueue,
+  useGetPreloadImages,
+  useClearPreloadQueue
+} from '@fly4react/image';
 
-export function MyImageComponent() {
-  return (
-    <ImageLoader 
-      type="content"
-      src="https://example.com/image.jpg"
-      preload={{
-        ssr: true,
-        compatibilityMode: "legacy", // Ensure data sharing with CJS app
-      }}
-      alt="Shared image"
-    />
-  );
+// Memory-based queue (default)
+class MemoryQueue {
+  private images = [];
+
+  addImage(options) {
+    this.images.push(options);
+  }
+
+  getImages() {
+    return [...this.images];
+  }
+
+  clearImages() {
+    this.images.length = 0;
+  }
 }
 
-// In main application (CJS format)
-const { ImagePreloadConsumer } = require('@fly4react/image');
+// Request-scoped queue for SSR
+class RequestQueue {
+  constructor(requestId) {
+    this.requestId = requestId;
+    this.images = [];
+  }
 
+  addImage(options) {
+    this.images.push({ ...options, requestId: this.requestId });
+  }
+
+  getImages() {
+    return this.images.filter(img => img.requestId === this.requestId);
+  }
+
+  clearImages() {
+    this.images = this.images.filter(img => img.requestId !== this.requestId);
+  }
+}
+
+// Custom queue with persistence
+class PersistentQueue {
+  constructor(storage) {
+    this.storage = storage;
+  }
+
+  addImage(options) {
+    const images = this.storage.getItem('preloadImages') || [];
+    images.push(options);
+    this.storage.setItem('preloadImages', images);
+  }
+
+  getImages() {
+    return JSON.parse(this.storage.getItem('preloadImages') || '[]');
+  }
+
+  clearImages() {
+    this.storage.removeItem('preloadImages');
+  }
+}
+
+// Usage with different queue types
 function App() {
+  // Memory queue (default)
+  const memoryQueue = new MemoryQueue();
+  
+  // Request-scoped queue for SSR
+  const requestQueue = new RequestQueue(req.id);
+  
+  // Persistent queue
+  const persistentQueue = new PersistentQueue(localStorage);
+
   return (
-    <div>
-      {/* Use legacy mode to ensure data sharing with ESM component library */}
-      <ImagePreloadConsumer compatibilityMode="legacy" />
-      <MyImageComponent />
-    </div>
+    <PreloadQueueProvider preloadQueue={memoryQueue}>
+      <MyComponent />
+    </PreloadQueueProvider>
   );
 }
 ```
@@ -396,133 +440,175 @@ A component that renders preload `<link>` tags in SSR environment.
 />
 ```
 
-### useImagePreload
+### Context Providers
 
-A hook for adding images to preload queue in SSR.
+#### PreloadQueueProvider
+
+The main provider that combines all preload functionality.
 
 ```tsx
-const { isAdded } = useImagePreload({
-  src: string,                    // Image URL
-  type?: string,                  // Image type
-  priority?: 'high' | 'low' | 'auto', // Preload priority
-  ssr?: boolean,                  // Whether to preload in SSR
-  sizes?: string,                 // Image size information
-  media?: string,                 // Media query
-  compatibilityMode?: 'modern' | 'legacy', // Compatibility mode, defaults to "modern"
+<PreloadQueueProvider preloadQueue={yourQueue}>
+  {children}
+</PreloadQueueProvider>
+```
+
+#### Individual Providers
+
+For performance optimization, you can use individual providers:
+
+```tsx
+<AddToPreloadProvider addImage={addImageFunction}>
+  <GetPreloadImagesProvider getImages={getImagesFunction}>
+    <ClearPreloadProvider clearImages={clearImagesFunction}>
+      {children}
+    </ClearPreloadProvider>
+  </GetPreloadImagesProvider>
+</AddToPreloadProvider>
+```
+
+### Hooks
+
+#### useAddToPreloadQueue
+
+Hook to add images to the preload queue.
+
+```tsx
+const addToPreloadQueue = useAddToPreloadQueue();
+
+// Add image to queue
+addToPreloadQueue({
+  src: 'https://example.com/image.jpg',
+  priority: 'high',
+  type: 'image/jpeg',
+  ssr: true,
 });
+```
+
+#### useGetPreloadImages
+
+Hook to get images from the preload queue.
+
+```tsx
+const getPreloadImages = useGetPreloadImages();
+
+// Get all images in queue
+const images = getPreloadImages();
+```
+
+#### useClearPreloadQueue
+
+Hook to clear the preload queue.
+
+```tsx
+const clearPreloadQueue = useClearPreloadQueue();
+
+// Clear all images from queue
+clearPreloadQueue();
 ```
 
 ### Preload Configuration
 
 ```tsx
-interface ImagePreloadOptions {
+interface PreloadConfig {
   preload?: boolean;              // Whether to enable preloading
   priority?: 'high' | 'low' | 'auto'; // Preload priority
   type?: string;                  // Image type
   ssr?: boolean;                  // Whether to preload in SSR
   sizes?: string;                 // Image size information
   media?: string;                 // Media query
-  compatibilityMode?: 'modern' | 'legacy'; // Compatibility mode, defaults to "modern"
 }
 ```
 
 
 
-### SSR Utilities
+### Individual Components
+
+#### BackgroundImage
+
+A component for background images with preload support.
 
 ```tsx
-import { 
-  generateImagePreloadHTML,    // Generate preload HTML
-  clearImagePreloadQueue,      // Clear preload queue
-  getImagePreloadQueue,        // Get preload queue
-  imagePreloadManager,         // Preload manager
-} from '@fly4react/image';
-
-// Compatibility mode related utility functions
-import { 
-  getPreloadQueueByMode,       // Get preload queue by compatibility mode
-  addToPreloadQueue,          // Add image to preload queue
-  isImageInPreloadQueue,      // Check if image is in preload queue
-} from '@fly4react/image';
-
-// Usage examples
-const modernQueue = getPreloadQueueByMode('modern');    // Get module-level queue
-const legacyQueue = getPreloadQueueByMode('legacy');    // Get global queue
-
-// Add image to specified mode queue
-addToPreloadQueue({
-  src: 'https://example.com/image.jpg',
-  ssr: true,
-  compatibilityMode: 'legacy', // Use legacy mode
-});
-
-// Check if image is in specified mode queue
-const isInQueue = isImageInPreloadQueue('https://example.com/image.jpg', 'legacy');
+<BackgroundImage
+  src="https://example.com/background.jpg"
+  preloadConfig={{
+    preload: true,
+    priority: 'low',
+    ssr: true,
+  }}
+  style={{ width: '100%', height: '200px' }}
+>
+  <h1>Content over background</h1>
+</BackgroundImage>
 ```
 
-## Compatibility Modes
+#### ContentImage
 
-The `@fly4react/image` package supports two compatibility modes to handle different module environments:
-
-### Modern Mode (Default)
-
-- **Use case**: Pure ESM environments
-- **Performance**: Better performance with module-level queue
-- **Data isolation**: Each module has its own preload queue
-- **Recommended for**: New projects using pure ESM
+A component for content images with preload and lazy loading support.
 
 ```tsx
-// Modern mode usage (default)
-<ImageLoader 
-  type="content"
-  src="https://example.com/image.jpg"
-  preload={{ ssr: true }} // compatibilityMode defaults to "modern"
+<ContentImage
+  src="https://example.com/content.jpg"
+  preloadConfig={{
+    preload: true,
+    priority: 'auto',
+    ssr: true,
+  }}
+  lazyload={true}
+  alt="Content image"
 />
 ```
 
-### Legacy Mode
+## Migration from v1.x
 
-- **Use case**: Mixed ESM/CJS environments
-- **Performance**: Slightly lower due to global object access
-- **Data sharing**: Preload data is shared across all modules
-- **Recommended for**: Projects mixing ESM and CJS modules
+If you're upgrading from v1.x, here are the key changes:
 
+### Breaking Changes
+
+1. **Removed compatibility modes**: The `compatibilityMode` prop is no longer supported
+2. **New Context architecture**: Preload functionality now requires Context providers
+3. **Renamed props**: `preload` prop is now `preloadConfig`
+4. **New type names**: `ImagePreloadOptions` is now `PreloadConfig`
+
+### Migration Steps
+
+1. **Wrap your app with PreloadQueueProvider**:
 ```tsx
-// Legacy mode usage
+// Before
+<MyApp />
+
+// After
+<PreloadQueueProvider preloadQueue={new MyPreloadQueue()}>
+  <MyApp />
+</PreloadQueueProvider>
+```
+
+2. **Update prop names**:
+```tsx
+// Before
 <ImageLoader 
-  type="content"
-  src="https://example.com/image.jpg"
-  preload={{ 
-    ssr: true, 
-    compatibilityMode: "legacy" 
+  preload={{
+    priority: 'high',
+    ssr: true,
+  }}
+/>
+
+// After
+<ImageLoader 
+  preloadConfig={{
+    preload: true,
+    priority: 'high',
+    ssr: true,
   }}
 />
 ```
 
-### When to Use Each Mode
-
-| Scenario | Recommended Mode | Reason |
-|----------|------------------|---------|
-| Pure ESM project | `modern` | Better performance, cleaner architecture |
-| ESM component library + CJS app | `legacy` | Ensures data sharing across module formats |
-| CJS project | `legacy` | Global queue works better in CJS environment |
-| Mixed module formats | `legacy` | Prevents data isolation issues |
-
-### Migration Guide
-
-If you're upgrading from an older version and experiencing preload data sharing issues:
-
-1. **Identify the issue**: Check if your app mixes ESM and CJS modules
-2. **Switch to legacy mode**: Add `compatibilityMode: "legacy"` to your preload configurations
-3. **Test thoroughly**: Ensure preload data is shared correctly across modules
-4. **Consider refactoring**: For long-term maintainability, consider migrating to pure ESM
-
+3. **Update ImagePreloadConsumer**:
 ```tsx
-// Before (potential data sharing issues)
-<ImagePreloadConsumer />
-
-// After (explicit legacy mode)
+// Before
 <ImagePreloadConsumer compatibilityMode="legacy" />
+
+// After
+<ImagePreloadConsumer />
 ```
 
 ## License
