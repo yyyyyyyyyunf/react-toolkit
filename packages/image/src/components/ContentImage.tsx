@@ -5,19 +5,19 @@ import { useImagePreload } from "../hooks/useImagePreload";
 import type { ContentImageProps } from "../types";
 
 const ContentImage = React.forwardRef<HTMLImageElement, ContentImageProps>(
-	({ src, lazyload, preload, transform, ...rest }, ref) => {
+	({ src, lazyload, preloadConfig, transform, ...rest }, ref) => {
 		// 转换图片 URL
 		const transformedSrc = transform ? transform(src) : src;
 
 		// 使用新的预加载 Hook
-		if (preload?.preload) {
+		if (preloadConfig?.preload) {
 			useImagePreload({
 				src: transformedSrc,
-				priority: preload.priority || "auto",
-				type: preload.type || "image",
-				ssr: preload.ssr ?? true,
-				sizes: preload.sizes,
-				media: preload.media,
+				priority: preloadConfig.priority || "auto",
+				type: preloadConfig.type || "image",
+				ssr: preloadConfig.ssr ?? true,
+				sizes: preloadConfig.sizes,
+				media: preloadConfig.media,
 			});
 		}
 

@@ -41,7 +41,7 @@ export interface PreloadQueueContext {
 /**
  * 图片预加载配置
  */
-export interface ImagePreloadOptions {
+export interface PreloadConfig {
 	/** 是否启用预加载 */
 	preload?: boolean;
 	/** 预加载优先级 */
@@ -73,7 +73,7 @@ export interface ContentImageProps
 	src: string;
 	lazyload?: boolean;
 	/** 预加载配置 */
-	preload?: ImagePreloadOptions;
+	preloadConfig?: PreloadConfig;
 	/** 图片 URL 转换函数 */
 	transform?: ImageTransform;
 }
@@ -84,7 +84,7 @@ export interface BackgroundImageProps {
 	className?: string;
 	children?: React.ReactNode;
 	/** 预加载配置 */
-	preload?: ImagePreloadOptions;
+	preloadConfig?: PreloadConfig;
 	/** 图片 URL 转换函数 */
 	transform?: ImageTransform;
 }

@@ -4,19 +4,19 @@ import { useImagePreload } from "../hooks/useImagePreload";
 import type { BackgroundImageProps } from "../types";
 
 const BackgroundImage = React.forwardRef<HTMLDivElement, BackgroundImageProps>(
-	({ src, style, className, children, preload, transform }, ref) => {
+	({ src, style, className, children, preloadConfig, transform }, ref) => {
 		// 转换图片 URL
 		const transformedSrc = transform ? transform(src) : src;
 
 		// 使用新的预加载 Hook
-		if (preload?.preload) {
+		if (preloadConfig?.preload) {
 			useImagePreload({
 				src: transformedSrc,
-				priority: preload.priority || "auto",
-				type: preload.type || "image",
-				ssr: preload.ssr ?? true,
-				sizes: preload.sizes,
-				media: preload.media,
+				priority: preloadConfig.priority || "auto",
+				type: preloadConfig.type || "image",
+				ssr: preloadConfig.ssr ?? true,
+				sizes: preloadConfig.sizes,
+				media: preloadConfig.media,
 			});
 		}
 
