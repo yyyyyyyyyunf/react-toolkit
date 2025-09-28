@@ -1,6 +1,6 @@
 import ImageLoader from "./components/ImageLoader";
-import { BackgroundImage } from "./components/BackgroundImage";
-import { ContentImage } from "./components/ContentImage";
+import BackgroundImage from "./components/BackgroundImage";
+import ContentImage from "./components/ContentImage";
 
 // 导出所有 hooks 和组件
 export * from "./types";
