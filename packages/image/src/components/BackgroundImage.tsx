@@ -8,15 +8,17 @@ const BackgroundImage = React.forwardRef<HTMLDivElement, BackgroundImageProps>(
 		// 转换图片 URL
 		const transformedSrc = transform ? transform(src) : src;
 
-		// 使用预加载 Hook
-		useImagePreload({
-			src: transformedSrc,
-			priority: preload?.priority || "auto",
-			type: preload?.type || "image",
-			ssr: preload?.ssr ?? true,
-			sizes: preload?.sizes,
-			media: preload?.media,
-		});
+		// 使用新的预加载 Hook
+		if (preload?.preload) {
+			useImagePreload({
+				src: transformedSrc,
+				priority: preload.priority || "auto",
+				type: preload.type || "image",
+				ssr: preload.ssr ?? true,
+				sizes: preload.sizes,
+				media: preload.media,
+			});
+		}
 
 		const styles = useMemo(
 			() => ({

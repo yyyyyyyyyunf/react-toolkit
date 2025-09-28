@@ -1,9 +1,42 @@
 import type React from "react";
 
 /**
- * 兼容模式类型
+ * 预加载选项
  */
-export type CompatibilityMode = "modern" | "legacy";
+export interface PreloadOptions {
+	/** 图片 URL */
+	src: string;
+	/** 图片类型，默认为 'image' */
+	type?:
+		| "image"
+		| "image/webp"
+		| "image/avif"
+		| "image/jpeg"
+		| "image/png"
+		| "image/gif"
+		| "image/svg+xml";
+	/** 是否在 SSR 时预加载 */
+	ssr?: boolean;
+	/** 预加载优先级 */
+	priority?: "high" | "low" | "auto";
+	/** 图片尺寸信息 */
+	sizes?: string;
+	/** 媒体查询 */
+	media?: string;
+}
+
+/**
+ * 预加载队列上下文接口
+ * 用户需要实现这个接口来提供自己的队列实现
+ */
+export interface PreloadQueueContext {
+	/** 添加图片到队列 */
+	addImage: (options: PreloadOptions) => void;
+	/** 获取队列中的所有图片（可选） */
+	getImages?: () => PreloadOptions[];
+	/** 清空队列（可选） */
+	clearImages?: () => void;
+}
 
 /**
  * 图片预加载配置
@@ -28,8 +61,6 @@ export interface ImagePreloadOptions {
 	sizes?: string;
 	/** 媒体查询 */
 	media?: string;
-	/** 兼容模式：modern 使用模块级队列，legacy 使用全局队列 */
-	compatibilityMode?: CompatibilityMode;
 }
 
 /**
@@ -65,15 +96,3 @@ export type ImageLoaderProps =
 	| ({
 			type: "background";
 	  } & BackgroundImageProps);
-
-/**
- * 图片预加载消费者组件
- * 在 SSR 环境下渲染预加载的 <link> 标签
- * 用户可以选择在 head 或 body 中渲染
- */
-export interface ImagePreloadConsumerProps {
-	/** 是否在服务端渲染时显示预加载链接 */
-	ssr?: boolean;
-	/** 兼容模式：modern 使用模块级队列，legacy 使用全局队列 */
-	compatibilityMode?: CompatibilityMode;
-}

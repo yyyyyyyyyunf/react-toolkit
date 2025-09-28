@@ -1,46 +1,53 @@
-import { type PreloadOptions, addToPreloadQueue } from "../utils/preload";
+import { useCallback } from "react";
+import { useAddToPreloadQueue } from "./useAddToPreloadQueue";
+import type { PreloadOptions } from "../types";
 
 /**
  * 图片预加载 Hook
- * 在服务端将图片添加到预加载队列
+ * 使用用户提供的队列实现
  */
-export function useImagePreload(options: PreloadOptions) {
-	const {
-		src,
-		type = "image",
-		priority = "auto",
-		ssr = true,
-		sizes,
-		media,
-	} = options;
+export const useImagePreload = (options: PreloadOptions) => {
+	const addToPreloadQueue = useAddToPreloadQueue();
 
-	// 在服务端立即执行，不依赖 useEffect
-	if (typeof window === "undefined" && ssr) {
-		addToPreloadQueue({ src, type, priority, ssr, sizes, media });
-	}
+	const addImage = useCallback(
+		(options: PreloadOptions) => {
+			if (options.ssr !== false) {
+				addToPreloadQueue(options);
+			}
+		},
+		[addToPreloadQueue],
+	);
+
+	// 立即添加图片到队列
+	addImage(options);
 
 	return {
-		isAdded: typeof window === "undefined" && ssr,
+		isAdded: true, // 总是返回 true，因为立即添加
 	};
-}
+};
 
 /**
- * 批量添加图片到预加载队列的 Hook
- * 在 SSR 环境下立即执行，不依赖 useEffect
+ * 批量图片预加载 Hook
+ * 使用用户提供的队列实现
  */
-export const useImagesPreload = (
-	options: PreloadOptions[],
-): { isAdded: boolean } => {
-	// 在服务端立即执行，不依赖 useEffect
-	if (typeof window === "undefined") {
-		for (const option of options) {
-			if (option.ssr !== false) {
-				addToPreloadQueue(option);
+export const useImagesPreload = (options: PreloadOptions[]) => {
+	const addToPreloadQueue = useAddToPreloadQueue();
+
+	const addImages = useCallback(
+		(options: PreloadOptions[]) => {
+			for (const option of options) {
+				if (option.ssr !== false) {
+					addToPreloadQueue(option);
+				}
 			}
-		}
-	}
+		},
+		[addToPreloadQueue],
+	);
+
+	// 立即添加所有图片到队列
+	addImages(options);
 
 	return {
-		isAdded: typeof window === "undefined",
+		isAdded: true, // 总是返回 true，因为立即添加
 	};
 };

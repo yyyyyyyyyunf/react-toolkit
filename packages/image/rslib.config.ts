@@ -17,14 +17,6 @@ export default defineConfig({
 				devDependencies: true,
 			},
 		},
-		{
-			bundle: true,
-			format: "cjs",
-			autoExternal: {
-				peerDependencies: true,
-				devDependencies: true,
-			},
-		},
 	],
 	output: {
 		target: "web",
