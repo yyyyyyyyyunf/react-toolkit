@@ -121,7 +121,7 @@ describe("PreloadQueueProvider", () => {
 		const testQueue = new TestQueue();
 
 		render(
-			<PreloadQueueProvider preloadQueue={testQueue}>
+			<PreloadQueueProvider value={testQueue}>
 				<TestFullComponent />
 			</PreloadQueueProvider>,
 		);

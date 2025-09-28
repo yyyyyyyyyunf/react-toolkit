@@ -314,7 +314,7 @@ function App() {
   const preloadQueue = new MyPreloadQueue();
   
   return (
-    <PreloadQueueProvider preloadQueue={preloadQueue}>
+    <PreloadQueueProvider value={preloadQueue}>
       {/* 你的应用组件 */}
     </PreloadQueueProvider>
   );

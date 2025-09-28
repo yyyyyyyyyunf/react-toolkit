@@ -11,17 +11,17 @@ import { ClearPreloadProvider } from "./ClearPreloadProvider";
  */
 export interface PreloadQueueProviderProps {
 	children: ReactNode;
-	preloadQueue: PreloadQueueContext;
+	value: PreloadQueueContext;
 }
 
 export const PreloadQueueProvider: React.FC<PreloadQueueProviderProps> = ({
 	children,
-	preloadQueue,
+	value,
 }) => {
 	return (
-		<AddToPreloadProvider addImage={preloadQueue.addImage}>
-			<GetPreloadImagesProvider getImages={preloadQueue.getImages}>
-				<ClearPreloadProvider clearImages={preloadQueue.clearImages}>
+		<AddToPreloadProvider addImage={value.addImage}>
+			<GetPreloadImagesProvider getImages={value.getImages}>
+				<ClearPreloadProvider clearImages={value.clearImages}>
 					{children}
 				</ClearPreloadProvider>
 			</GetPreloadImagesProvider>

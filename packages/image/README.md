@@ -87,7 +87,7 @@ class MyPreloadQueue {
 
 function MyComponent() {
   return (
-    <PreloadQueueProvider preloadQueue={new MyPreloadQueue()}>
+    <PreloadQueueProvider value={new MyPreloadQueue()}>
       <ImageLoader 
         type="content"
         src="https://example.com/critical-image.jpg"
@@ -215,7 +215,7 @@ function App() {
   const persistentQueue = new PersistentQueue(localStorage);
 
   return (
-    <PreloadQueueProvider preloadQueue={memoryQueue}>
+    <PreloadQueueProvider value={memoryQueue}>
       <MyComponent />
     </PreloadQueueProvider>
   );
@@ -449,7 +449,7 @@ A component that renders preload `<link>` tags in SSR environment.
 The main provider that combines all preload functionality.
 
 ```tsx
-<PreloadQueueProvider preloadQueue={yourQueue}>
+<PreloadQueueProvider value={yourQueue}>
   {children}
 </PreloadQueueProvider>
 ```
@@ -579,7 +579,7 @@ If you're upgrading from v1.x, here are the key changes:
 <MyApp />
 
 // After
-<PreloadQueueProvider preloadQueue={new MyPreloadQueue()}>
+<PreloadQueueProvider value={new MyPreloadQueue()}>
   <MyApp />
 </PreloadQueueProvider>
 ```

@@ -98,7 +98,7 @@ import { ImageLoader, PreloadQueueProvider } from '@fly4react/image';
 
 function App() {
   return (
-    <PreloadQueueProvider preloadQueue={new MyPreloadQueue()}>
+    <PreloadQueueProvider value={new MyPreloadQueue()}>
       <ImageLoader 
         type="content"
         src="https://example.com/image.jpg"

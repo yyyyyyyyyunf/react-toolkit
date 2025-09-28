@@ -87,7 +87,7 @@ class MyPreloadQueue {
 
 function MyComponent() {
   return (
-    <PreloadQueueProvider preloadQueue={new MyPreloadQueue()}>
+    <PreloadQueueProvider value={new MyPreloadQueue()}>
       <ImageLoader 
         type="content"
         src="https://example.com/critical-image.jpg"
@@ -215,7 +215,7 @@ function App() {
   const persistentQueue = new PersistentQueue(localStorage);
 
   return (
-    <PreloadQueueProvider preloadQueue={memoryQueue}>
+    <PreloadQueueProvider value={memoryQueue}>
       <MyComponent />
     </PreloadQueueProvider>
   );
@@ -380,7 +380,7 @@ const imageRef = useRef<HTMLImageElement | HTMLDivElement>(null);
 组合所有预加载功能的主提供者。
 
 ```tsx
-<PreloadQueueProvider preloadQueue={yourQueue}>
+<PreloadQueueProvider value={yourQueue}>
   {children}
 </PreloadQueueProvider>
 ```
@@ -508,7 +508,7 @@ interface PreloadConfig {
 <MyApp />
 
 // 之后
-<PreloadQueueProvider preloadQueue={new MyPreloadQueue()}>
+<PreloadQueueProvider value={new MyPreloadQueue()}>
   <MyApp />
 </PreloadQueueProvider>
 ```

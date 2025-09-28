@@ -110,7 +110,7 @@ const MemoComponent = createMemoComponent(({ data }) => {
 // Image Loading
 function App() {
   return (
-    <PreloadQueueProvider preloadQueue={new MyPreloadQueue()}>
+    <PreloadQueueProvider value={new MyPreloadQueue()}>
       <ImageLoader 
         type="content"
         src="https://example.com/image.jpg"
