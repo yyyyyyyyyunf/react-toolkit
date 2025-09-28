@@ -79,10 +79,13 @@ const getGlobalPreloadQueue = (): PreloadOptions[] => {
 
 	// 在 Node.js 环境中使用 global 对象
 	if (typeof global !== "undefined") {
-		if (!global.__fly4react_image_preload_queue__) {
-			global.__fly4react_image_preload_queue__ = [];
+		const globalWithQueue = global as typeof global & {
+			__fly4react_image_preload_queue__?: PreloadOptions[];
+		};
+		if (!globalWithQueue.__fly4react_image_preload_queue__) {
+			globalWithQueue.__fly4react_image_preload_queue__ = [];
 		}
-		return global.__fly4react_image_preload_queue__;
+		return globalWithQueue.__fly4react_image_preload_queue__;
 	}
 
 	// 降级到 globalThis
