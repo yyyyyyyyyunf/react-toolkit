@@ -1,13 +1,15 @@
 {
 	"name": "@fly4react/image",
-	"version": "1.7.0",
+	"version": "1.8.0",
 	"description": "Image optimization and lazy loading utilities for React",
 	"type": "module",
-	"main": "./dist/index.js",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
 			"import": "./dist/index.js",
+			"require": "./dist/index.cjs",
 			"types": "./dist/index.d.ts"
 		}
 	},
