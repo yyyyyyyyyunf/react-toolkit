@@ -12,13 +12,13 @@ declare global {
 	interface Window {
 		__fly4react_image_preload_queue__?: PreloadOptions[];
 	}
-	
+
 	namespace NodeJS {
 		interface Global {
 			__fly4react_image_preload_queue__?: PreloadOptions[];
 		}
 	}
-	
+
 	interface GlobalThis {
 		__fly4react_image_preload_queue__?: PreloadOptions[];
 	}
@@ -62,7 +62,7 @@ export const isBrowser = typeof window !== "undefined";
  * 模块级预加载队列（modern 模式）
  * 用于纯 ESM 环境，性能更好
  */
-let preloadQueue: PreloadOptions[] = [];
+const preloadQueue: PreloadOptions[] = [];
 
 /**
  * 获取全局预加载队列（legacy 模式）
@@ -76,26 +76,31 @@ const getGlobalPreloadQueue = (): PreloadOptions[] => {
 		}
 		return window.__fly4react_image_preload_queue__;
 	}
-	
+
 	// 在 Node.js 环境中使用 global 对象
 	if (typeof global !== "undefined") {
-		if (!(global as any).__fly4react_image_preload_queue__) {
-			(global as any).__fly4react_image_preload_queue__ = [];
+		if (!global.__fly4react_image_preload_queue__) {
+			global.__fly4react_image_preload_queue__ = [];
 		}
-		return (global as any).__fly4react_image_preload_queue__;
+		return global.__fly4react_image_preload_queue__;
 	}
-	
+
 	// 降级到 globalThis
-	if (!(globalThis as any).__fly4react_image_preload_queue__) {
-		(globalThis as any).__fly4react_image_preload_queue__ = [];
+	const globalThisWithQueue = globalThis as typeof globalThis & {
+		__fly4react_image_preload_queue__?: PreloadOptions[];
+	};
+	if (!globalThisWithQueue.__fly4react_image_preload_queue__) {
+		globalThisWithQueue.__fly4react_image_preload_queue__ = [];
 	}
-	return (globalThis as any).__fly4react_image_preload_queue__;
+	return globalThisWithQueue.__fly4react_image_preload_queue__;
 };
 
 /**
  * 根据兼容模式获取预加载队列
  */
-export const getPreloadQueueByMode = (compatibilityMode: CompatibilityMode = "modern"): PreloadOptions[] => {
+export const getPreloadQueueByMode = (
+	compatibilityMode: CompatibilityMode = "modern",
+): PreloadOptions[] => {
 	if (compatibilityMode === "legacy") {
 		return getGlobalPreloadQueue();
 	}
@@ -105,7 +110,9 @@ export const getPreloadQueueByMode = (compatibilityMode: CompatibilityMode = "mo
 /**
  * 获取预加载队列
  */
-export const getPreloadQueue = (compatibilityMode: CompatibilityMode = "modern"): PreloadOptions[] => {
+export const getPreloadQueue = (
+	compatibilityMode: CompatibilityMode = "modern",
+): PreloadOptions[] => {
 	const preloadQueue = getPreloadQueueByMode(compatibilityMode);
 	return [...preloadQueue];
 };
@@ -113,7 +120,9 @@ export const getPreloadQueue = (compatibilityMode: CompatibilityMode = "modern")
 /**
  * 清空预加载队列
  */
-export const clearPreloadQueue = (compatibilityMode: CompatibilityMode = "modern"): void => {
+export const clearPreloadQueue = (
+	compatibilityMode: CompatibilityMode = "modern",
+): void => {
 	const preloadQueue = getPreloadQueueByMode(compatibilityMode);
 	preloadQueue.length = 0;
 };
@@ -121,7 +130,10 @@ export const clearPreloadQueue = (compatibilityMode: CompatibilityMode = "modern
 /**
  * 检查图片是否已经在预加载队列中
  */
-export const isImageInPreloadQueue = (src: string, compatibilityMode: CompatibilityMode = "modern"): boolean => {
+export const isImageInPreloadQueue = (
+	src: string,
+	compatibilityMode: CompatibilityMode = "modern",
+): boolean => {
 	const preloadQueue = getPreloadQueueByMode(compatibilityMode);
 	return preloadQueue.some((item) => item.src === src);
 };
@@ -143,7 +155,9 @@ export const addToPreloadQueue = (options: PreloadOptions): void => {
 /**
  * 生成 SSR 预加载 HTML
  */
-export const generatePreloadHTML = (compatibilityMode: CompatibilityMode = "modern"): string => {
+export const generatePreloadHTML = (
+	compatibilityMode: CompatibilityMode = "modern",
+): string => {
 	const preloadQueue = getPreloadQueueByMode(compatibilityMode);
 	if (preloadQueue.length === 0) {
 		return "";
