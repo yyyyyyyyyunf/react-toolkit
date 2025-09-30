@@ -297,7 +297,10 @@ export class FeatureDetector<T extends FeatureConfigMap = FeatureConfigMap> {
 		const cacheKey = `${String(feature)}_${ua}`;
 
 		if (this.useCache && this.cache.has(cacheKey)) {
-			return this.cache.get(cacheKey)!;
+			const cached = this.cache.get(cacheKey);
+			if (cached) {
+				return cached;
+			}
 		}
 
 		const config = this.getFeatureConfig(feature);

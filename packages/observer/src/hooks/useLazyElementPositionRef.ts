@@ -21,7 +21,7 @@ import { useIsMounted } from "./useIsMounted";
  * 与 useElementPositionRef 类似，但不实时计算位置信息，而是返回一个 callback 函数。
  * 只有当用户主动调用 callback 时，才会计算并返回当前的位置信息。
  * 适用于需要按需获取元素位置信息的场景，可以进一步减少不必要的计算开销。
- * 
+ *
  * 浏览器兼容性：
  * - 支持 IntersectionObserver 的浏览器：使用原生 API，性能最佳
  * - 不支持 IntersectionObserver 的浏览器：使用标准的 intersection-observer polyfill
@@ -344,7 +344,7 @@ export const useLazyElementPositionRef = (
 			currentScrollY,
 			now,
 		);
-		
+
 		// 更新缓存
 		positionRef.current = newPosition;
 		return positionRef.current;
