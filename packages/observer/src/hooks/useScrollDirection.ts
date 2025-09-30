@@ -1,7 +1,7 @@
-import { useCallback, useMemo, useRef, useState } from "react";
-import type { ScrollDirection, UseScrollDirectionOptions } from "../types";
-import { calculateFinalThreshold } from "../utils";
-import { useIntersectionObserver } from "./useIntersectionObserver";
+import { useCallback, useMemo, useRef, useState } from 'react';
+import type { ScrollDirection, UseScrollDirectionOptions } from '../types';
+import { calculateFinalThreshold } from '../utils';
+import { useIntersectionObserver } from './useIntersectionObserver';
 
 /**
  * 滚动方向检测 Hook
@@ -50,84 +50,80 @@ import { useIntersectionObserver } from "./useIntersectionObserver";
  * ```
  */
 export const useScrollDirection = (
-	ref: React.RefObject<HTMLElement | null>,
-	options: UseScrollDirectionOptions = {},
+  ref: React.RefObject<HTMLElement | null>,
+  options: UseScrollDirectionOptions = {}
 ) => {
-	/** 当前滚动方向 */
-	const [scrollDirection, setScrollDirection] =
-		useState<ScrollDirection>("none");
-	/** 是否正在滚动 */
-	const [isScrolling, setIsScrolling] = useState(false);
-	/** 上次滚动方向，用于避免重复更新 */
-	const lastDirectionRef = useRef<ScrollDirection>("none");
-	/** 滚动状态重置定时器 */
-	const timeoutRef = useRef<number | null>(null);
+  /** 当前滚动方向 */
+  const [scrollDirection, setScrollDirection] = useState<ScrollDirection>('none');
+  /** 是否正在滚动 */
+  const [isScrolling, setIsScrolling] = useState(false);
+  /** 上次滚动方向，用于避免重复更新 */
+  const lastDirectionRef = useRef<ScrollDirection>('none');
+  /** 滚动状态重置定时器 */
+  const timeoutRef = useRef<number | null>(null);
 
-	// 解构配置选项，设置默认值，避免对象引用问题
-	const offset = options.offset ?? 0;
-	const throttle = options.throttle ?? 100; // 默认 100ms 节流，避免过于频繁的更新
+  // 解构配置选项，设置默认值，避免对象引用问题
+  const offset = options.offset ?? 0;
+  const throttle = options.throttle ?? 100; // 默认 100ms 节流，避免过于频繁的更新
 
-	// 处理 root 选项
-	const root = "root" in options ? options.root : null;
+  // 处理 root 选项
+  const root = 'root' in options ? options.root : null;
 
-	/**
-	 * 计算最终的 threshold 数组
-	 * 根据配置的 step 或 threshold 生成用于 Intersection Observer 的阈值数组
-	 */
-	const finalThreshold = useMemo(() => {
-		return calculateFinalThreshold(options, "useScrollDirection");
-	}, [options]);
+  /**
+   * 计算最终的 threshold 数组
+   * 根据配置的 step 或 threshold 生成用于 Intersection Observer 的阈值数组
+   */
+  const finalThreshold = useMemo(() => {
+    return calculateFinalThreshold(options, 'useScrollDirection');
+  }, [options]);
 
-	/**
-	 * 节流更新滚动方向
-	 * 确保在指定时间间隔内只更新一次，同时管理滚动状态
-	 *
-	 * @param direction 新的滚动方向
-	 */
-	const throttledSetScrollDirection = useCallback(
-		(direction: ScrollDirection) => {
-			// 如果方向没有变化，不更新
-			if (direction === lastDirectionRef.current) {
-				return;
-			}
+  /**
+   * 节流更新滚动方向
+   * 确保在指定时间间隔内只更新一次，同时管理滚动状态
+   *
+   * @param direction 新的滚动方向
+   */
+  const throttledSetScrollDirection = useCallback(
+    (direction: ScrollDirection) => {
+      // 如果方向没有变化，不更新
+      if (direction === lastDirectionRef.current) {
+        return;
+      }
 
-			lastDirectionRef.current = direction;
-			setScrollDirection(direction);
-			setIsScrolling(true);
+      lastDirectionRef.current = direction;
+      setScrollDirection(direction);
+      setIsScrolling(true);
 
-			// 清除之前的定时器
-			if (timeoutRef.current) {
-				clearTimeout(timeoutRef.current);
-			}
+      // 清除之前的定时器
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
 
-			// 设置定时器，在指定时间后重置滚动状态
-			timeoutRef.current = setTimeout(() => {
-				setIsScrolling(false);
-				timeoutRef.current = null;
-			}, throttle);
-		},
-		[throttle],
-	);
+      // 设置定时器，在指定时间后重置滚动状态
+      timeoutRef.current = setTimeout(() => {
+        setIsScrolling(false);
+        timeoutRef.current = null;
+      }, throttle);
+    },
+    [throttle]
+  );
 
-	// 使用 Intersection Observer 监听元素位置变化
-	useIntersectionObserver(
-		ref,
-		(entry) => {
-			// 获取滚动方向
-			if (entry.scrollDirection && entry.scrollDirection !== "none") {
-				throttledSetScrollDirection(entry.scrollDirection);
-			}
-		},
-		{
-			threshold: finalThreshold,
-			rootMargin: `${offset}px`,
-			root,
-		},
-	);
+  // 使用 Intersection Observer 监听元素位置变化
+  useIntersectionObserver(
+    ref,
+    entry => {
+      // 获取滚动方向
+      if (entry.scrollDirection && entry.scrollDirection !== 'none') {
+        throttledSetScrollDirection(entry.scrollDirection);
+      }
+    },
+    {
+      threshold: finalThreshold,
+      rootMargin: `${offset}px`,
+      root,
+    }
+  );
 
-	// 使用 useMemo 包裹返回值，避免不必要的重新渲染
-	return useMemo(
-		() => ({ scrollDirection, isScrolling }),
-		[scrollDirection, isScrolling],
-	);
+  // 使用 useMemo 包裹返回值，避免不必要的重新渲染
+  return useMemo(() => ({ scrollDirection, isScrolling }), [scrollDirection, isScrolling]);
 };

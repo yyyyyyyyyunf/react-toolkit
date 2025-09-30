@@ -1,7 +1,7 @@
-import type React from "react";
-import { useLayoutEffect, useRef } from "react";
-import { lazyloadManager } from "../base/IntersectionObserverManager";
-import type { ObserverCallbackType, ObserverOptions } from "../types";
+import type React from 'react';
+import { useLayoutEffect, useRef } from 'react';
+import { lazyloadManager } from '../base/IntersectionObserverManager';
+import type { ObserverCallbackType, ObserverOptions } from '../types';
 
 /**
  * 基础 Intersection Observer Hook
@@ -47,47 +47,47 @@ import type { ObserverCallbackType, ObserverOptions } from "../types";
  * ```
  */
 export const useIntersectionObserver = (
-	ref: React.RefObject<HTMLElement | null>,
-	callback: ObserverCallbackType,
-	options: ObserverOptions,
+  ref: React.RefObject<HTMLElement | null>,
+  callback: ObserverCallbackType,
+  options: ObserverOptions
 ) => {
-	// 使用 useRef 来存储最新的 callback 和 options，避免依赖问题
-	const callbackRef = useRef(callback);
-	const optionsRef = useRef(options);
-	const hasTriggeredRef = useRef(false);
+  // 使用 useRef 来存储最新的 callback 和 options，避免依赖问题
+  const callbackRef = useRef(callback);
+  const optionsRef = useRef(options);
+  const hasTriggeredRef = useRef(false);
 
-	// 更新 ref 中的值
-	callbackRef.current = callback;
-	optionsRef.current = options;
+  // 更新 ref 中的值
+  callbackRef.current = callback;
+  optionsRef.current = options;
 
-	useLayoutEffect(() => {
-		if (!ref.current) return;
+  useLayoutEffect(() => {
+    if (!ref.current) return;
 
-		// 如果 once 为 true 且已经触发过，就不再观察
-		if (optionsRef.current.once && hasTriggeredRef.current) {
-			return;
-		}
+    // 如果 once 为 true 且已经触发过，就不再观察
+    if (optionsRef.current.once && hasTriggeredRef.current) {
+      return;
+    }
 
-		// 开始观察元素，返回清理函数
-		const unSubscribe = lazyloadManager.observe(
-			ref.current,
-			(entry) => {
-				if (entry) {
-					callbackRef.current(entry); // 使用 ref 中的最新值
-					// 如果 once 为 true 且元素可见，标记为已触发
-					if (optionsRef.current.once && entry.isIntersecting) {
-						hasTriggeredRef.current = true;
-					}
-				}
-			},
-			optionsRef.current, // 使用 ref 中的最新值
-		);
+    // 开始观察元素，返回清理函数
+    const unSubscribe = lazyloadManager.observe(
+      ref.current,
+      entry => {
+        if (entry) {
+          callbackRef.current(entry); // 使用 ref 中的最新值
+          // 如果 once 为 true 且元素可见，标记为已触发
+          if (optionsRef.current.once && entry.isIntersecting) {
+            hasTriggeredRef.current = true;
+          }
+        }
+      },
+      optionsRef.current // 使用 ref 中的最新值
+    );
 
-		// 清理函数：取消观察
-		return () => {
-			if (unSubscribe) {
-				unSubscribe();
-			}
-		};
-	}, [ref]); // 只依赖 ref，不依赖 callback 和 options
+    // 清理函数：取消观察
+    return () => {
+      if (unSubscribe) {
+        unSubscribe();
+      }
+    };
+  }, [ref]); // 只依赖 ref，不依赖 callback 和 options
 };

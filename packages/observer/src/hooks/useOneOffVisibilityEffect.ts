@@ -1,7 +1,7 @@
-import { useLayoutEffect, useMemo, useRef } from "react";
-import { lazyloadManager } from "../base/IntersectionObserverManager";
-import type { ObserverOptions, OneOffVisibilityOptions } from "../types";
-import { useIsMounted } from "./useIsMounted";
+import { useLayoutEffect, useMemo, useRef } from 'react';
+import { lazyloadManager } from '../base/IntersectionObserverManager';
+import type { ObserverOptions, OneOffVisibilityOptions } from '../types';
+import { useIsMounted } from './useIsMounted';
 
 /**
  * 一次性可见性检测 Effect Hook
@@ -54,66 +54,66 @@ import { useIsMounted } from "./useIsMounted";
  * ```
  */
 export const useOneOffVisibilityEffect = (
-	ref: React.RefObject<HTMLElement | null>,
-	callback: () => void,
-	options: OneOffVisibilityOptions = {},
+  ref: React.RefObject<HTMLElement | null>,
+  callback: () => void,
+  options: OneOffVisibilityOptions = {}
 ) => {
-	/** 组件挂载状态跟踪 */
-	const isMountedRef = useIsMounted();
+  /** 组件挂载状态跟踪 */
+  const isMountedRef = useIsMounted();
 
-	/** 是否已经执行过回调的标记 */
-	const hasExecutedRef = useRef(false);
+  /** 是否已经执行过回调的标记 */
+  const hasExecutedRef = useRef(false);
 
-	// 解构 options 以避免对象引用问题
-	const { threshold = 0.1, offset = 100, enable = true } = options;
+  // 解构 options 以避免对象引用问题
+  const { threshold = 0.1, offset = 100, enable = true } = options;
 
-	// 构建稳定的 observer options 对象
-	const observerOptions: ObserverOptions = useMemo(() => {
-		return {
-			threshold,
-			rootMargin: offset > 0 ? `${offset}px` : "0px",
-			once: true, // 确保只触发一次
-		};
-	}, [threshold, offset]);
+  // 构建稳定的 observer options 对象
+  const observerOptions: ObserverOptions = useMemo(() => {
+    return {
+      threshold,
+      rootMargin: offset > 0 ? `${offset}px` : '0px',
+      once: true, // 确保只触发一次
+    };
+  }, [threshold, offset]);
 
-	// 使用 useRef 来存储最新的 callback，避免依赖问题
-	const callbackRef = useRef<() => void>();
+  // 使用 useRef 来存储最新的 callback，避免依赖问题
+  const callbackRef = useRef<() => void>();
 
-	// 更新 ref 中的回调函数
-	callbackRef.current = callback;
+  // 更新 ref 中的回调函数
+  callbackRef.current = callback;
 
-	// 使用 useLayoutEffect 确保在浏览器绘制前开始观察
-	useLayoutEffect(() => {
-		if (!ref.current || !enable) return;
+  // 使用 useLayoutEffect 确保在浏览器绘制前开始观察
+  useLayoutEffect(() => {
+    if (!ref.current || !enable) return;
 
-		// 如果已经执行过回调，就不再观察
-		if (hasExecutedRef.current) {
-			return;
-		}
+    // 如果已经执行过回调，就不再观察
+    if (hasExecutedRef.current) {
+      return;
+    }
 
-		// 开始观察元素，返回清理函数
-		const unSubscribe = lazyloadManager.observe(
-			ref.current,
-			(entry) => {
-				// 只有在组件仍然挂载、元素可见且未执行过回调时才执行
-				if (
-					entry.isIntersecting &&
-					isMountedRef.current &&
-					!hasExecutedRef.current &&
-					callbackRef.current
-				) {
-					hasExecutedRef.current = true;
-					callbackRef.current();
-				}
-			},
-			observerOptions,
-		);
+    // 开始观察元素，返回清理函数
+    const unSubscribe = lazyloadManager.observe(
+      ref.current,
+      entry => {
+        // 只有在组件仍然挂载、元素可见且未执行过回调时才执行
+        if (
+          entry.isIntersecting &&
+          isMountedRef.current &&
+          !hasExecutedRef.current &&
+          callbackRef.current
+        ) {
+          hasExecutedRef.current = true;
+          callbackRef.current();
+        }
+      },
+      observerOptions
+    );
 
-		// 清理函数：取消观察
-		return () => {
-			if (unSubscribe) {
-				unSubscribe();
-			}
-		};
-	}, [ref, enable, observerOptions, isMountedRef]);
+    // 清理函数：取消观察
+    return () => {
+      if (unSubscribe) {
+        unSubscribe();
+      }
+    };
+  }, [ref, enable, observerOptions, isMountedRef]);
 };

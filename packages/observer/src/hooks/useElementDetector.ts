@@ -1,19 +1,19 @@
-import type React from "react";
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { lazyloadManager } from "../base/IntersectionObserverManager";
+import type React from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { lazyloadManager } from '../base/IntersectionObserverManager';
 import type {
-	ElementPosition,
-	ObserverCallbackParamType,
-	ObserverOptions,
-	UnSubscribeType,
-	UseElementDetectorOptions,
-} from "../types";
+  ElementPosition,
+  ObserverCallbackParamType,
+  ObserverOptions,
+  UnSubscribeType,
+  UseElementDetectorOptions,
+} from '../types';
 import {
-	calculateFinalThreshold,
-	calculateScrollBasedPosition,
-	checkIfShouldSyncPosition,
-} from "../utils";
-import { useIsMounted } from "./useIsMounted";
+  calculateFinalThreshold,
+  calculateScrollBasedPosition,
+  checkIfShouldSyncPosition,
+} from '../utils';
+import { useIsMounted } from './useIsMounted';
 
 /**
  * 元素检测器 Hook
@@ -89,273 +89,264 @@ import { useIsMounted } from "./useIsMounted";
  * ```
  */
 export const useElementDetector = (
-	ref: React.RefObject<HTMLElement | null>,
-	options: UseElementDetectorOptions = {},
+  ref: React.RefObject<HTMLElement | null>,
+  options: UseElementDetectorOptions = {}
 ): boolean => {
-	const [isConditionMet, setIsConditionMet] = useState(false);
-	const isMountedRef = useIsMounted();
-	const lastConditionMetRef = useRef<boolean | null>(null);
-	/** 当前元素位置信息，用于智能计算策略 */
-	const positionRef = useRef<ElementPosition | null>(null);
-	/** 上次更新时间戳，用于节流控制 */
-	const lastUpdateTimeRef = useRef(0);
-	/** 上次强制校准时间戳，用于控制校准频率 */
-	const lastCalibrateTimeRef = useRef(0);
-	/** 节流定时器引用 */
-	const timeoutRef = useRef<number | null>(null);
-	/** scroll 事件节流定时器引用 */
-	const scrollTimeoutRef = useRef<number | null>(null);
+  const [isConditionMet, setIsConditionMet] = useState(false);
+  const isMountedRef = useIsMounted();
+  const lastConditionMetRef = useRef<boolean | null>(null);
+  /** 当前元素位置信息，用于智能计算策略 */
+  const positionRef = useRef<ElementPosition | null>(null);
+  /** 上次更新时间戳，用于节流控制 */
+  const lastUpdateTimeRef = useRef(0);
+  /** 上次强制校准时间戳，用于控制校准频率 */
+  const lastCalibrateTimeRef = useRef(0);
+  /** 节流定时器引用 */
+  const timeoutRef = useRef<number | null>(null);
+  /** scroll 事件节流定时器引用 */
+  const scrollTimeoutRef = useRef<number | null>(null);
 
-	// 解构配置选项，设置默认值
-	const offset = options.offset ?? 0;
-	const throttle = options.throttle ?? 16; // 默认 60fps
-	const forceCalibrate = options.forceCalibrate ?? true; // 元素完全不可见时跳过更新
-	const calibrateInterval = options.calibrateInterval ?? 2500; // 校准间隔
+  // 解构配置选项，设置默认值
+  const offset = options.offset ?? 0;
+  const throttle = options.throttle ?? 16; // 默认 60fps
+  const forceCalibrate = options.forceCalibrate ?? true; // 元素完全不可见时跳过更新
+  const calibrateInterval = options.calibrateInterval ?? 2500; // 校准间隔
 
-	// 处理 root 选项
-	const root = "root" in options ? options.root : null;
+  // 处理 root 选项
+  const root = 'root' in options ? options.root : null;
 
-	/**
-	 * 计算最终的 threshold 数组
-	 * 根据配置的 step 或 threshold 生成用于 Intersection Observer 的阈值数组
-	 */
-	const finalThreshold = useMemo(() => {
-		return calculateFinalThreshold(options, "useElementDetector");
-	}, [options]);
+  /**
+   * 计算最终的 threshold 数组
+   * 根据配置的 step 或 threshold 生成用于 Intersection Observer 的阈值数组
+   */
+  const finalThreshold = useMemo(() => {
+    return calculateFinalThreshold(options, 'useElementDetector');
+  }, [options]);
 
-	// 默认计算函数：检测元素是否贴顶（top <= 0）
-	const defaultCompute = useCallback((boundingClientRect: DOMRect): boolean => {
-		return boundingClientRect.top <= 0;
-	}, []);
+  // 默认计算函数：检测元素是否贴顶（top <= 0）
+  const defaultCompute = useCallback((boundingClientRect: DOMRect): boolean => {
+    return boundingClientRect.top <= 0;
+  }, []);
 
-	// 使用用户提供的计算函数或默认函数
-	const compute = useCallback(
-		(boundingClientRect: DOMRect): boolean => {
-			const computeFn = options.compute ?? defaultCompute;
-			return computeFn(boundingClientRect);
-		},
-		[options.compute, defaultCompute],
-	);
+  // 使用用户提供的计算函数或默认函数
+  const compute = useCallback(
+    (boundingClientRect: DOMRect): boolean => {
+      const computeFn = options.compute ?? defaultCompute;
+      return computeFn(boundingClientRect);
+    },
+    [options.compute, defaultCompute]
+  );
 
-	/**
-	 * 节流更新条件状态
-	 * 确保在指定时间间隔内只更新一次
-	 *
-	 * @param newConditionMet 新的条件状态
-	 * @param newPosition 新的位置信息（可选）
-	 */
-	const throttledSetCondition = useCallback(
-		(newConditionMet: boolean, newPosition?: ElementPosition) => {
-			// 检查组件是否仍然挂载
-			if (!isMountedRef.current) return;
+  /**
+   * 节流更新条件状态
+   * 确保在指定时间间隔内只更新一次
+   *
+   * @param newConditionMet 新的条件状态
+   * @param newPosition 新的位置信息（可选）
+   */
+  const throttledSetCondition = useCallback(
+    (newConditionMet: boolean, newPosition?: ElementPosition) => {
+      // 检查组件是否仍然挂载
+      if (!isMountedRef.current) return;
 
-			// 更新位置信息
-			if (newPosition) {
-				positionRef.current = newPosition;
-			}
+      // 更新位置信息
+      if (newPosition) {
+        positionRef.current = newPosition;
+      }
 
-			const now = Date.now();
+      const now = Date.now();
 
-			if (now - lastUpdateTimeRef.current >= throttle) {
-				// 立即更新
-				lastConditionMetRef.current = newConditionMet;
-				setIsConditionMet(newConditionMet);
-				lastUpdateTimeRef.current = now;
+      if (now - lastUpdateTimeRef.current >= throttle) {
+        // 立即更新
+        lastConditionMetRef.current = newConditionMet;
+        setIsConditionMet(newConditionMet);
+        lastUpdateTimeRef.current = now;
 
-				// 清除之前的延迟更新
-				if (timeoutRef.current) {
-					clearTimeout(timeoutRef.current);
-					timeoutRef.current = null;
-				}
-			} else {
-				// 延迟更新，确保最后一次更新被记录
-				if (timeoutRef.current) {
-					clearTimeout(timeoutRef.current);
-				}
-				timeoutRef.current = setTimeout(
-					() => {
-						// 再次检查组件是否仍然挂载
-						if (isMountedRef.current) {
-							lastConditionMetRef.current = newConditionMet;
-							setIsConditionMet(newConditionMet);
-							lastUpdateTimeRef.current = Date.now();
-						}
-						timeoutRef.current = null;
-					},
-					throttle - (now - lastUpdateTimeRef.current),
-				);
-			}
-		},
-		[throttle, isMountedRef],
-	);
+        // 清除之前的延迟更新
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+      } else {
+        // 延迟更新，确保最后一次更新被记录
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(
+          () => {
+            // 再次检查组件是否仍然挂载
+            if (isMountedRef.current) {
+              lastConditionMetRef.current = newConditionMet;
+              setIsConditionMet(newConditionMet);
+              lastUpdateTimeRef.current = Date.now();
+            }
+            timeoutRef.current = null;
+          },
+          throttle - (now - lastUpdateTimeRef.current)
+        );
+      }
+    },
+    [throttle, isMountedRef]
+  );
 
-	/** 存储 throttledSetCondition 的 ref，避免依赖问题 */
-	const throttledSetConditionRef = useRef(throttledSetCondition);
+  /** 存储 throttledSetCondition 的 ref，避免依赖问题 */
+  const throttledSetConditionRef = useRef(throttledSetCondition);
 
-	// 更新 ref 中的值
-	throttledSetConditionRef.current = throttledSetCondition;
+  // 更新 ref 中的值
+  throttledSetConditionRef.current = throttledSetCondition;
 
-	const unSubscribeRef = useRef<UnSubscribeType | undefined>(undefined);
+  const unSubscribeRef = useRef<UnSubscribeType | undefined>(undefined);
 
-	/**
-	 * Intersection Observer 回调函数
-	 * 处理元素位置变化，计算条件状态并更新
-	 */
-	const callback = useCallback(
-		(entry: ObserverCallbackParamType) => {
-			// 构建位置信息对象
-			const newPosition: ElementPosition = {
-				boundingClientRect: entry.boundingClientRect,
-				intersectionRatio: entry.intersectionRatio,
-				isIntersecting: entry.isIntersecting,
-				time: entry.time,
-				relativeRect: undefined,
-				scrollX: window.scrollX,
-				scrollY: window.scrollY,
-			};
+  /**
+   * Intersection Observer 回调函数
+   * 处理元素位置变化，计算条件状态并更新
+   */
+  const callback = useCallback(
+    (entry: ObserverCallbackParamType) => {
+      // 构建位置信息对象
+      const newPosition: ElementPosition = {
+        boundingClientRect: entry.boundingClientRect,
+        intersectionRatio: entry.intersectionRatio,
+        isIntersecting: entry.isIntersecting,
+        time: entry.time,
+        relativeRect: undefined,
+        scrollX: window.scrollX,
+        scrollY: window.scrollY,
+      };
 
-			// 使用计算函数判断元素是否满足条件
-			const newConditionMet = compute(entry.boundingClientRect);
+      // 使用计算函数判断元素是否满足条件
+      const newConditionMet = compute(entry.boundingClientRect);
 
-			// 更新条件状态和位置信息
-			throttledSetConditionRef.current(newConditionMet, newPosition);
-		},
-		[compute],
-	);
+      // 更新条件状态和位置信息
+      throttledSetConditionRef.current(newConditionMet, newPosition);
+    },
+    [compute]
+  );
 
-	const observerOptions: ObserverOptions = useMemo(
-		() => ({
-			threshold: finalThreshold,
-			rootMargin: `${offset}px`,
-			root,
-		}),
-		[finalThreshold, offset, root],
-	);
+  const observerOptions: ObserverOptions = useMemo(
+    () => ({
+      threshold: finalThreshold,
+      rootMargin: `${offset}px`,
+      root,
+    }),
+    [finalThreshold, offset, root]
+  );
 
-	/**
-	 * 节流的 scroll 事件处理函数
-	 *
-	 * 智能处理 scroll 事件，根据元素当前状态决定是否需要执行复杂计算：
-	 * - 元素部分可见时：依赖 Intersection Observer 自动触发，跳过计算
-	 * - 元素完全可见/不可见时：执行位置计算和校准检查
-	 *
-	 * 性能优化：
-	 * - 使用节流机制避免过度计算
-	 * - 智能判断是否需要复杂计算
-	 * - 定期校准确保数据准确性
-	 */
-	const throttledHandleScroll = useCallback(() => {
-		// 如果已经有待执行的 scroll 处理，直接返回
-		if (scrollTimeoutRef.current) return;
+  /**
+   * 节流的 scroll 事件处理函数
+   *
+   * 智能处理 scroll 事件，根据元素当前状态决定是否需要执行复杂计算：
+   * - 元素部分可见时：依赖 Intersection Observer 自动触发，跳过计算
+   * - 元素完全可见/不可见时：执行位置计算和校准检查
+   *
+   * 性能优化：
+   * - 使用节流机制避免过度计算
+   * - 智能判断是否需要复杂计算
+   * - 定期校准确保数据准确性
+   */
+  const throttledHandleScroll = useCallback(() => {
+    // 如果已经有待执行的 scroll 处理，直接返回
+    if (scrollTimeoutRef.current) return;
 
-		scrollTimeoutRef.current = setTimeout(() => {
-			// 检查组件是否仍然挂载
-			if (!isMountedRef.current) {
-				scrollTimeoutRef.current = null;
-				return;
-			}
+    scrollTimeoutRef.current = setTimeout(() => {
+      // 检查组件是否仍然挂载
+      if (!isMountedRef.current) {
+        scrollTimeoutRef.current = null;
+        return;
+      }
 
-			if (!positionRef.current) {
-				scrollTimeoutRef.current = null;
-				return;
-			}
+      if (!positionRef.current) {
+        scrollTimeoutRef.current = null;
+        return;
+      }
 
-			// 智能判断当前状态下的处理策略
-			const { shouldCalibrate, shouldCalculateOnScroll } =
-				checkIfShouldSyncPosition(
-					positionRef.current || {},
-					forceCalibrate,
-					lastCalibrateTimeRef.current,
-					calibrateInterval,
-				);
+      // 智能判断当前状态下的处理策略
+      const { shouldCalibrate, shouldCalculateOnScroll } = checkIfShouldSyncPosition(
+        positionRef.current || {},
+        forceCalibrate,
+        lastCalibrateTimeRef.current,
+        calibrateInterval
+      );
 
-			const now = Date.now();
+      const now = Date.now();
 
-			// 执行校准：重新使用 Intersection Observer 获取准确位置
-			if (shouldCalibrate && ref.current) {
-				lastCalibrateTimeRef.current = now;
-				unSubscribeRef.current?.();
-				unSubscribeRef.current = lazyloadManager.observe(
-					ref.current,
-					callback,
-					observerOptions,
-				);
-				scrollTimeoutRef.current = null;
-				return;
-			}
+      // 执行校准：重新使用 Intersection Observer 获取准确位置
+      if (shouldCalibrate && ref.current) {
+        lastCalibrateTimeRef.current = now;
+        unSubscribeRef.current?.();
+        unSubscribeRef.current = lazyloadManager.observe(ref.current, callback, observerOptions);
+        scrollTimeoutRef.current = null;
+        return;
+      }
 
-			// 跳过计算：元素部分可见时，依赖 Intersection Observer 自动触发
-			if (!shouldCalculateOnScroll) {
-				if (scrollTimeoutRef.current) {
-					clearTimeout(scrollTimeoutRef.current);
-					scrollTimeoutRef.current = null;
-				}
-				return;
-			}
+      // 跳过计算：元素部分可见时，依赖 Intersection Observer 自动触发
+      if (!shouldCalculateOnScroll) {
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+          scrollTimeoutRef.current = null;
+        }
+        return;
+      }
 
-			// 执行复杂的位置计算：元素完全可见或完全不可见时
-			const currentScrollX = window.scrollX;
-			const currentScrollY = window.scrollY;
-			const newPosition = calculateScrollBasedPosition(
-				positionRef.current,
-				currentScrollX,
-				currentScrollY,
-				now,
-			);
+      // 执行复杂的位置计算：元素完全可见或完全不可见时
+      const currentScrollX = window.scrollX;
+      const currentScrollY = window.scrollY;
+      const newPosition = calculateScrollBasedPosition(
+        positionRef.current,
+        currentScrollX,
+        currentScrollY,
+        now
+      );
 
-			// 使用计算函数判断元素是否满足条件
-			const newConditionMet = compute(newPosition.boundingClientRect);
+      // 使用计算函数判断元素是否满足条件
+      const newConditionMet = compute(newPosition.boundingClientRect);
 
-			// 更新条件状态和位置信息
-			throttledSetConditionRef.current(newConditionMet, newPosition);
+      // 更新条件状态和位置信息
+      throttledSetConditionRef.current(newConditionMet, newPosition);
 
-			scrollTimeoutRef.current = null;
-		}, throttle); // 使用相同的节流时间
-	}, [
-		throttle,
-		isMountedRef,
-		forceCalibrate,
-		calibrateInterval,
-		ref,
-		callback,
-		observerOptions,
-		compute,
-	]);
+      scrollTimeoutRef.current = null;
+    }, throttle); // 使用相同的节流时间
+  }, [
+    throttle,
+    isMountedRef,
+    forceCalibrate,
+    calibrateInterval,
+    ref,
+    callback,
+    observerOptions,
+    compute,
+  ]);
 
-	// 设置 Intersection Observer
-	useLayoutEffect(() => {
-		if (!ref.current) return;
+  // 设置 Intersection Observer
+  useLayoutEffect(() => {
+    if (!ref.current) return;
 
-		// 开始观察元素
-		unSubscribeRef.current = lazyloadManager.observe(
-			ref.current,
-			callback,
-			observerOptions,
-		);
+    // 开始观察元素
+    unSubscribeRef.current = lazyloadManager.observe(ref.current, callback, observerOptions);
 
-		window.addEventListener("scroll", throttledHandleScroll, { passive: true });
+    window.addEventListener('scroll', throttledHandleScroll, { passive: true });
 
-		// 清理函数
-		return () => {
-			if (unSubscribeRef.current) {
-				unSubscribeRef.current();
-			}
+    // 清理函数
+    return () => {
+      if (unSubscribeRef.current) {
+        unSubscribeRef.current();
+      }
 
-			window.removeEventListener("scroll", throttledHandleScroll);
+      window.removeEventListener('scroll', throttledHandleScroll);
 
-			// 清理定时器
-			if (timeoutRef.current) {
-				clearTimeout(timeoutRef.current);
-				timeoutRef.current = null;
-			}
+      // 清理定时器
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
 
-			// 清理 scroll 节流定时器
-			if (scrollTimeoutRef.current) {
-				clearTimeout(scrollTimeoutRef.current);
-				scrollTimeoutRef.current = null;
-			}
-		};
-	}, [ref, callback, observerOptions, throttledHandleScroll]);
+      // 清理 scroll 节流定时器
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+        scrollTimeoutRef.current = null;
+      }
+    };
+  }, [ref, callback, observerOptions, throttledHandleScroll]);
 
-	return isConditionMet;
+  return isConditionMet;
 };

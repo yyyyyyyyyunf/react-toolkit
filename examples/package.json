@@ -8,9 +8,8 @@
 		"dev": "vite",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
-		"lint": "biome lint --write --skip=a11y src/",
-		"lint:fix": "biome check --fix --unsafe src/",
-		"format": "biome format --write src/"
+		"check": "oxlint src/",
+		"format": "prettier --write src/"
 	},
 	"dependencies": {
 		"@fly4react/observer": "workspace:*",
@@ -22,7 +21,6 @@
 		"react-dom": "^16.8.6"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.5.3",
 		"@types/react": "^16.9.56",
 		"@types/react-dom": "^16.9.19",
 		"@vitejs/plugin-react": "^4.3.4",

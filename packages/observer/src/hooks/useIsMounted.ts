@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
 /**
  * 组件挂载状态 Hook
@@ -23,13 +23,13 @@ import { useEffect, useRef } from "react";
  * ```
  */
 export const useIsMounted = () => {
-	const isMountedRef = useRef(true);
+  const isMountedRef = useRef(true);
 
-	useEffect(() => {
-		return () => {
-			isMountedRef.current = false;
-		};
-	}, []);
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
-	return isMountedRef;
+  return isMountedRef;
 };

@@ -1,8 +1,8 @@
-import type React from "react";
-import { useLayoutEffect, useState } from "react";
-import { lazyloadManager } from "../base/IntersectionObserverManager";
-import type { ObserverCallbackParamType } from "../types";
-import { useIsMounted } from "./useIsMounted";
+import type React from 'react';
+import { useLayoutEffect, useState } from 'react';
+import { lazyloadManager } from '../base/IntersectionObserverManager';
+import type { ObserverCallbackParamType } from '../types';
+import { useIsMounted } from './useIsMounted';
 
 /**
  * 元素视口可见性 Hook
@@ -38,37 +38,35 @@ import { useIsMounted } from "./useIsMounted";
  * }
  * ```
  */
-export const useInViewport = (
-	ref: React.RefObject<HTMLElement | null>,
-): boolean => {
-	const [isInViewport, setIsInViewport] = useState(false);
-	const isMountedRef = useIsMounted();
+export const useInViewport = (ref: React.RefObject<HTMLElement | null>): boolean => {
+  const [isInViewport, setIsInViewport] = useState(false);
+  const isMountedRef = useIsMounted();
 
-	// 设置 Intersection Observer
-	useLayoutEffect(() => {
-		if (!ref.current) return;
+  // 设置 Intersection Observer
+  useLayoutEffect(() => {
+    if (!ref.current) return;
 
-		const callback = (entry: ObserverCallbackParamType) => {
-			// 检查组件是否仍然挂载
-			if (!isMountedRef.current) return;
+    const callback = (entry: ObserverCallbackParamType) => {
+      // 检查组件是否仍然挂载
+      if (!isMountedRef.current) return;
 
-			// 只关注是否在视口中可见
-			const newIsInViewport = entry.isIntersecting;
-			setIsInViewport(newIsInViewport);
-		};
+      // 只关注是否在视口中可见
+      const newIsInViewport = entry.isIntersecting;
+      setIsInViewport(newIsInViewport);
+    };
 
-		// 开始观察元素，使用简单的配置
-		const unSubscribe = lazyloadManager.observe(ref.current, callback, {
-			threshold: [0], // 只关心是否可见
-		});
+    // 开始观察元素，使用简单的配置
+    const unSubscribe = lazyloadManager.observe(ref.current, callback, {
+      threshold: [0], // 只关心是否可见
+    });
 
-		// 清理函数
-		return () => {
-			if (unSubscribe) {
-				unSubscribe();
-			}
-		};
-	}, [ref, isMountedRef]);
+    // 清理函数
+    return () => {
+      if (unSubscribe) {
+        unSubscribe();
+      }
+    };
+  }, [ref, isMountedRef]);
 
-	return isInViewport;
+  return isInViewport;
 };

@@ -1,19 +1,19 @@
-import type React from "react";
-import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
-import { lazyloadManager } from "../base/IntersectionObserverManager";
+import type React from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import { lazyloadManager } from '../base/IntersectionObserverManager';
 import type {
-	ElementPosition,
-	ObserverCallbackParamType,
-	ObserverOptions,
-	Options,
-	UnSubscribeType,
-} from "../types";
+  ElementPosition,
+  ObserverCallbackParamType,
+  ObserverOptions,
+  Options,
+  UnSubscribeType,
+} from '../types';
 import {
-	calculateFinalThreshold,
-	calculateScrollBasedPosition,
-	checkIfShouldSyncPosition,
-} from "../utils";
-import { useIsMounted } from "./useIsMounted";
+  calculateFinalThreshold,
+  calculateScrollBasedPosition,
+  checkIfShouldSyncPosition,
+} from '../utils';
+import { useIsMounted } from './useIsMounted';
 
 /**
  * 延迟计算元素位置 Hook (Lazy 版本)
@@ -73,282 +73,265 @@ import { useIsMounted } from "./useIsMounted";
  * ```
  */
 export const useLazyElementPositionRef = (
-	ref: React.RefObject<HTMLElement | null>,
-	options: Options = {},
+  ref: React.RefObject<HTMLElement | null>,
+  options: Options = {}
 ) => {
-	/** 当前元素位置信息，存储在 ref 中不会触发重新渲染 */
-	const positionRef = useRef<ElementPosition | null>(null);
-	/** 上次更新时间戳，用于节流控制 */
-	const lastUpdateTimeRef = useRef(0);
-	/** 上次强制校准时间戳，用于控制校准频率 */
-	const lastCalibrateTimeRef = useRef(0);
-	/** 节流定时器引用 */
-	const timeoutRef = useRef<number | null>(null);
-	/** scroll 事件节流定时器引用 */
-	const scrollTimeoutRef = useRef<number | null>(null);
-	/** 组件挂载状态跟踪 */
-	const isMountedRef = useIsMounted();
+  /** 当前元素位置信息，存储在 ref 中不会触发重新渲染 */
+  const positionRef = useRef<ElementPosition | null>(null);
+  /** 上次更新时间戳，用于节流控制 */
+  const lastUpdateTimeRef = useRef(0);
+  /** 上次强制校准时间戳，用于控制校准频率 */
+  const lastCalibrateTimeRef = useRef(0);
+  /** 节流定时器引用 */
+  const timeoutRef = useRef<number | null>(null);
+  /** scroll 事件节流定时器引用 */
+  const scrollTimeoutRef = useRef<number | null>(null);
+  /** 组件挂载状态跟踪 */
+  const isMountedRef = useIsMounted();
 
-	// 解构配置选项，设置默认值，避免对象引用问题
-	const offset = options.offset ?? 0;
-	const throttle = options.throttle ?? 16; // 默认 60fps
-	const forceCalibrate = options.forceCalibrate ?? true; // 启用强制校准
-	const calibrateInterval = options.calibrateInterval ?? 2500; // 校准间隔
+  // 解构配置选项，设置默认值，避免对象引用问题
+  const offset = options.offset ?? 0;
+  const throttle = options.throttle ?? 16; // 默认 60fps
+  const forceCalibrate = options.forceCalibrate ?? true; // 启用强制校准
+  const calibrateInterval = options.calibrateInterval ?? 2500; // 校准间隔
 
-	// 处理 root 和 relativeToRoot 选项
-	const root = "root" in options ? options.root : null;
-	const relativeToRoot =
-		root && "relativeToRoot" in options ? options.relativeToRoot : false;
+  // 处理 root 和 relativeToRoot 选项
+  const root = 'root' in options ? options.root : null;
+  const relativeToRoot = root && 'relativeToRoot' in options ? options.relativeToRoot : false;
 
-	/**
-	 * 计算最终的 threshold 数组
-	 * 根据配置的 step 或 threshold 生成用于 Intersection Observer 的阈值数组
-	 */
-	const finalThreshold = useMemo(() => {
-		return calculateFinalThreshold(options, "useLazyElementPositionRef");
-	}, [options]);
+  /**
+   * 计算最终的 threshold 数组
+   * 根据配置的 step 或 threshold 生成用于 Intersection Observer 的阈值数组
+   */
+  const finalThreshold = useMemo(() => {
+    return calculateFinalThreshold(options, 'useLazyElementPositionRef');
+  }, [options]);
 
-	/**
-	 * 节流更新位置信息
-	 * 确保在指定时间间隔内只更新一次，同时保证最后一次更新被记录
-	 *
-	 * @param newPosition 新的位置信息
-	 */
-	const throttledSetPosition = useCallback(
-		(newPosition: ElementPosition) => {
-			// 检查组件是否仍然挂载
-			if (!isMountedRef.current) return;
+  /**
+   * 节流更新位置信息
+   * 确保在指定时间间隔内只更新一次，同时保证最后一次更新被记录
+   *
+   * @param newPosition 新的位置信息
+   */
+  const throttledSetPosition = useCallback(
+    (newPosition: ElementPosition) => {
+      // 检查组件是否仍然挂载
+      if (!isMountedRef.current) return;
 
-			const now = Date.now();
+      const now = Date.now();
 
-			if (now - lastUpdateTimeRef.current >= throttle) {
-				// 立即更新
-				positionRef.current = newPosition;
-				lastUpdateTimeRef.current = now;
+      if (now - lastUpdateTimeRef.current >= throttle) {
+        // 立即更新
+        positionRef.current = newPosition;
+        lastUpdateTimeRef.current = now;
 
-				// 清除之前的延迟更新
-				if (timeoutRef.current) {
-					clearTimeout(timeoutRef.current);
-					timeoutRef.current = null;
-				}
-			} else {
-				// 延迟更新，确保最后一次更新被记录
-				if (timeoutRef.current) {
-					clearTimeout(timeoutRef.current);
-				}
-				timeoutRef.current = setTimeout(
-					() => {
-						// 再次检查组件是否仍然挂载
-						if (isMountedRef.current) {
-							positionRef.current = newPosition;
-							lastUpdateTimeRef.current = Date.now();
-						}
-						timeoutRef.current = null;
-					},
-					throttle - (now - lastUpdateTimeRef.current),
-				);
-			}
-		},
-		[throttle, isMountedRef],
-	);
+        // 清除之前的延迟更新
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+      } else {
+        // 延迟更新，确保最后一次更新被记录
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(
+          () => {
+            // 再次检查组件是否仍然挂载
+            if (isMountedRef.current) {
+              positionRef.current = newPosition;
+              lastUpdateTimeRef.current = Date.now();
+            }
+            timeoutRef.current = null;
+          },
+          throttle - (now - lastUpdateTimeRef.current)
+        );
+      }
+    },
+    [throttle, isMountedRef]
+  );
 
-	/** 存储 throttledSetPosition 的 ref，避免依赖问题 */
-	const throttledSetPositionRef = useRef(throttledSetPosition);
+  /** 存储 throttledSetPosition 的 ref，避免依赖问题 */
+  const throttledSetPositionRef = useRef(throttledSetPosition);
 
-	// 更新 ref 中的值
-	throttledSetPositionRef.current = throttledSetPosition;
+  // 更新 ref 中的值
+  throttledSetPositionRef.current = throttledSetPosition;
 
-	const unSubscribeRef = useRef<UnSubscribeType | undefined>(undefined);
+  const unSubscribeRef = useRef<UnSubscribeType | undefined>(undefined);
 
-	/**
-	 * Intersection Observer 回调函数
-	 * 处理元素位置变化，计算相对位置并更新状态
-	 */
-	const callback = useCallback(
-		(entry: ObserverCallbackParamType) => {
-			/** 相对于 root 的位置信息 */
-			let relativeRect: DOMRect | undefined;
+  /**
+   * Intersection Observer 回调函数
+   * 处理元素位置变化，计算相对位置并更新状态
+   */
+  const callback = useCallback(
+    (entry: ObserverCallbackParamType) => {
+      /** 相对于 root 的位置信息 */
+      let relativeRect: DOMRect | undefined;
 
-			// 如果需要相对位置且设置了 root
-			if (relativeToRoot && root) {
-				const rootRect = root.getBoundingClientRect();
-				const elementRect = entry.boundingClientRect;
+      // 如果需要相对位置且设置了 root
+      if (relativeToRoot && root) {
+        const rootRect = root.getBoundingClientRect();
+        const elementRect = entry.boundingClientRect;
 
-				relativeRect = new DOMRect(
-					elementRect.left - rootRect.left,
-					elementRect.top - rootRect.top,
-					elementRect.width,
-					elementRect.height,
-				);
-			}
+        relativeRect = new DOMRect(
+          elementRect.left - rootRect.left,
+          elementRect.top - rootRect.top,
+          elementRect.width,
+          elementRect.height
+        );
+      }
 
-			// 构建位置信息对象
-			const newPosition: ElementPosition = {
-				boundingClientRect: entry.boundingClientRect,
-				intersectionRatio: entry.intersectionRatio,
-				isIntersecting: entry.isIntersecting,
-				time: entry.time,
-				relativeRect,
-				scrollX: window.scrollX,
-				scrollY: window.scrollY,
-			};
+      // 构建位置信息对象
+      const newPosition: ElementPosition = {
+        boundingClientRect: entry.boundingClientRect,
+        intersectionRatio: entry.intersectionRatio,
+        isIntersecting: entry.isIntersecting,
+        time: entry.time,
+        relativeRect,
+        scrollX: window.scrollX,
+        scrollY: window.scrollY,
+      };
 
-			// 使用节流更新位置
-			throttledSetPositionRef.current(newPosition);
-		},
-		[relativeToRoot, root],
-	);
+      // 使用节流更新位置
+      throttledSetPositionRef.current(newPosition);
+    },
+    [relativeToRoot, root]
+  );
 
-	const observerOptions: ObserverOptions = useMemo(
-		() => ({
-			threshold: finalThreshold,
-			rootMargin: `${offset}px`,
-			root,
-		}),
-		[finalThreshold, offset, root],
-	);
+  const observerOptions: ObserverOptions = useMemo(
+    () => ({
+      threshold: finalThreshold,
+      rootMargin: `${offset}px`,
+      root,
+    }),
+    [finalThreshold, offset, root]
+  );
 
-	/**
-	 * 节流的 scroll 事件处理函数
-	 *
-	 * 在 lazy 版本中，scroll 事件主要用于校准 Intersection Observer，
-	 * 不进行位置计算，位置计算只在用户主动调用 callback 时进行。
-	 *
-	 * 性能优化：
-	 * - 使用节流机制避免过度校准
-	 * - 只在必要时重新校准 Intersection Observer
-	 * - 不进行位置计算，保持 lazy 特性
-	 */
-	const throttledHandleScroll = useCallback(() => {
-		// 如果已经有待执行的 scroll 处理，直接返回
-		if (scrollTimeoutRef.current) return;
+  /**
+   * 节流的 scroll 事件处理函数
+   *
+   * 在 lazy 版本中，scroll 事件主要用于校准 Intersection Observer，
+   * 不进行位置计算，位置计算只在用户主动调用 callback 时进行。
+   *
+   * 性能优化：
+   * - 使用节流机制避免过度校准
+   * - 只在必要时重新校准 Intersection Observer
+   * - 不进行位置计算，保持 lazy 特性
+   */
+  const throttledHandleScroll = useCallback(() => {
+    // 如果已经有待执行的 scroll 处理，直接返回
+    if (scrollTimeoutRef.current) return;
 
-		scrollTimeoutRef.current = setTimeout(() => {
-			// 检查组件是否仍然挂载
-			if (!isMountedRef.current) {
-				scrollTimeoutRef.current = null;
-				return;
-			}
+    scrollTimeoutRef.current = setTimeout(() => {
+      // 检查组件是否仍然挂载
+      if (!isMountedRef.current) {
+        scrollTimeoutRef.current = null;
+        return;
+      }
 
-			// 在 lazy 版本中，我们只进行校准，不计算位置
-			// 位置计算只在用户调用 callback 时进行
-			if (!positionRef.current) {
-				scrollTimeoutRef.current = null;
-				return;
-			}
+      // 在 lazy 版本中，我们只进行校准，不计算位置
+      // 位置计算只在用户调用 callback 时进行
+      if (!positionRef.current) {
+        scrollTimeoutRef.current = null;
+        return;
+      }
 
-			// 智能判断当前状态下的处理策略
-			const { shouldCalibrate } = checkIfShouldSyncPosition(
-				positionRef.current || {},
-				forceCalibrate,
-				lastCalibrateTimeRef.current,
-				calibrateInterval,
-			);
+      // 智能判断当前状态下的处理策略
+      const { shouldCalibrate } = checkIfShouldSyncPosition(
+        positionRef.current || {},
+        forceCalibrate,
+        lastCalibrateTimeRef.current,
+        calibrateInterval
+      );
 
-			const now = Date.now();
+      const now = Date.now();
 
-			// 执行校准：重新使用 Intersection Observer 获取准确位置
-			if (shouldCalibrate && ref.current) {
-				lastCalibrateTimeRef.current = now;
-				unSubscribeRef.current?.();
-				unSubscribeRef.current = lazyloadManager.observe(
-					ref.current,
-					callback,
-					observerOptions,
-				);
-			}
+      // 执行校准：重新使用 Intersection Observer 获取准确位置
+      if (shouldCalibrate && ref.current) {
+        lastCalibrateTimeRef.current = now;
+        unSubscribeRef.current?.();
+        unSubscribeRef.current = lazyloadManager.observe(ref.current, callback, observerOptions);
+      }
 
-			scrollTimeoutRef.current = null;
-		}, throttle); // 使用相同的节流时间
-	}, [
-		throttle,
-		isMountedRef,
-		forceCalibrate,
-		calibrateInterval,
-		ref,
-		callback,
-		observerOptions,
-	]);
+      scrollTimeoutRef.current = null;
+    }, throttle); // 使用相同的节流时间
+  }, [throttle, isMountedRef, forceCalibrate, calibrateInterval, ref, callback, observerOptions]);
 
-	// 设置 Intersection Observer
-	useLayoutEffect(() => {
-		if (!ref.current) return;
+  // 设置 Intersection Observer
+  useLayoutEffect(() => {
+    if (!ref.current) return;
 
-		// 开始观察元素
-		unSubscribeRef.current = lazyloadManager.observe(
-			ref.current,
-			callback,
-			observerOptions,
-		);
+    // 开始观察元素
+    unSubscribeRef.current = lazyloadManager.observe(ref.current, callback, observerOptions);
 
-		window.addEventListener("scroll", throttledHandleScroll, { passive: true });
+    window.addEventListener('scroll', throttledHandleScroll, { passive: true });
 
-		// 清理函数
-		return () => {
-			if (unSubscribeRef.current) {
-				unSubscribeRef.current();
-			}
+    // 清理函数
+    return () => {
+      if (unSubscribeRef.current) {
+        unSubscribeRef.current();
+      }
 
-			window.removeEventListener("scroll", throttledHandleScroll);
+      window.removeEventListener('scroll', throttledHandleScroll);
 
-			// 清理定时器
-			if (timeoutRef.current) {
-				clearTimeout(timeoutRef.current);
-				timeoutRef.current = null;
-			}
+      // 清理定时器
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
 
-			// 清理 scroll 节流定时器
-			if (scrollTimeoutRef.current) {
-				clearTimeout(scrollTimeoutRef.current);
-				scrollTimeoutRef.current = null;
-			}
-		};
-	}, [ref, callback, observerOptions, throttledHandleScroll]);
+      // 清理 scroll 节流定时器
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+        scrollTimeoutRef.current = null;
+      }
+    };
+  }, [ref, callback, observerOptions, throttledHandleScroll]);
 
-	/**
-	 * 延迟计算位置信息的 callback 函数
-	 * 只有在用户主动调用时才会计算并返回当前的位置信息
-	 *
-	 * @returns 当前元素位置信息，如果元素不存在或未挂载则返回 null
-	 */
-	const getPosition = useCallback(() => {
-		// 检查组件是否仍然挂载
-		if (!isMountedRef.current) return null;
+  /**
+   * 延迟计算位置信息的 callback 函数
+   * 只有在用户主动调用时才会计算并返回当前的位置信息
+   *
+   * @returns 当前元素位置信息，如果元素不存在或未挂载则返回 null
+   */
+  const getPosition = useCallback(() => {
+    // 检查组件是否仍然挂载
+    if (!isMountedRef.current) return null;
 
-		// 检查元素是否存在
-		if (!ref.current) return null;
+    // 检查元素是否存在
+    if (!ref.current) return null;
 
-		// 如果没有缓存的位置信息，直接返回 null（lazy 特性）
-		if (!positionRef.current) {
-			return null;
-		}
+    // 如果没有缓存的位置信息，直接返回 null（lazy 特性）
+    if (!positionRef.current) {
+      return null;
+    }
 
-		const now = Date.now();
-		const currentScrollX = window.scrollX;
-		const currentScrollY = window.scrollY;
+    const now = Date.now();
+    const currentScrollX = window.scrollX;
+    const currentScrollY = window.scrollY;
 
-		// 检查滚动位置是否发生变化
-		if (
-			positionRef.current.scrollX === currentScrollX &&
-			positionRef.current.scrollY === currentScrollY
-		) {
-			// 滚动位置没有变化，只更新时间戳
-			positionRef.current.time = now;
-			return positionRef.current;
-		}
+    // 检查滚动位置是否发生变化
+    if (
+      positionRef.current.scrollX === currentScrollX &&
+      positionRef.current.scrollY === currentScrollY
+    ) {
+      // 滚动位置没有变化，只更新时间戳
+      positionRef.current.time = now;
+      return positionRef.current;
+    }
 
-		// 滚动位置发生变化，使用 calculateScrollBasedPosition 计算新位置
-		const newPosition = calculateScrollBasedPosition(
-			positionRef.current,
-			currentScrollX,
-			currentScrollY,
-			now,
-		);
+    // 滚动位置发生变化，使用 calculateScrollBasedPosition 计算新位置
+    const newPosition = calculateScrollBasedPosition(
+      positionRef.current,
+      currentScrollX,
+      currentScrollY,
+      now
+    );
 
-		// 更新缓存
-		positionRef.current = newPosition;
-		return positionRef.current;
-	}, [isMountedRef, ref]);
+    // 更新缓存
+    positionRef.current = newPosition;
+    return positionRef.current;
+  }, [isMountedRef, ref]);
 
-	return getPosition;
+  return getPosition;
 };

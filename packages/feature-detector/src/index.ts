@@ -22,10 +22,10 @@
  */
 
 // 导出所有类型定义
-export * from "./types";
+export * from './types';
 
 // 导出默认配置
-export * from "./defaults";
+export * from './defaults';
 
 // 导出工具函数
-export { createFeatureDetector } from "./utils";
+export { createFeatureDetector } from './utils';

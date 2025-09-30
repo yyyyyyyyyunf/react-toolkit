@@ -1,10 +1,10 @@
-import "intersection-observer";
+import 'intersection-observer';
 import type {
-	CheckIfShouldSyncPositionResult,
-	ElementPosition,
-	ObserverOptions,
-	Options,
-} from "../types";
+  CheckIfShouldSyncPositionResult,
+  ElementPosition,
+  ObserverOptions,
+  Options,
+} from '../types';
 
 /**
  * 检查浏览器是否支持 Intersection Observer API
@@ -23,12 +23,12 @@ import type {
  * ```
  */
 export const isSupportIntersectionObserver = () => {
-	return (
-		typeof window !== "undefined" &&
-		"IntersectionObserver" in window &&
-		"IntersectionObserverEntry" in window &&
-		"intersectionRatio" in window.IntersectionObserverEntry.prototype
-	);
+  return (
+    typeof window !== 'undefined' &&
+    'IntersectionObserver' in window &&
+    'IntersectionObserverEntry' in window &&
+    'intersectionRatio' in window.IntersectionObserverEntry.prototype
+  );
 };
 
 /**
@@ -44,8 +44,7 @@ export const isSupportIntersectionObserver = () => {
  * const id = uniqueId("intersection_element"); // "intersection_element_abc123def"
  * ```
  */
-export const uniqueId = (prefix: string) =>
-	`${prefix}_${Math.random().toString(36).slice(2, 11)}`;
+export const uniqueId = (prefix: string) => `${prefix}_${Math.random().toString(36).slice(2, 11)}`;
 
 /**
  * 根据步长生成阈值数组
@@ -64,24 +63,24 @@ export const uniqueId = (prefix: string) =>
  * ```
  */
 export const generateThresholdArray = (step: number): number[] => {
-	if (step <= 0 || step > 1) {
-		throw new Error("Step must be between 0 and 1");
-	}
+  if (step <= 0 || step > 1) {
+    throw new Error('Step must be between 0 and 1');
+  }
 
-	const thresholds: number[] = [];
-	for (let i = 0; i <= 1; i += step) {
-		thresholds.push(Number(i.toFixed(3))); // 保留3位小数，避免浮点数精度问题
-	}
+  const thresholds: number[] = [];
+  for (let i = 0; i <= 1; i += step) {
+    thresholds.push(Number(i.toFixed(3))); // 保留3位小数，避免浮点数精度问题
+  }
 
-	// 确保包含 0 和 1
-	if (thresholds[0] !== 0) {
-		thresholds.unshift(0);
-	}
-	if (thresholds[thresholds.length - 1] !== 1) {
-		thresholds.push(1);
-	}
+  // 确保包含 0 和 1
+  if (thresholds[0] !== 0) {
+    thresholds.unshift(0);
+  }
+  if (thresholds[thresholds.length - 1] !== 1) {
+    thresholds.push(1);
+  }
 
-	return thresholds;
+  return thresholds;
 };
 
 /**
@@ -99,7 +98,7 @@ export const generateThresholdArray = (step: number): number[] => {
  * ```
  */
 export const getDefaultThresholdArray = (): number[] => {
-	return [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
+  return [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
 };
 
 /**
@@ -137,34 +136,29 @@ export const getDefaultThresholdArray = (): number[] => {
  * // [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
  * ```
  */
-export const calculateFinalThreshold = (
-	options: Options,
-	hookName: string,
-): number[] => {
-	// 解构 step 和 threshold 以避免对象引用问题
-	const step = "step" in options ? options.step : undefined;
-	const threshold = "threshold" in options ? options.threshold : undefined;
+export const calculateFinalThreshold = (options: Options, hookName: string): number[] => {
+  // 解构 step 和 threshold 以避免对象引用问题
+  const step = 'step' in options ? options.step : undefined;
+  const threshold = 'threshold' in options ? options.threshold : undefined;
 
-	// 运行时检查：确保 step 和 threshold 不同时设置
-	if (step !== undefined && threshold !== undefined) {
-		console.warn(
-			`${hookName}: step 和 threshold 不能同时设置，将使用 threshold`,
-		);
-	}
+  // 运行时检查：确保 step 和 threshold 不同时设置
+  if (step !== undefined && threshold !== undefined) {
+    console.warn(`${hookName}: step 和 threshold 不能同时设置，将使用 threshold`);
+  }
 
-	// 如果明确指定了 threshold，优先使用
-	if (threshold !== undefined) {
-		// 如果是单个数字，转换为数组
-		return Array.isArray(threshold) ? threshold : [threshold];
-	}
+  // 如果明确指定了 threshold，优先使用
+  if (threshold !== undefined) {
+    // 如果是单个数字，转换为数组
+    return Array.isArray(threshold) ? threshold : [threshold];
+  }
 
-	// 如果指定了 step，根据 step 生成 threshold 数组
-	if (step !== undefined) {
-		return generateThresholdArray(step);
-	}
+  // 如果指定了 step，根据 step 生成 threshold 数组
+  if (step !== undefined) {
+    return generateThresholdArray(step);
+  }
 
-	// 否则使用默认的 threshold 数组
-	return getDefaultThresholdArray();
+  // 否则使用默认的 threshold 数组
+  return getDefaultThresholdArray();
 };
 
 /**
@@ -188,37 +182,37 @@ export const calculateFinalThreshold = (
  * ```
  */
 export const checkVisibility = (
-	entry: IntersectionObserverEntry,
-	threshold: number | "any" | "top" | "right" | "bottom" | "left",
+  entry: IntersectionObserverEntry,
+  threshold: number | 'any' | 'top' | 'right' | 'bottom' | 'left'
 ): boolean => {
-	if (typeof threshold === "number") {
-		// 对于数值阈值，检查交叉比例是否达到要求
-		return entry.isIntersecting && entry.intersectionRatio >= threshold;
-	}
+  if (typeof threshold === 'number') {
+    // 对于数值阈值，检查交叉比例是否达到要求
+    return entry.isIntersecting && entry.intersectionRatio >= threshold;
+  }
 
-	if (threshold === "any") {
-		return entry.isIntersecting && entry.intersectionRatio > 0;
-	}
+  if (threshold === 'any') {
+    return entry.isIntersecting && entry.intersectionRatio > 0;
+  }
 
-	// 方向性检测
-	const rect = entry.boundingClientRect;
-	const viewport = {
-		width: window.innerWidth,
-		height: window.innerHeight,
-	};
+  // 方向性检测
+  const rect = entry.boundingClientRect;
+  const viewport = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+  };
 
-	switch (threshold) {
-		case "top":
-			return rect.top < viewport.height && rect.bottom > 0;
-		case "right":
-			return rect.right > 0 && rect.left < viewport.width;
-		case "bottom":
-			return rect.bottom > 0 && rect.top < viewport.height;
-		case "left":
-			return rect.left < viewport.width && rect.right > 0;
-		default:
-			return entry.isIntersecting;
-	}
+  switch (threshold) {
+    case 'top':
+      return rect.top < viewport.height && rect.bottom > 0;
+    case 'right':
+      return rect.right > 0 && rect.left < viewport.width;
+    case 'bottom':
+      return rect.bottom > 0 && rect.top < viewport.height;
+    case 'left':
+      return rect.left < viewport.width && rect.right > 0;
+    default:
+      return entry.isIntersecting;
+  }
 };
 
 /**
@@ -238,34 +232,34 @@ export const checkVisibility = (
  * ```
  */
 export const calculateScrollDirection = (
-	currentRect: DOMRect,
-	previousRect: DOMRect,
-): "up" | "down" | "left" | "right" | "none" => {
-	const deltaY = currentRect.top - previousRect.top;
-	const deltaX = currentRect.left - previousRect.left;
+  currentRect: DOMRect,
+  previousRect: DOMRect
+): 'up' | 'down' | 'left' | 'right' | 'none' => {
+  const deltaY = currentRect.top - previousRect.top;
+  const deltaX = currentRect.left - previousRect.left;
 
-	// 设置一个最小阈值，避免微小的抖动
-	const threshold = 1;
+  // 设置一个最小阈值，避免微小的抖动
+  const threshold = 1;
 
-	if (Math.abs(deltaY) > Math.abs(deltaX)) {
-		// 垂直滚动
-		if (deltaY > threshold) {
-			return "down"; // 元素向下移动，说明向上滚动
-		}
-		if (deltaY < -threshold) {
-			return "up"; // 元素向上移动，说明向下滚动
-		}
-	}
+  if (Math.abs(deltaY) > Math.abs(deltaX)) {
+    // 垂直滚动
+    if (deltaY > threshold) {
+      return 'down'; // 元素向下移动，说明向上滚动
+    }
+    if (deltaY < -threshold) {
+      return 'up'; // 元素向上移动，说明向下滚动
+    }
+  }
 
-	// 水平滚动
-	if (deltaX > threshold) {
-		return "right"; // 元素向右移动，说明向左滚动
-	}
-	if (deltaX < -threshold) {
-		return "left"; // 元素向左移动，说明向右滚动
-	}
+  // 水平滚动
+  if (deltaX > threshold) {
+    return 'right'; // 元素向右移动，说明向左滚动
+  }
+  if (deltaX < -threshold) {
+    return 'left'; // 元素向左移动，说明向右滚动
+  }
 
-	return "none";
+  return 'none';
 };
 
 /**
@@ -292,10 +286,10 @@ export const calculateScrollDirection = (
  * ```
  */
 export const createIntersectionObserver = (
-	callback: IntersectionObserverCallback,
-	options?: ObserverOptions,
+  callback: IntersectionObserverCallback,
+  options?: ObserverOptions
 ): IntersectionObserver => {
-	return new IntersectionObserver(callback, options);
+  return new IntersectionObserver(callback, options);
 };
 
 /**
@@ -310,36 +304,36 @@ export const createIntersectionObserver = (
  * @returns 是否需要同步位置
  */
 export const checkIfShouldSyncPosition = (
-	position: ElementPosition,
-	forceCalibrate: boolean,
-	lastCalibrateTime: number,
-	calibrateInterval: number,
+  position: ElementPosition,
+  forceCalibrate: boolean,
+  lastCalibrateTime: number,
+  calibrateInterval: number
 ): CheckIfShouldSyncPositionResult => {
-	const { intersectionRatio, isIntersecting } = position;
+  const { intersectionRatio, isIntersecting } = position;
 
-	/** 如果元素正在部分可见，则不需要同步位置，IntersectionObserver会自动触发回调 */
-	if (isIntersecting && intersectionRatio !== 1) {
-		return { shouldCalibrate: false, shouldCalculateOnScroll: false };
-	}
+  /** 如果元素正在部分可见，则不需要同步位置，IntersectionObserver会自动触发回调 */
+  if (isIntersecting && intersectionRatio !== 1) {
+    return { shouldCalibrate: false, shouldCalculateOnScroll: false };
+  }
 
-	/** 如果不需要强制校准，则需要计算位置 */
-	if (!forceCalibrate) {
-		return { shouldCalibrate: false, shouldCalculateOnScroll: true };
-	}
+  /** 如果不需要强制校准，则需要计算位置 */
+  if (!forceCalibrate) {
+    return { shouldCalibrate: false, shouldCalculateOnScroll: true };
+  }
 
-	/** 如果元素完全不可见，则需要计算位置 */
-	if (!isIntersecting) {
-		return { shouldCalibrate: false, shouldCalculateOnScroll: true };
-	}
+  /** 如果元素完全不可见，则需要计算位置 */
+  if (!isIntersecting) {
+    return { shouldCalibrate: false, shouldCalculateOnScroll: true };
+  }
 
-	/** 如果距离上次校准时间小于校准间隔，则需要计算位置 */
-	const now = Date.now();
-	if (now - lastCalibrateTime < calibrateInterval) {
-		return { shouldCalibrate: false, shouldCalculateOnScroll: true };
-	}
+  /** 如果距离上次校准时间小于校准间隔，则需要计算位置 */
+  const now = Date.now();
+  if (now - lastCalibrateTime < calibrateInterval) {
+    return { shouldCalibrate: false, shouldCalculateOnScroll: true };
+  }
 
-	/** 如果距离上次校准时间大于校准间隔，则需要校准位置 */
-	return { shouldCalibrate: true, shouldCalculateOnScroll: false };
+  /** 如果距离上次校准时间大于校准间隔，则需要校准位置 */
+  return { shouldCalibrate: true, shouldCalculateOnScroll: false };
 };
 
 /**
@@ -381,63 +375,59 @@ export const checkIfShouldSyncPosition = (
  * ```
  */
 export const calculateScrollBasedPosition = (
-	currentPosition: ElementPosition,
-	currentScrollX: number,
-	currentScrollY: number,
-	now: number,
+  currentPosition: ElementPosition,
+  currentScrollX: number,
+  currentScrollY: number,
+  now: number
 ): ElementPosition => {
-	const { scrollX = 0, scrollY = 0 } = currentPosition;
-	const {
-		top = 0,
-		left = 0,
-		width = 0,
-		height = 0,
-		right = 0,
-		bottom = 0,
-	} = currentPosition.boundingClientRect || {};
+  const { scrollX = 0, scrollY = 0 } = currentPosition;
+  const {
+    top = 0,
+    left = 0,
+    width = 0,
+    height = 0,
+    right = 0,
+    bottom = 0,
+  } = currentPosition.boundingClientRect || {};
 
-	const deltaX = currentScrollX - scrollX;
-	const deltaY = currentScrollY - scrollY;
+  const deltaX = currentScrollX - scrollX;
+  const deltaY = currentScrollY - scrollY;
 
-	const estimatedRect: DOMRect = {
-		top: top - deltaY,
-		left: left - deltaX,
-		width,
-		height,
-		right: right - deltaX,
-		bottom: bottom - deltaY,
-		x: left - deltaX,
-		y: top - deltaY,
-		toJSON: () => {},
-	};
+  const estimatedRect: DOMRect = {
+    top: top - deltaY,
+    left: left - deltaX,
+    width,
+    height,
+    right: right - deltaX,
+    bottom: bottom - deltaY,
+    x: left - deltaX,
+    y: top - deltaY,
+    toJSON: () => {},
+  };
 
-	const isIntersecting =
-		(estimatedRect.top >= 0 && estimatedRect.top <= window.innerHeight) ||
-		(estimatedRect.bottom >= 0 && estimatedRect.bottom <= window.innerHeight);
+  const isIntersecting =
+    (estimatedRect.top >= 0 && estimatedRect.top <= window.innerHeight) ||
+    (estimatedRect.bottom >= 0 && estimatedRect.bottom <= window.innerHeight);
 
-	let intersectionRatio = 0;
-	if (isIntersecting) {
-		const intersectingTop = Math.max(0, estimatedRect.top);
-		const intersectingBottom = Math.min(
-			window.innerHeight,
-			estimatedRect.bottom,
-		);
-		const intersectingLeft = Math.max(0, estimatedRect.left);
-		const intersectingRight = Math.min(window.innerWidth, estimatedRect.right);
-		const intersectingArea =
-			(intersectingBottom - intersectingTop) *
-			(intersectingRight - intersectingLeft);
-		const boundingArea = width * height;
-		intersectionRatio = intersectingArea / boundingArea;
-	}
+  let intersectionRatio = 0;
+  if (isIntersecting) {
+    const intersectingTop = Math.max(0, estimatedRect.top);
+    const intersectingBottom = Math.min(window.innerHeight, estimatedRect.bottom);
+    const intersectingLeft = Math.max(0, estimatedRect.left);
+    const intersectingRight = Math.min(window.innerWidth, estimatedRect.right);
+    const intersectingArea =
+      (intersectingBottom - intersectingTop) * (intersectingRight - intersectingLeft);
+    const boundingArea = width * height;
+    intersectionRatio = intersectingArea / boundingArea;
+  }
 
-	return {
-		boundingClientRect: estimatedRect,
-		intersectionRatio: intersectionRatio,
-		isIntersecting: isIntersecting,
-		time: now,
-		relativeRect: undefined,
-		scrollX: currentScrollX,
-		scrollY: currentScrollY,
-	};
+  return {
+    boundingClientRect: estimatedRect,
+    intersectionRatio: intersectionRatio,
+    isIntersecting: isIntersecting,
+    time: now,
+    relativeRect: undefined,
+    scrollX: currentScrollX,
+    scrollY: currentScrollY,
+  };
 };

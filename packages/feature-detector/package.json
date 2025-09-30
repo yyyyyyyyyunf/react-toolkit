@@ -48,12 +48,12 @@
 	"scripts": {
 		"build": "rslib build",
 		"dev": "rslib build --watch",
-		"format": "biome format --write src/",
-		"format:check": "biome format --check src/",
-		"lint": "biome lint --write src/",
-		"lint:fix": "biome lint --write src/",
-		"check": "biome check src/",
-		"check:fix": "biome check --write src/",
+		"format": "prettier --write src/",
+		"format:check": "prettier --check src/",
+		"lint": "oxlint src/",
+		"lint:fix": "oxlint --fix src/",
+		"check": "oxlint src/",
+		"check:fix": "oxlint --fix src/",
 		"test": "vitest",
 		"test:run": "vitest run",
 		"test:ui": "vitest --ui",
@@ -65,10 +65,10 @@
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@biomejs/biome": "^1.5.3",
 		"@rslib/core": "^0.14.0",
 		"@vitest/ui": "^3.2.4",
 		"jsdom": "^26.1.0",
+		"prettier": "^3.1.1",
 		"typescript": "^5.9.2",
 		"vitest": "^3.2.4"
 	}

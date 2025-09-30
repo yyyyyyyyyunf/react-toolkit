@@ -18,9 +18,9 @@ const componentIgnoreProps: Map<string, string[]> = new Map();
  * @param component 要调试的组件名称
  */
 export const registerDebugComponent = (component: string) => {
-	if (debugComponents.indexOf(component) === -1) {
-		debugComponents.push(component);
-	}
+  if (debugComponents.indexOf(component) === -1) {
+    debugComponents.push(component);
+  }
 };
 
 /**
@@ -29,16 +29,16 @@ export const registerDebugComponent = (component: string) => {
  * @param prop 要忽略的属性名称
  */
 export const registerIgnoreProp = (prop: string) => {
-	if (ignoreProps.indexOf(prop) === -1) {
-		ignoreProps.push(prop);
-	}
+  if (ignoreProps.indexOf(prop) === -1) {
+    ignoreProps.push(prop);
+  }
 };
 
 /**
  * 获取当前的调试组件列表
  */
 export const getDebugComponents = (): readonly string[] => {
-	return [...debugComponents];
+  return [...debugComponents];
 };
 
 /**
@@ -47,24 +47,21 @@ export const getDebugComponents = (): readonly string[] => {
  * @param componentName 组件名称
  * @param prop 要忽略的属性名称
  */
-export const registerComponentIgnoreProp = (
-	componentName: string,
-	prop: string,
-) => {
-	if (!componentIgnoreProps.has(componentName)) {
-		componentIgnoreProps.set(componentName, []);
-	}
-	const props = componentIgnoreProps.get(componentName);
-	if (props && props.indexOf(prop) === -1) {
-		props.push(prop);
-	}
+export const registerComponentIgnoreProp = (componentName: string, prop: string) => {
+  if (!componentIgnoreProps.has(componentName)) {
+    componentIgnoreProps.set(componentName, []);
+  }
+  const props = componentIgnoreProps.get(componentName);
+  if (props && props.indexOf(prop) === -1) {
+    props.push(prop);
+  }
 };
 
 /**
  * 获取当前的要忽略的属性列表
  */
 export const getIgnoreProps = (): readonly string[] => {
-	return [...ignoreProps];
+  return [...ignoreProps];
 };
 
 /**
@@ -73,8 +70,6 @@ export const getIgnoreProps = (): readonly string[] => {
  * @param componentName 组件名称
  * @returns 该组件要忽略的属性列表
  */
-export const getComponentIgnoreProps = (
-	componentName: string,
-): readonly string[] => {
-	return [...(componentIgnoreProps.get(componentName) || [])];
+export const getComponentIgnoreProps = (componentName: string): readonly string[] => {
+  return [...(componentIgnoreProps.get(componentName) || [])];
 };

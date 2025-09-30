@@ -1,13 +1,13 @@
-import type React from "react";
-import { useLayoutEffect, useMemo, useState } from "react";
-import { lazyloadManager } from "../base/IntersectionObserverManager";
+import type React from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
+import { lazyloadManager } from '../base/IntersectionObserverManager';
 import type {
-	ObserverCallbackParamType,
-	ObserverOptions,
-	UseIntersectionRatioOptions,
-} from "../types";
-import { calculateFinalThreshold } from "../utils";
-import { useIsMounted } from "./useIsMounted";
+  ObserverCallbackParamType,
+  ObserverOptions,
+  UseIntersectionRatioOptions,
+} from '../types';
+import { calculateFinalThreshold } from '../utils';
+import { useIsMounted } from './useIsMounted';
 
 /**
  * 元素交叉比例 Hook
@@ -49,62 +49,56 @@ import { useIsMounted } from "./useIsMounted";
  * ```
  */
 export const useIntersectionRatio = (
-	ref: React.RefObject<HTMLElement | null>,
-	options: UseIntersectionRatioOptions = {},
+  ref: React.RefObject<HTMLElement | null>,
+  options: UseIntersectionRatioOptions = {}
 ) => {
-	const [intersectionRatio, setIntersectionRatio] = useState<
-		number | undefined
-	>(undefined);
-	const isMountedRef = useIsMounted();
+  const [intersectionRatio, setIntersectionRatio] = useState<number | undefined>(undefined);
+  const isMountedRef = useIsMounted();
 
-	/**
-	 * 计算最终的 threshold 数组
-	 * 根据配置的 step 或 threshold 生成用于 Intersection Observer 的阈值数组
-	 */
-	const finalThreshold = useMemo(() => {
-		return calculateFinalThreshold(options, "useIntersectionRatio");
-	}, [options]);
+  /**
+   * 计算最终的 threshold 数组
+   * 根据配置的 step 或 threshold 生成用于 Intersection Observer 的阈值数组
+   */
+  const finalThreshold = useMemo(() => {
+    return calculateFinalThreshold(options, 'useIntersectionRatio');
+  }, [options]);
 
-	/**
-	 * 创建观察器选项
-	 */
-	const observerOptions: ObserverOptions = useMemo(
-		() => ({
-			threshold: finalThreshold,
-			rootMargin: options.offset ? `${options.offset}px` : undefined,
-			root: "root" in options ? options.root : undefined,
-		}),
-		[finalThreshold, options],
-	);
+  /**
+   * 创建观察器选项
+   */
+  const observerOptions: ObserverOptions = useMemo(
+    () => ({
+      threshold: finalThreshold,
+      rootMargin: options.offset ? `${options.offset}px` : undefined,
+      root: 'root' in options ? options.root : undefined,
+    }),
+    [finalThreshold, options]
+  );
 
-	/**
-	 * 设置 Intersection Observer
-	 */
-	useLayoutEffect(() => {
-		if (!ref.current) return;
+  /**
+   * 设置 Intersection Observer
+   */
+  useLayoutEffect(() => {
+    if (!ref.current) return;
 
-		const callback = (entry: ObserverCallbackParamType) => {
-			// 检查组件是否仍然挂载
-			if (!isMountedRef.current) return;
+    const callback = (entry: ObserverCallbackParamType) => {
+      // 检查组件是否仍然挂载
+      if (!isMountedRef.current) return;
 
-			// 只关注交叉比例
-			setIntersectionRatio(entry.intersectionRatio);
-		};
+      // 只关注交叉比例
+      setIntersectionRatio(entry.intersectionRatio);
+    };
 
-		// 开始观察
-		const unsubscribe = lazyloadManager.observe(
-			ref.current,
-			callback,
-			observerOptions,
-		);
+    // 开始观察
+    const unsubscribe = lazyloadManager.observe(ref.current, callback, observerOptions);
 
-		// 清理函数
-		return () => {
-			if (unsubscribe) {
-				unsubscribe();
-			}
-		};
-	}, [ref, observerOptions, isMountedRef]);
+    // 清理函数
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [ref, observerOptions, isMountedRef]);
 
-	return intersectionRatio;
+  return intersectionRatio;
 };

@@ -1,6 +1,6 @@
-import { FeatureDetector } from "../FeatureDetector";
-import { defaultDetectorConfig, defaultFeatureConfigs } from "../defaults";
-import type { FeatureConfigMap, FeatureDetectorOptions } from "../types";
+import { FeatureDetector } from '../FeatureDetector';
+import { defaultDetectorConfig, defaultFeatureConfigs } from '../defaults';
+import type { FeatureConfigMap, FeatureDetectorOptions } from '../types';
 
 /**
  * 比较两个版本字符串
@@ -9,18 +9,18 @@ import type { FeatureConfigMap, FeatureDetectorOptions } from "../types";
  * @returns 正数表示 v1 > v2，负数表示 v1 < v2，0 表示相等
  */
 export function compareVersions(v1: string, v2: string): number {
-	const parts1 = v1.split(".").map(Number);
-	const parts2 = v2.split(".").map(Number);
+  const parts1 = v1.split('.').map(Number);
+  const parts2 = v2.split('.').map(Number);
 
-	for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
-		const part1 = parts1[i] || 0;
-		const part2 = parts2[i] || 0;
+  for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+    const part1 = parts1[i] || 0;
+    const part2 = parts2[i] || 0;
 
-		if (part1 > part2) return 1;
-		if (part1 < part2) return -1;
-	}
+    if (part1 > part2) return 1;
+    if (part1 < part2) return -1;
+  }
 
-	return 0;
+  return 0;
 }
 
 /**
@@ -38,8 +38,8 @@ export function compareVersions(v1: string, v2: string): number {
  * ```
  */
 export function createFeatureDetector(
-	config: FeatureConfigMap = defaultFeatureConfigs,
-	detectorConfig: FeatureDetectorOptions = defaultDetectorConfig,
+  config: FeatureConfigMap = defaultFeatureConfigs,
+  detectorConfig: FeatureDetectorOptions = defaultDetectorConfig
 ): FeatureDetector {
-	return new FeatureDetector(config, detectorConfig);
+  return new FeatureDetector(config, detectorConfig);
 }

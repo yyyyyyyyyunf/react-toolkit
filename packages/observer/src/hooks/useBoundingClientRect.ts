@@ -1,5 +1,5 @@
-import type { UseBoundingClientRectOptions } from "../types";
-import { useElementPosition } from "./useElementPosition";
+import type { UseBoundingClientRectOptions } from '../types';
+import { useElementPosition } from './useElementPosition';
 
 /**
  * 元素边界矩形 Hook
@@ -41,9 +41,9 @@ import { useElementPosition } from "./useElementPosition";
  * ```
  */
 export const useBoundingClientRect = (
-	ref: React.RefObject<HTMLElement | null>,
-	options: UseBoundingClientRectOptions = {},
+  ref: React.RefObject<HTMLElement | null>,
+  options: UseBoundingClientRectOptions = {}
 ) => {
-	const elPosition = useElementPosition(ref, options);
-	return elPosition?.boundingClientRect || null;
+  const elPosition = useElementPosition(ref, options);
+  return elPosition?.boundingClientRect || null;
 };

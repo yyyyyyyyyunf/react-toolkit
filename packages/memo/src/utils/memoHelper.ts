@@ -1,8 +1,4 @@
-import {
-	getComponentIgnoreProps,
-	getDebugComponents,
-	getIgnoreProps,
-} from "../config";
+import { getComponentIgnoreProps, getDebugComponents, getIgnoreProps } from '../config';
 
 /**
  * 调试日志函数
@@ -20,10 +16,10 @@ import {
  * ```
  */
 export const debugLog = (displayName: string, ...args: unknown[]) => {
-	const currentDebugComponents = getDebugComponents();
-	if (currentDebugComponents.some((item) => displayName.indexOf(item) !== -1)) {
-		console.log(`[${displayName}]`, ...args);
-	}
+  const currentDebugComponents = getDebugComponents();
+  if (currentDebugComponents.some(item => displayName.indexOf(item) !== -1)) {
+    console.log(`[${displayName}]`, ...args);
+  }
 };
 
 /**
@@ -33,21 +29,18 @@ export const debugLog = (displayName: string, ...args: unknown[]) => {
  * @param componentName 组件名称（可选）
  * @returns 是否应该忽略该属性
  */
-export const shouldIgnoreProp = (
-	propName: string,
-	componentName?: string,
-): boolean => {
-	// 首先检查全局忽略属性
-	const currentIgnoreProps = getIgnoreProps();
-	if (currentIgnoreProps.indexOf(propName) !== -1) {
-		return true;
-	}
+export const shouldIgnoreProp = (propName: string, componentName?: string): boolean => {
+  // 首先检查全局忽略属性
+  const currentIgnoreProps = getIgnoreProps();
+  if (currentIgnoreProps.indexOf(propName) !== -1) {
+    return true;
+  }
 
-	// 如果提供了组件名称，检查组件特定的忽略属性
-	if (componentName) {
-		const componentIgnoreProps = getComponentIgnoreProps(componentName);
-		return componentIgnoreProps.indexOf(propName) !== -1;
-	}
+  // 如果提供了组件名称，检查组件特定的忽略属性
+  if (componentName) {
+    const componentIgnoreProps = getComponentIgnoreProps(componentName);
+    return componentIgnoreProps.indexOf(propName) !== -1;
+  }
 
-	return false;
+  return false;
 };

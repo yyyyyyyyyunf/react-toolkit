@@ -1,27 +1,27 @@
-import React, { useRef, useState, useCallback, useMemo } from "react";
+import React, { useRef, useState, useCallback, useMemo } from 'react';
 import {
-	useElementDetector,
-	useInViewport,
-	useElementPosition,
-	useElementPositionRef,
-	useBoundingClientRect,
-	useIntersectionRatio,
-	type UseElementDetectorOptions,
-	type Options,
-} from "@fly4react/observer";
+  useElementDetector,
+  useInViewport,
+  useElementPosition,
+  useElementPositionRef,
+  useBoundingClientRect,
+  useIntersectionRatio,
+  type UseElementDetectorOptions,
+  type Options,
+} from '@fly4react/observer';
 
 interface LogEntry {
-	id: string;
-	timestamp: string;
-	hook: string;
-	message: string;
-	type: "info" | "success" | "warning" | "error";
+  id: string;
+  timestamp: string;
+  hook: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error';
 }
 
 interface HookConfig {
-	name: string;
-	enabled: boolean;
-	description: string;
+  name: string;
+  enabled: boolean;
+  description: string;
 }
 
 /**
@@ -34,463 +34,412 @@ interface HookConfig {
  * 4. 资源清理正确
  */
 export const MultiHookExample = () => {
-	const ref = useRef<HTMLDivElement>(null);
-	const [logs, setLogs] = useState<LogEntry[]>([]);
-	const [hookConfigs, setHookConfigs] = useState<Record<string, HookConfig>>({
-		elementDetector: {
-			name: "useElementDetector",
-			enabled: true,
-			description: "检测元素是否贴顶",
-		},
-		inViewport: {
-			name: "useInViewport",
-			enabled: true,
-			description: "检测元素是否在视口内",
-		},
-		elementPosition: {
-			name: "useElementPosition",
-			enabled: true,
-			description: "跟踪元素位置 (useState 版本)",
-		},
-		elementPositionRef: {
-			name: "useElementPositionRef",
-			enabled: true,
-			description: "跟踪元素位置 (useRef 版本)",
-		},
-		boundingRect: {
-			name: "useBoundingClientRect",
-			enabled: true,
-			description: "获取元素边界矩形",
-		},
-		intersectionRatio: {
-			name: "useIntersectionRatio",
-			enabled: true,
-			description: "获取元素交叉比例",
-		},
-	});
-	const [logFilter, setLogFilter] = useState<string>("all");
-	const [performanceStats, setPerformanceStats] = useState<
-		Record<string, number>
-	>({});
+  const ref = useRef<HTMLDivElement>(null);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [hookConfigs, setHookConfigs] = useState<Record<string, HookConfig>>({
+    elementDetector: {
+      name: 'useElementDetector',
+      enabled: true,
+      description: '检测元素是否贴顶',
+    },
+    inViewport: {
+      name: 'useInViewport',
+      enabled: true,
+      description: '检测元素是否在视口内',
+    },
+    elementPosition: {
+      name: 'useElementPosition',
+      enabled: true,
+      description: '跟踪元素位置 (useState 版本)',
+    },
+    elementPositionRef: {
+      name: 'useElementPositionRef',
+      enabled: true,
+      description: '跟踪元素位置 (useRef 版本)',
+    },
+    boundingRect: {
+      name: 'useBoundingClientRect',
+      enabled: true,
+      description: '获取元素边界矩形',
+    },
+    intersectionRatio: {
+      name: 'useIntersectionRatio',
+      enabled: true,
+      description: '获取元素交叉比例',
+    },
+  });
+  const [logFilter, setLogFilter] = useState<string>('all');
+  const [performanceStats, setPerformanceStats] = useState<Record<string, number>>({});
 
-	// 添加日志
-	const addLog = useCallback(
-		(hook: string, message: string, type: LogEntry["type"] = "info") => {
-			const timestamp = new Date().toLocaleTimeString();
-			const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-			const newLog: LogEntry = { id, timestamp, hook, message, type };
-			setLogs((prev) => [newLog, ...prev.slice(0, 49)]); // Keep last 50 logs
-		},
-		[],
-	);
+  // 添加日志
+  const addLog = useCallback((hook: string, message: string, type: LogEntry['type'] = 'info') => {
+    const timestamp = new Date().toLocaleTimeString();
+    const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const newLog: LogEntry = { id, timestamp, hook, message, type };
+    setLogs(prev => [newLog, ...prev.slice(0, 49)]); // Keep last 50 logs
+  }, []);
 
-	// 更新性能统计
-	const updatePerformanceStats = useCallback((hookName: string) => {
-		setPerformanceStats((prev) => ({
-			...prev,
-			[hookName]: (prev[hookName] || 0) + 1,
-		}));
-	}, []);
+  // 更新性能统计
+  const updatePerformanceStats = useCallback((hookName: string) => {
+    setPerformanceStats(prev => ({
+      ...prev,
+      [hookName]: (prev[hookName] || 0) + 1,
+    }));
+  }, []);
 
-	const ceilingOptions: UseElementDetectorOptions = useMemo(
-		() => ({
-			compute: (rect) => rect.top <= 0,
-			forceCalibrate: true,
-			calibrateInterval: 2000,
-		}),
-		[],
-	);
+  const ceilingOptions: UseElementDetectorOptions = useMemo(
+    () => ({
+      compute: rect => rect.top <= 0,
+      forceCalibrate: true,
+      calibrateInterval: 2000,
+    }),
+    []
+  );
 
-	// 1. 元素检测器 - 检测是否贴顶
-	const isCeiling = useElementDetector(ref, ceilingOptions);
+  // 1. 元素检测器 - 检测是否贴顶
+  const isCeiling = useElementDetector(ref, ceilingOptions);
 
-	// 2. 视口检测
-	const isInViewport = useInViewport(ref);
+  // 2. 视口检测
+  const isInViewport = useInViewport(ref);
 
-	const elementPositionOptions: Options = useMemo(
-		() => ({
-			forceCalibrate: true,
-			calibrateInterval: 2000,
-		}),
-		[],
-	);
-	// 3. 元素位置跟踪 (useState 版本)
-	const position = useElementPosition(ref, elementPositionOptions);
+  const elementPositionOptions: Options = useMemo(
+    () => ({
+      forceCalibrate: true,
+      calibrateInterval: 2000,
+    }),
+    []
+  );
+  // 3. 元素位置跟踪 (useState 版本)
+  const position = useElementPosition(ref, elementPositionOptions);
 
-	// 4. 元素位置跟踪 (useRef 版本)
-	const positionRef = useElementPositionRef(ref, elementPositionOptions);
+  // 4. 元素位置跟踪 (useRef 版本)
+  const positionRef = useElementPositionRef(ref, elementPositionOptions);
 
-	// 5. 边界矩形
-	const boundingRect = useBoundingClientRect(ref, elementPositionOptions);
+  // 5. 边界矩形
+  const boundingRect = useBoundingClientRect(ref, elementPositionOptions);
 
-	const intersectionRatioOptions: Options = useMemo(
-		() => ({
-			threshold: [0, 0.25, 0.5, 0.75, 1],
-		}),
-		[],
-	);
-	// 6. 交叉比例
-	const intersectionRatio = useIntersectionRatio(ref, intersectionRatioOptions);
+  const intersectionRatioOptions: Options = useMemo(
+    () => ({
+      threshold: [0, 0.25, 0.5, 0.75, 1],
+    }),
+    []
+  );
+  // 6. 交叉比例
+  const intersectionRatio = useIntersectionRatio(ref, intersectionRatioOptions);
 
-	// 监听状态变化并记录日志
-	React.useEffect(() => {
-		if (hookConfigs.elementDetector.enabled) {
-			addLog(
-				"useElementDetector",
-				`${isCeiling ? "已贴顶" : "未贴顶"}`,
-				isCeiling ? "success" : "info",
-			);
-			updatePerformanceStats("useElementDetector");
-			console.log("isCeiling", isCeiling);
-		}
-	}, [
-		isCeiling,
-		hookConfigs.elementDetector.enabled,
-		addLog,
-		updatePerformanceStats,
-	]);
+  // 监听状态变化并记录日志
+  React.useEffect(() => {
+    if (hookConfigs.elementDetector.enabled) {
+      addLog(
+        'useElementDetector',
+        `${isCeiling ? '已贴顶' : '未贴顶'}`,
+        isCeiling ? 'success' : 'info'
+      );
+      updatePerformanceStats('useElementDetector');
+      console.log('isCeiling', isCeiling);
+    }
+  }, [isCeiling, hookConfigs.elementDetector.enabled, addLog, updatePerformanceStats]);
 
-	React.useEffect(() => {
-		if (hookConfigs.inViewport.enabled) {
-			addLog(
-				"useInViewport",
-				`${isInViewport ? "在视口内" : "在视口外"}`,
-				isInViewport ? "success" : "warning",
-			);
-			updatePerformanceStats("useInViewport");
-		}
-	}, [
-		isInViewport,
-		hookConfigs.inViewport.enabled,
-		addLog,
-		updatePerformanceStats,
-	]);
+  React.useEffect(() => {
+    if (hookConfigs.inViewport.enabled) {
+      addLog(
+        'useInViewport',
+        `${isInViewport ? '在视口内' : '在视口外'}`,
+        isInViewport ? 'success' : 'warning'
+      );
+      updatePerformanceStats('useInViewport');
+    }
+  }, [isInViewport, hookConfigs.inViewport.enabled, addLog, updatePerformanceStats]);
 
-	React.useEffect(() => {
-		if (hookConfigs.elementPosition.enabled && position) {
-			addLog(
-				"useElementPosition",
-				`top=${Math.round(position.boundingClientRect.top)}, ratio=${position.intersectionRatio.toFixed(2)}`,
-				"info",
-			);
-			updatePerformanceStats("useElementPosition");
-		}
-	}, [
-		position,
-		hookConfigs.elementPosition.enabled,
-		addLog,
-		updatePerformanceStats,
-	]);
+  React.useEffect(() => {
+    if (hookConfigs.elementPosition.enabled && position) {
+      addLog(
+        'useElementPosition',
+        `top=${Math.round(position.boundingClientRect.top)}, ratio=${position.intersectionRatio.toFixed(2)}`,
+        'info'
+      );
+      updatePerformanceStats('useElementPosition');
+    }
+  }, [position, hookConfigs.elementPosition.enabled, addLog, updatePerformanceStats]);
 
-	React.useEffect(() => {
-		if (hookConfigs.boundingRect.enabled && boundingRect) {
-			addLog(
-				"useBoundingClientRect",
-				`width=${Math.round(boundingRect.width)}, height=${Math.round(boundingRect.height)}`,
-				"info",
-			);
-			updatePerformanceStats("useBoundingClientRect");
-		}
-	}, [
-		boundingRect,
-		hookConfigs.boundingRect.enabled,
-		addLog,
-		updatePerformanceStats,
-	]);
+  React.useEffect(() => {
+    if (hookConfigs.boundingRect.enabled && boundingRect) {
+      addLog(
+        'useBoundingClientRect',
+        `width=${Math.round(boundingRect.width)}, height=${Math.round(boundingRect.height)}`,
+        'info'
+      );
+      updatePerformanceStats('useBoundingClientRect');
+    }
+  }, [boundingRect, hookConfigs.boundingRect.enabled, addLog, updatePerformanceStats]);
 
-	React.useEffect(() => {
-		if (
-			hookConfigs.intersectionRatio.enabled &&
-			intersectionRatio !== undefined
-		) {
-			addLog(
-				"useIntersectionRatio",
-				`ratio=${intersectionRatio.toFixed(2)}`,
-				"info",
-			);
-			updatePerformanceStats("useIntersectionRatio");
-		}
-	}, [
-		intersectionRatio,
-		hookConfigs.intersectionRatio.enabled,
-		addLog,
-		updatePerformanceStats,
-	]);
+  React.useEffect(() => {
+    if (hookConfigs.intersectionRatio.enabled && intersectionRatio !== undefined) {
+      addLog('useIntersectionRatio', `ratio=${intersectionRatio.toFixed(2)}`, 'info');
+      updatePerformanceStats('useIntersectionRatio');
+    }
+  }, [intersectionRatio, hookConfigs.intersectionRatio.enabled, addLog, updatePerformanceStats]);
 
-	// 切换 Hook 启用状态
-	const toggleHook = useCallback(
-		(hookKey: string) => {
-			setHookConfigs((prev) => ({
-				...prev,
-				[hookKey]: { ...prev[hookKey], enabled: !prev[hookKey].enabled },
-			}));
-			addLog(
-				"System",
-				`${hookConfigs[hookKey].name} ${hookConfigs[hookKey].enabled ? "已禁用" : "已启用"}`,
-				"warning",
-			);
-		},
-		[hookConfigs, addLog],
-	);
+  // 切换 Hook 启用状态
+  const toggleHook = useCallback(
+    (hookKey: string) => {
+      setHookConfigs(prev => ({
+        ...prev,
+        [hookKey]: { ...prev[hookKey], enabled: !prev[hookKey].enabled },
+      }));
+      addLog(
+        'System',
+        `${hookConfigs[hookKey].name} ${hookConfigs[hookKey].enabled ? '已禁用' : '已启用'}`,
+        'warning'
+      );
+    },
+    [hookConfigs, addLog]
+  );
 
-	// 手动检查 positionRef
-	const checkPositionRef = useCallback(() => {
-		if (positionRef.current) {
-			const { boundingClientRect, scrollX, scrollY } = positionRef.current;
-			addLog(
-				"Manual Check",
-				`positionRef: top=${Math.round(boundingClientRect.top)}, scrollX=${scrollX}, scrollY=${scrollY}`,
-				"info",
-			);
-		} else {
-			addLog("Manual Check", "positionRef: null", "warning");
-		}
-	}, [positionRef, addLog]);
+  // 手动检查 positionRef
+  const checkPositionRef = useCallback(() => {
+    if (positionRef.current) {
+      const { boundingClientRect, scrollX, scrollY } = positionRef.current;
+      addLog(
+        'Manual Check',
+        `positionRef: top=${Math.round(boundingClientRect.top)}, scrollX=${scrollX}, scrollY=${scrollY}`,
+        'info'
+      );
+    } else {
+      addLog('Manual Check', 'positionRef: null', 'warning');
+    }
+  }, [positionRef, addLog]);
 
-	// 清空日志
-	const clearLogs = useCallback(() => {
-		setLogs([]);
-		addLog("System", "日志已清空", "info");
-	}, [addLog]);
+  // 清空日志
+  const clearLogs = useCallback(() => {
+    setLogs([]);
+    addLog('System', '日志已清空', 'info');
+  }, [addLog]);
 
-	// 重置性能统计
-	const resetStats = useCallback(() => {
-		setPerformanceStats({});
-		addLog("System", "性能统计已重置", "info");
-	}, [addLog]);
+  // 重置性能统计
+  const resetStats = useCallback(() => {
+    setPerformanceStats({});
+    addLog('System', '性能统计已重置', 'info');
+  }, [addLog]);
 
-	// 过滤日志
-	const filteredLogs = useMemo(() => {
-		if (logFilter === "all") return logs;
-		return logs.filter((log) => log.hook === logFilter);
-	}, [logs, logFilter]);
+  // 过滤日志
+  const filteredLogs = useMemo(() => {
+    if (logFilter === 'all') return logs;
+    return logs.filter(log => log.hook === logFilter);
+  }, [logs, logFilter]);
 
-	// 获取可用的 Hook 名称用于过滤
-	const availableHooks = useMemo(() => {
-		const hooks = ["all", ...Object.keys(hookConfigs)];
-		return hooks;
-	}, [hookConfigs]);
+  // 获取可用的 Hook 名称用于过滤
+  const availableHooks = useMemo(() => {
+    const hooks = ['all', ...Object.keys(hookConfigs)];
+    return hooks;
+  }, [hookConfigs]);
 
-	return (
-		<div className="multi-hook-example">
-			{/* Header Section */}
-			<div className="example-header">
-				<div className="header-content">
-					<h1>多 Hook 同时观察同一元素</h1>
-					<p className="header-description">
-						这个示例演示如何对同一个元素应用多个 hook，验证多个 hook
-						可以同时工作、正确触发回调、智能位置同步策略正常工作以及资源清理正确。
-					</p>
-				</div>
-			</div>
+  return (
+    <div className="multi-hook-example">
+      {/* Header Section */}
+      <div className="example-header">
+        <div className="header-content">
+          <h1>多 Hook 同时观察同一元素</h1>
+          <p className="header-description">
+            这个示例演示如何对同一个元素应用多个 hook，验证多个 hook
+            可以同时工作、正确触发回调、智能位置同步策略正常工作以及资源清理正确。
+          </p>
+        </div>
+      </div>
 
-			{/* Control Panel */}
-			<div className="control-panel">
-				<div className="panel-section">
-					<h3>Hook 控制</h3>
-					<div className="hook-toggles">
-						{Object.entries(hookConfigs).map(([key, config]) => (
-							<div key={key} className="hook-toggle">
-								<label className="toggle-label">
-									<input
-										type="checkbox"
-										checked={config.enabled}
-										onChange={() => toggleHook(key)}
-										className="toggle-input"
-									/>
-									<span className="toggle-slider" />
-									<div className="toggle-info">
-										<span className="hook-name">{config.name}</span>
-										<span className="hook-description">
-											{config.description}
-										</span>
-									</div>
-								</label>
-							</div>
-						))}
-					</div>
-				</div>
+      {/* Control Panel */}
+      <div className="control-panel">
+        <div className="panel-section">
+          <h3>Hook 控制</h3>
+          <div className="hook-toggles">
+            {Object.entries(hookConfigs).map(([key, config]) => (
+              <div key={key} className="hook-toggle">
+                <label className="toggle-label">
+                  <input
+                    type="checkbox"
+                    checked={config.enabled}
+                    onChange={() => toggleHook(key)}
+                    className="toggle-input"
+                  />
+                  <span className="toggle-slider" />
+                  <div className="toggle-info">
+                    <span className="hook-name">{config.name}</span>
+                    <span className="hook-description">{config.description}</span>
+                  </div>
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
 
-				<div className="panel-section">
-					<h3>操作控制</h3>
-					<div className="action-buttons">
-						<button onClick={checkPositionRef} className="btn btn-primary">
-							🔍 检查 positionRef
-						</button>
-						<button onClick={clearLogs} className="btn btn-secondary">
-							🗑️ 清空日志
-						</button>
-						<button onClick={resetStats} className="btn btn-secondary">
-							📊 重置统计
-						</button>
-					</div>
-				</div>
+        <div className="panel-section">
+          <h3>操作控制</h3>
+          <div className="action-buttons">
+            <button onClick={checkPositionRef} className="btn btn-primary">
+              🔍 检查 positionRef
+            </button>
+            <button onClick={clearLogs} className="btn btn-secondary">
+              🗑️ 清空日志
+            </button>
+            <button onClick={resetStats} className="btn btn-secondary">
+              📊 重置统计
+            </button>
+          </div>
+        </div>
 
-				<div className="panel-section">
-					<h3>性能统计</h3>
-					<div className="performance-stats">
-						{Object.entries(performanceStats).map(([hook, count]) => (
-							<div key={hook} className="stat-item">
-								<span className="stat-hook">{hook}</span>
-								<span className="stat-count">{count}</span>
-							</div>
-						))}
-						{Object.keys(performanceStats).length === 0 && (
-							<div className="no-stats">暂无统计数据</div>
-						)}
-					</div>
-				</div>
-			</div>
+        <div className="panel-section">
+          <h3>性能统计</h3>
+          <div className="performance-stats">
+            {Object.entries(performanceStats).map(([hook, count]) => (
+              <div key={hook} className="stat-item">
+                <span className="stat-hook">{hook}</span>
+                <span className="stat-count">{count}</span>
+              </div>
+            ))}
+            {Object.keys(performanceStats).length === 0 && (
+              <div className="no-stats">暂无统计数据</div>
+            )}
+          </div>
+        </div>
+      </div>
 
-			{/* Main Content */}
-			<div className="example-content">
-				{/* Observed Element */}
-				<div className="element-section">
-					<h3>被观察的元素</h3>
-					<div
-						ref={ref}
-						className={`observed-element ${isCeiling ? "ceiling" : ""} ${isInViewport ? "in-viewport" : ""}`}
-					>
-						<div className="element-content">
-							<div className="element-title">被观察的元素</div>
-							<div className="element-status">
-								<span
-									className={`status-badge ${isCeiling ? "ceiling" : "normal"}`}
-								>
-									{isCeiling ? "已贴顶" : "未贴顶"}
-								</span>
-								<span
-									className={`status-badge ${isInViewport ? "in-viewport" : "out-viewport"}`}
-								>
-									{isInViewport ? "在视口内" : "在视口外"}
-								</span>
-							</div>
-							{intersectionRatio !== undefined && (
-								<div className="element-ratio">
-									可见比例: {(intersectionRatio * 100).toFixed(1)}%
-								</div>
-							)}
-						</div>
-					</div>
-				</div>
+      {/* Main Content */}
+      <div className="example-content">
+        {/* Observed Element */}
+        <div className="element-section">
+          <h3>被观察的元素</h3>
+          <div
+            ref={ref}
+            className={`observed-element ${isCeiling ? 'ceiling' : ''} ${isInViewport ? 'in-viewport' : ''}`}
+          >
+            <div className="element-content">
+              <div className="element-title">被观察的元素</div>
+              <div className="element-status">
+                <span className={`status-badge ${isCeiling ? 'ceiling' : 'normal'}`}>
+                  {isCeiling ? '已贴顶' : '未贴顶'}
+                </span>
+                <span className={`status-badge ${isInViewport ? 'in-viewport' : 'out-viewport'}`}>
+                  {isInViewport ? '在视口内' : '在视口外'}
+                </span>
+              </div>
+              {intersectionRatio !== undefined && (
+                <div className="element-ratio">
+                  可见比例: {(intersectionRatio * 100).toFixed(1)}%
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
 
-				{/* Status Dashboard */}
-				<div className="status-dashboard">
-					<h3>实时状态</h3>
-					<div className="status-grid">
-						<div className="status-card">
-							<div className="status-header">
-								<span className="status-icon">🎯</span>
-								<span className="status-title">元素检测器</span>
-							</div>
-							<div
-								className={`status-value ${isCeiling ? "active" : "inactive"}`}
-							>
-								{isCeiling ? "已贴顶" : "未贴顶"}
-							</div>
-						</div>
+        {/* Status Dashboard */}
+        <div className="status-dashboard">
+          <h3>实时状态</h3>
+          <div className="status-grid">
+            <div className="status-card">
+              <div className="status-header">
+                <span className="status-icon">🎯</span>
+                <span className="status-title">元素检测器</span>
+              </div>
+              <div className={`status-value ${isCeiling ? 'active' : 'inactive'}`}>
+                {isCeiling ? '已贴顶' : '未贴顶'}
+              </div>
+            </div>
 
-						<div className="status-card">
-							<div className="status-header">
-								<span className="status-icon">👁️</span>
-								<span className="status-title">视口检测</span>
-							</div>
-							<div
-								className={`status-value ${isInViewport ? "active" : "inactive"}`}
-							>
-								{isInViewport ? "在视口内" : "在视口外"}
-							</div>
-						</div>
+            <div className="status-card">
+              <div className="status-header">
+                <span className="status-icon">👁️</span>
+                <span className="status-title">视口检测</span>
+              </div>
+              <div className={`status-value ${isInViewport ? 'active' : 'inactive'}`}>
+                {isInViewport ? '在视口内' : '在视口外'}
+              </div>
+            </div>
 
-						<div className="status-card">
-							<div className="status-header">
-								<span className="status-icon">📍</span>
-								<span className="status-title">位置跟踪</span>
-							</div>
-							<div className="status-value">
-								{position
-									? `top: ${Math.round(position.boundingClientRect.top)}px`
-									: "未初始化"}
-							</div>
-						</div>
+            <div className="status-card">
+              <div className="status-header">
+                <span className="status-icon">📍</span>
+                <span className="status-title">位置跟踪</span>
+              </div>
+              <div className="status-value">
+                {position ? `top: ${Math.round(position.boundingClientRect.top)}px` : '未初始化'}
+              </div>
+            </div>
 
-						<div className="status-card">
-							<div className="status-header">
-								<span className="status-icon">📐</span>
-								<span className="status-title">边界矩形</span>
-							</div>
-							<div className="status-value">
-								{boundingRect
-									? `${Math.round(boundingRect.width)}×${Math.round(boundingRect.height)}px`
-									: "未初始化"}
-							</div>
-						</div>
+            <div className="status-card">
+              <div className="status-header">
+                <span className="status-icon">📐</span>
+                <span className="status-title">边界矩形</span>
+              </div>
+              <div className="status-value">
+                {boundingRect
+                  ? `${Math.round(boundingRect.width)}×${Math.round(boundingRect.height)}px`
+                  : '未初始化'}
+              </div>
+            </div>
 
-						<div className="status-card">
-							<div className="status-header">
-								<span className="status-icon">📊</span>
-								<span className="status-title">交叉比例</span>
-							</div>
-							<div className="status-value">
-								{intersectionRatio !== undefined
-									? `${(intersectionRatio * 100).toFixed(1)}%`
-									: "未初始化"}
-							</div>
-						</div>
+            <div className="status-card">
+              <div className="status-header">
+                <span className="status-icon">📊</span>
+                <span className="status-title">交叉比例</span>
+              </div>
+              <div className="status-value">
+                {intersectionRatio !== undefined
+                  ? `${(intersectionRatio * 100).toFixed(1)}%`
+                  : '未初始化'}
+              </div>
+            </div>
 
-						<div className="status-card">
-							<div className="status-header">
-								<span className="status-icon">🔗</span>
-								<span className="status-title">位置引用</span>
-							</div>
-							<div className="status-value">
-								{positionRef.current ? "已初始化" : "未初始化"}
-							</div>
-						</div>
-					</div>
-				</div>
+            <div className="status-card">
+              <div className="status-header">
+                <span className="status-icon">🔗</span>
+                <span className="status-title">位置引用</span>
+              </div>
+              <div className="status-value">{positionRef.current ? '已初始化' : '未初始化'}</div>
+            </div>
+          </div>
+        </div>
 
-				{/* Logs Section */}
-				<div className="logs-section">
-					<div className="logs-header">
-						<h3>实时日志</h3>
-						<div className="logs-controls">
-							<select
-								value={logFilter}
-								onChange={(e) => setLogFilter(e.target.value)}
-								className="log-filter"
-							>
-								{availableHooks.map((hook) => (
-									<option key={hook} value={hook}>
-										{hook === "all" ? "全部日志" : hook}
-									</option>
-								))}
-							</select>
-							<span className="log-count">共 {filteredLogs.length} 条日志</span>
-						</div>
-					</div>
-					<div className="logs-container">
-						{filteredLogs.length === 0 ? (
-							<div className="no-logs">
-								<div className="no-logs-icon">📝</div>
-								<div className="no-logs-text">暂无日志，滚动页面查看效果</div>
-							</div>
-						) : (
-							filteredLogs.map((log) => (
-								<div key={log.id} className={`log-item log-${log.type}`}>
-									<div className="log-header">
-										<span className="log-timestamp">{log.timestamp}</span>
-										<span className="log-hook">{log.hook}</span>
-									</div>
-									<div className="log-message">{log.message}</div>
-								</div>
-							))
-						)}
-					</div>
-				</div>
-			</div>
+        {/* Logs Section */}
+        <div className="logs-section">
+          <div className="logs-header">
+            <h3>实时日志</h3>
+            <div className="logs-controls">
+              <select
+                value={logFilter}
+                onChange={e => setLogFilter(e.target.value)}
+                className="log-filter"
+              >
+                {availableHooks.map(hook => (
+                  <option key={hook} value={hook}>
+                    {hook === 'all' ? '全部日志' : hook}
+                  </option>
+                ))}
+              </select>
+              <span className="log-count">共 {filteredLogs.length} 条日志</span>
+            </div>
+          </div>
+          <div className="logs-container">
+            {filteredLogs.length === 0 ? (
+              <div className="no-logs">
+                <div className="no-logs-icon">📝</div>
+                <div className="no-logs-text">暂无日志，滚动页面查看效果</div>
+              </div>
+            ) : (
+              filteredLogs.map(log => (
+                <div key={log.id} className={`log-item log-${log.type}`}>
+                  <div className="log-header">
+                    <span className="log-timestamp">{log.timestamp}</span>
+                    <span className="log-hook">{log.hook}</span>
+                  </div>
+                  <div className="log-message">{log.message}</div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
 
-			<style>{`
+      <style>{`
 				.multi-hook-example {
 					padding: 0;
 					max-width: 1400px;
@@ -1072,6 +1021,6 @@ export const MultiHookExample = () => {
 					}
 				}
 			`}</style>
-		</div>
-	);
+    </div>
+  );
 };
