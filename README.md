@@ -15,6 +15,7 @@
 | [@fly4react/observer](https://www.npmjs.com/package/@fly4react/observer) | [![npm version](https://img.shields.io/npm/v/@fly4react/observer.svg?label=version)](https://www.npmjs.com/package/@fly4react/observer) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/observer.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/observer) | [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/observer.svg?label=size)](https://bundlephobia.com/package/@fly4react/observer) |
 | [@fly4react/memo](https://www.npmjs.com/package/@fly4react/memo) | [![npm version](https://img.shields.io/npm/v/@fly4react/memo.svg?label=version)](https://www.npmjs.com/package/@fly4react/memo) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/memo.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/memo) | [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/memo.svg?label=size)](https://bundlephobia.com/package/@fly4react/memo) |
 | [@fly4react/image](https://www.npmjs.com/package/@fly4react/image) | [![npm version](https://img.shields.io/npm/v/@fly4react/image.svg?label=version)](https://www.npmjs.com/package/@fly4react/image) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/image.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/image) | [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/image.svg?label=size)](https://bundlephobia.com/package/@fly4react/image) |
+| [@fly4react/feature-detector](https://www.npmjs.com/package/@fly4react/feature-detector) | [![npm version](https://img.shields.io/npm/v/@fly4react/feature-detector.svg?label=version)](https://www.npmjs.com/package/@fly4react/feature-detector) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/feature-detector.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/feature-detector) | [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/feature-detector.svg?label=size)](https://bundlephobia.com/package/@fly4react/feature-detector) |
 
 This is a React Toolkit monorepo containing multiple high-performance React utility libraries.
 
@@ -72,18 +73,33 @@ Image optimization and lazy loading utilities with SSR support.
 
 [📖 Documentation](packages/image/README.md) | [中文文档](packages/image/README.zh.md)
 
+### @fly4react/feature-detector
+
+Pure JavaScript browser feature detection library with comprehensive browser support and intelligent caching.
+
+**Key Features:**
+- Pure JavaScript (no React dependencies)
+- Comprehensive browser support
+- Smart caching system
+- WebView environment support
+- Runtime feature detection
+- Highly configurable
+
+[📖 Documentation](packages/feature-detector/README.md) | [中文文档](packages/feature-detector/README.zh.md)
+
 ## 🚀 Quick Start
 
 ### Installation
 
 ```bash
 # Install all packages
-npm install @fly4react/observer @fly4react/memo @fly4react/image
+npm install @fly4react/observer @fly4react/memo @fly4react/image @fly4react/feature-detector
 
 # Or install individually
 npm install @fly4react/observer
 npm install @fly4react/memo
 npm install @fly4react/image
+npm install @fly4react/feature-detector
 ```
 
 ### Basic Usage
@@ -92,6 +108,7 @@ npm install @fly4react/image
 import { useIntersectionObserver } from '@fly4react/observer';
 import createMemoComponent from '@fly4react/memo';
 import { ImageLoader, PreloadQueueProvider } from '@fly4react/image';
+import { createFeatureDetector } from '@fly4react/feature-detector';
 
 // Intersection Observer
 function MyComponent() {
@@ -122,6 +139,20 @@ function App() {
         alt="My image"
       />
     </PreloadQueueProvider>
+  );
+}
+
+// Feature Detection
+function FeatureAwareComponent() {
+  const detector = createFeatureDetector();
+  const webpSupported = detector.check('webp');
+  const cssGridSupported = detector.check('css-grid');
+  
+  return (
+    <div>
+      {webpSupported && <img src="image.webp" alt="WebP image" />}
+      {cssGridSupported && <div className="grid-layout">Grid content</div>}
+    </div>
   );
 }
 ```

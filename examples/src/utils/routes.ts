@@ -111,6 +111,11 @@ const MultiHookExample = lazy(() =>
 		default: module.MultiHookExample,
 	})),
 );
+const FeatureDetection = lazy(() =>
+	import("../pages/feature-detection").then((module) => ({
+		default: module.default,
+	})),
+);
 
 // 路由配置
 export const routes = [
@@ -242,6 +247,12 @@ export const routes = [
 		name: "useElementDetector",
 		component: UseElementDetector,
 		description: "元素条件检测器 - 通用检测 Hook",
+	},
+	{
+		path: "/feature-detection",
+		name: "特性检测",
+		component: FeatureDetection,
+		description: "浏览器特性检测示例 - 使用 @fly4react/feature-detector",
 	},
 ];
 

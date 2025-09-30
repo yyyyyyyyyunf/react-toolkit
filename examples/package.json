@@ -16,6 +16,7 @@
 		"@fly4react/observer": "workspace:*",
 		"@fly4react/memo": "workspace:*",
 		"@fly4react/image": "workspace:*",
+		"@fly4react/feature-detector": "workspace:*",
 		"intersection-observer": "^0.12.2",
 		"react": "^16.8.6",
 		"react-dom": "^16.8.6"

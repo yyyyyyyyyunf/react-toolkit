@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `@fly4react/observer` - Intersection Observer 工具库
 - `@fly4react/memo` - React 记忆化组件工具
 - `@fly4react/image` - 图片优化和懒加载工具库
+- `@fly4react/feature-detector` - 浏览器特性检测库
 
 ## [1.8.0] - 2025-01-28
 

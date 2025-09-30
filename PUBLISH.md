@@ -7,6 +7,7 @@
 - `@fly4react/observer`
 - `@fly4react/memo`
 - `@fly4react/image`
+- `@fly4react/feature-detector`
 
 ## 🚀 发布方式
 

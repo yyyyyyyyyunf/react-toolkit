@@ -1,0 +1,75 @@
+{
+	"name": "@fly4react/feature-detector",
+	"version": "1.0.0",
+	"description": "一个用于检测浏览器特性和设备能力的 React 工具库",
+	"type": "module",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"keywords": [
+		"react",
+		"feature-detection",
+		"browser-detection",
+		"device-detection",
+		"capability-detection",
+		"performance",
+		"typescript",
+		"hooks",
+		"utilities"
+	],
+	"author": "yyyyyyyyyunf",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yyyyyyyyyunf/react-toolkit.git"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org/"
+	},
+	"bugs": {
+		"url": "https://github.com/yyyyyyyyyunf/react-toolkit/issues"
+	},
+	"homepage": "https://github.com/yyyyyyyyyunf/react-toolkit#readme",
+	"funding": {
+		"type": "github",
+		"url": "https://github.com/yyyyyyyyyunf/react-toolkit"
+	},
+	"scripts": {
+		"build": "rslib build",
+		"dev": "rslib build --watch",
+		"format": "biome format --write src/",
+		"format:check": "biome format --check src/",
+		"lint": "biome lint --write src/",
+		"lint:fix": "biome lint --write src/",
+		"check": "biome check src/",
+		"check:fix": "biome check --write src/",
+		"test": "vitest",
+		"test:run": "vitest run",
+		"test:ui": "vitest --ui",
+		"test:coverage": "vitest run --coverage",
+		"clean": "rm -rf dist",
+		"prepublishOnly": "pnpm check && pnpm test:run && pnpm build",
+		"prepack": "pnpm build",
+		"prepare": "[ -d .git ] && husky || true"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@biomejs/biome": "^1.5.3",
+		"@rslib/core": "^0.14.0",
+		"@vitest/ui": "^3.2.4",
+		"jsdom": "^26.1.0",
+		"typescript": "^5.9.2",
+		"vitest": "^3.2.4"
+	}
+}

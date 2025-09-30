@@ -497,3 +497,218 @@ interface PreloadQueueContext {
 3. 在服务端渲染时启用 `ssr: true` 选项
 4. 使用 `ImagePreloadConsumer` 生成预加载链接
 5. 根据实际需求选择合适的预加载策略
+
+## @fly4react/feature-detector
+
+### 核心类
+
+#### FeatureDetector
+
+特性检测器的主要类。
+
+```typescript
+class FeatureDetector {
+  constructor(config: FeatureConfigMap, detectorConfig: FeatureDetectorOptions)
+  
+  // 检测单个特性
+  check(feature: string): boolean
+  
+  // 检测多个特性
+  detect(features: string[]): DetectionResult[]
+  
+  // 注册新特性
+  registerFeature(name: string, config: FeatureConfig): void
+  
+  // 移除特性
+  removeFeature(name: string): void
+  
+  // 清除缓存
+  clearCache(): void
+  
+  // 获取检测器状态
+  getStatus(): DetectorInfo
+}
+```
+
+#### createFeatureDetector
+
+创建检测器实例的工厂函数。
+
+```typescript
+function createFeatureDetector(
+  config?: FeatureConfigMap,
+  detectorConfig?: FeatureDetectorOptions
+): FeatureDetector
+```
+
+### 类型定义
+
+#### FeatureConfig
+
+单个特性的配置。
+
+```typescript
+interface FeatureConfig {
+  /** 浏览器版本要求 */
+  browsers: BrowserSupport;
+  /** 运行时测试函数 */
+  runtimeTest?: () => boolean;
+}
+```
+
+#### BrowserSupport
+
+浏览器版本要求。
+
+```typescript
+interface BrowserSupport {
+  chrome?: string;
+  firefox?: string;
+  safari?: string;
+  edge?: string;
+  opera?: string;
+  samsung?: string;
+  safariWebview?: string;
+  chromeWebview?: string;
+  [key: string]: string | undefined;
+}
+```
+
+#### DetectionResult
+
+特性检测结果。
+
+```typescript
+interface DetectionResult {
+  feature: string;
+  supported: boolean;
+  confidence: 'high' | 'medium' | 'low';
+  method: 'runtime' | 'ua' | 'fallback';
+  browserInfo?: BrowserInfo;
+}
+```
+
+#### BrowserInfo
+
+浏览器信息。
+
+```typescript
+interface BrowserInfo {
+  name: BrowserName;
+  version: string;
+  isWebView: boolean;
+  webkitVersion?: string;
+  userAgent: string;
+}
+```
+
+### 内置特性
+
+库预配置了常见 Web 特性的支持：
+
+- **WebP** - 图像格式支持
+- **AVIF** - 下一代图像格式支持
+- **CSS Grid** - CSS Grid 布局支持
+- **CSS Flexbox** - CSS Flexbox 支持
+- **CSS Custom Properties** - CSS 变量支持
+- **Intersection Observer** - Intersection Observer API 支持
+- **Resize Observer** - Resize Observer API 支持
+- **Web Animations** - Web Animations API 支持
+- **Service Workers** - Service Worker API 支持
+- **WebGL** - WebGL 支持
+- **WebGL2** - WebGL 2.0 支持
+- **WebRTC** - WebRTC 支持
+- **WebAssembly** - WebAssembly 支持
+- **Aspect Ratio** - CSS aspect-ratio 属性支持
+
+### 使用示例
+
+#### 基础用法
+
+```typescript
+import { createFeatureDetector } from '@fly4react/feature-detector';
+
+// 创建检测器
+const detector = createFeatureDetector();
+
+// 检测单个特性
+const webpSupported = detector.check('webp');
+console.log('WebP 支持:', webpSupported);
+
+// 检测多个特性
+const results = detector.detect(['webp', 'css-grid', 'webgl']);
+console.log('检测结果:', results);
+```
+
+#### 自定义配置
+
+```typescript
+import { createFeatureDetector } from '@fly4react/feature-detector';
+
+// 自定义特性配置
+const customFeatures = {
+  'my-feature': {
+    browsers: {
+      chrome: '90',
+      firefox: '88',
+      safari: '14'
+    },
+    runtimeTest: () => {
+      return 'myFeature' in window;
+    }
+  }
+};
+
+// 自定义检测器配置
+const detectorConfig = {
+  useCache: true,
+  enableRuntimeTest: true,
+  browserPatterns: [
+    {
+      name: 'myCustomBrowser',
+      pattern: /mybrowser\/([\d.]+)/i,
+      versionIndex: 1
+    }
+  ]
+};
+
+const detector = createFeatureDetector(customFeatures, detectorConfig);
+```
+
+#### React 集成
+
+```tsx
+import { createFeatureDetector } from '@fly4react/feature-detector';
+import { useEffect, useState } from 'react';
+
+function FeatureAwareComponent() {
+  const [features, setFeatures] = useState({});
+  
+  useEffect(() => {
+    const detector = createFeatureDetector();
+    const results = detector.detect(['webp', 'css-grid', 'webgl']);
+    
+    const featureMap = results.reduce((acc, result) => {
+      acc[result.feature] = result.supported;
+      return acc;
+    }, {});
+    
+    setFeatures(featureMap);
+  }, []);
+  
+  return (
+    <div>
+      {features.webp && <img src="image.webp" alt="WebP 图像" />}
+      {features['css-grid'] && <div className="grid-layout">网格内容</div>}
+    </div>
+  );
+}
+```
+
+### 最佳实践
+
+1. 使用 `createFeatureDetector()` 创建检测器实例
+2. 利用智能缓存机制避免重复检测
+3. 结合运行时检测和 User Agent 分析
+4. 为 WebView 环境配置特殊处理
+5. 根据检测结果实现渐进增强

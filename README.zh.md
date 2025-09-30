@@ -15,6 +15,7 @@
 | [@fly4react/observer](https://www.npmjs.com/package/@fly4react/observer) | [![npm version](https://img.shields.io/npm/v/@fly4react/observer.svg?label=version)](https://www.npmjs.com/package/@fly4react/observer) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/observer.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/observer) | [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/observer.svg?label=size)](https://bundlephobia.com/package/@fly4react/observer) |
 | [@fly4react/memo](https://www.npmjs.com/package/@fly4react/memo) | [![npm version](https://img.shields.io/npm/v/@fly4react/memo.svg?label=version)](https://www.npmjs.com/package/@fly4react/memo) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/memo.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/memo) | [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/memo.svg?label=size)](https://bundlephobia.com/package/@fly4react/memo) |
 | [@fly4react/image](https://www.npmjs.com/package/@fly4react/image) | [![npm version](https://img.shields.io/npm/v/@fly4react/image.svg?label=version)](https://www.npmjs.com/package/@fly4react/image) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/image.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/image) | [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/image.svg?label=size)](https://bundlephobia.com/package/@fly4react/image) |
+| [@fly4react/feature-detector](https://www.npmjs.com/package/@fly4react/feature-detector) | [![npm version](https://img.shields.io/npm/v/@fly4react/feature-detector.svg?label=version)](https://www.npmjs.com/package/@fly4react/feature-detector) | [![npm downloads](https://img.shields.io/npm/dm/@fly4react/feature-detector.svg?label=downloads)](https://www.npmjs.com/package/@fly4react/feature-detector) | [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@fly4react/feature-detector.svg?label=size)](https://bundlephobia.com/package/@fly4react/feature-detector) |
 
 这是一个 React Toolkit 的 monorepo，包含多个高性能的 React 工具库。
 
@@ -126,6 +127,22 @@ npm install @fly4react/memo
 
 ```bash
 npm install @fly4react/image @fly4react/observer @fly4react/memo
+```
+
+### `@fly4react/feature-detector`
+
+纯 JavaScript 浏览器特性检测库，具有全面的浏览器支持和智能缓存功能。
+
+**特性:**
+- 🚀 纯 JavaScript（无 React 依赖）
+- 🌐 全面浏览器支持
+- 🧠 智能缓存系统
+- 📱 WebView 环境支持
+- 🎯 运行时特性检测
+- 🔧 高度可配置
+
+```bash
+npm install @fly4react/feature-detector
 ```
 
 ## 🎯 使用场景
