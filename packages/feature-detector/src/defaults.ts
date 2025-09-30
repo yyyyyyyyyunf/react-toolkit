@@ -189,6 +189,7 @@ export const defaultFeatureConfigs: FeatureConfigMap = {
       edge: '85',
       opera: '71',
       webkit: '612.1',
+      safariWebview: '612.1',
       chromeWebview: '85',
     },
   },
@@ -212,6 +213,7 @@ export const defaultFeatureConfigs: FeatureConfigMap = {
       edge: '106',
       opera: '92',
       webkit: '612.1',
+      safariWebview: '612.1',
       chromeWebview: '106',
     },
     runtimeTest: () => {
@@ -227,6 +229,7 @@ export const defaultFeatureConfigs: FeatureConfigMap = {
       edge: '112',
       opera: '98',
       webkit: '613.1',
+      safariWebview: '613.1',
       chromeWebview: '112',
     },
     runtimeTest: () => {
@@ -245,6 +248,7 @@ export const defaultFeatureConfigs: FeatureConfigMap = {
       edge: '93',
       opera: '75',
       webkit: '606.1',
+      safariWebview: '606.1',
       chromeWebview: '89',
     },
     runtimeTest: () => {
@@ -261,6 +265,7 @@ export const defaultFeatureConfigs: FeatureConfigMap = {
       edge: '15',
       opera: '38',
       webkit: '606.1',
+      safariWebview: '606.1',
       chromeWebview: '51',
     },
     runtimeTest: () => {
