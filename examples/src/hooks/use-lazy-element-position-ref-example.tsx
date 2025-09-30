@@ -58,6 +58,19 @@ export const UseLazyElementPositionRefExample: React.FC = () => {
 		}
 	};
 
+	// 打印之前获取的位置信息，用于比较 lazy 计算
+	// 这个函数打印的是 lastPosition 状态中保存的位置，不触发新的计算
+	const handlePrintCurrentPosition = () => {
+		if (lastPosition && lastPosition !== "位置信息尚未可用") {
+			console.log("=== 之前获取的位置信息（缓存） ===");
+			console.log(lastPosition);
+			console.log("注意：这是之前获取的缓存位置，证明 lazy 特性！");
+		} else {
+			console.log("=== 之前获取的位置信息 ===");
+			console.log("请先点击'按需获取位置信息'按钮获取位置数据");
+		}
+	};
+
 	return (
 		<div className="example-container">
 			<h2>useLazyElementPositionRef 示例</h2>
@@ -69,9 +82,12 @@ export const UseLazyElementPositionRefExample: React.FC = () => {
 
 			<div className="demo-section">
 				<h3>功能演示</h3>
-				<div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+				<div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
 					<button type="button" onClick={handleGetPosition} className="demo-button">
 						按需获取位置信息
+					</button>
+					<button type="button" onClick={handlePrintCurrentPosition} className="demo-button">
+						打印之前的位置
 					</button>
 					<button type="button" onClick={handleFrequentCalls} className="demo-button">
 						测试频繁调用
@@ -132,6 +148,41 @@ export const UseLazyElementPositionRefExample: React.FC = () => {
 						</li>
 						<li>
 							<strong>智能计算：</strong>基于滚动变化计算新位置，而不是重新计算整个位置
+						</li>
+					</ul>
+					
+					<h4>Lazy 特性验证步骤：</h4>
+					<ol>
+						<li>
+							<strong>步骤 1：</strong>点击"按需获取位置信息" - 获取初始位置并显示在页面上
+						</li>
+						<li>
+							<strong>步骤 2：</strong>点击"打印之前的位置" - 打印刚才获取的位置信息
+						</li>
+						<li>
+							<strong>步骤 3：</strong>滚动页面改变元素位置
+						</li>
+						<li>
+							<strong>步骤 4：</strong>再次点击"打印之前的位置" - 应该还是旧的位置（证明是懒计算）
+						</li>
+						<li>
+							<strong>步骤 5：</strong>点击"按需获取位置信息" - 触发新的位置计算
+						</li>
+						<li>
+							<strong>步骤 6：</strong>再次点击"打印之前的位置" - 现在才显示新位置
+						</li>
+					</ol>
+					
+					<h4>按钮说明：</h4>
+					<ul>
+						<li>
+							<strong>"按需获取位置信息"：</strong>触发位置计算并显示在页面上
+						</li>
+						<li>
+							<strong>"打印之前的位置"：</strong>打印之前获取的位置信息（不触发新计算）
+						</li>
+						<li>
+							<strong>"测试频繁调用"：</strong>模拟频繁调用，展示 lazy 特性的性能优势
 						</li>
 					</ul>
 				</div>
