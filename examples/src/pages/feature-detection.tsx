@@ -38,8 +38,13 @@ const customFeatureConfigs: FeatureConfigMap = {
         if (typeof window === 'undefined') return false;
         try {
           const canvas = document.createElement('canvas');
-          canvas.width = canvas.height = 1;
-          return canvas.toDataURL('image/avif').indexOf('image/avif') === 0;
+          if(canvas.getContext?.('2d')){
+            const data=canvas.toDataURL('image/avif')
+            if(data.indexOf('data:image/avif') === 0){
+              return true;
+            }
+          }
+          return false;
         } catch {
           return false;
         }

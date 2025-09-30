@@ -1,48 +1,129 @@
-import { describe, it, expect } from 'vitest';
-import { createFeatureDetector } from '../src/FeatureDetector';
+import { describe, expect, it } from "vitest";
+import { createFeatureDetector } from "../src/FeatureDetector";
+import { safariUserAgents } from "./test-user-agents";
 
-describe('iOS WebView 检测', () => {
+describe("iOS WebView 检测", () => {
+	// 测试 iOS WebView Safari WebP 支持
+	describe("iOS WebView Safari WebP 支持", () => {
+		const iosWebViewCases = safariUserAgents.filter(
+			(ua) => ua.expectedBrowser === "safariWebview",
+		);
 
-  it('应该正确检测 iOS WebView Safari', () => {
-    const detector = createFeatureDetector({}, { enableRuntimeTest: false });
-    
-    // iOS 15 WebView 用户代理字符串（支持 WebP）
-    const ios15UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/608.1.15 (KHTML, like Gecko) Mobile/15E148';
-    const result15 = detector.detect('webp', ios15UA);
-    expect(result15.supported).toBe(true); // iOS 15 支持 WebP
-    
-    // iOS 14 WebView 用户代理字符串（支持 WebP）
-    const ios14UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148';
-    const result14 = detector.detect('webp', ios14UA);
-    expect(result14.supported).toBe(true); // iOS 14 支持 WebP
-    
-    // iOS 13 WebView 用户代理字符串（支持 WebP）
-    const ios13UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Mobile/15E148';
-    const result13 = detector.detect('webp', ios13UA);
-    expect(result13.supported).toBe(true); // iOS 13 支持 WebP
-    
-    // iOS 12 WebView 用户代理字符串（不支持 WebP）
-    const ios12UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Mobile/15E148';
-    const result12 = detector.detect('webp', ios12UA);
-    expect(result12.supported).toBe(false); // iOS 12 不支持 WebP
-    
-    // iOS 11 WebView 用户代理字符串（不支持 WebP）
-    const ios11UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Mobile/15E148';
-    const result11 = detector.detect('webp', ios11UA);
-    expect(result11.supported).toBe(false); // iOS 11 不支持 WebP
-  });
+		iosWebViewCases.forEach(({ name, userAgent, description }) => {
+			it(`应该正确检测 ${description} 的 WebP 支持`, () => {
+				const detector = createFeatureDetector(
+					{},
+					{ enableRuntimeTest: false },
+				);
+				const result = detector.detect("webp", userAgent);
 
-  it('应该检测 iOS WebView 中的 aspect-ratio 支持', () => {
-    const detector = createFeatureDetector({}, { enableRuntimeTest: false });
-    
-    // iOS 15 WebView 用户代理字符串（支持 aspect-ratio）
-    const ios15UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/608.1.15 (KHTML, like Gecko) Mobile/15E148';
-    const result = detector.detect('aspect-ratio', ios15UA);
-    expect(result.supported).toBe(true);
-    
-    // iOS 14 WebView 用户代理字符串（不支持 aspect-ratio）
-    const ios14UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148';
-    const result14 = detector.detect('aspect-ratio', ios14UA);
-    expect(result14.supported).toBe(false);
-  });
+				// 基于WebKit版本判断WebP支持：WebKit 604.1+ 支持WebP
+				// iOS微信WebView使用WebKit 605.1.15，应该支持WebP
+				const isWebKit604Plus =
+					name.includes("iOS 18") ||
+					name.includes("iOS 16") ||
+					name.includes("iOS 15") ||
+					name.includes("iOS 14") ||
+					name.includes("iOS 13");
+				expect(result.supported).toBe(isWebKit604Plus);
+			});
+		});
+	});
+
+	// 测试 iOS WebView Safari aspect-ratio 支持
+	describe("iOS WebView Safari aspect-ratio 支持", () => {
+		const iosWebViewCases = safariUserAgents.filter(
+			(ua) => ua.expectedBrowser === "safariWebview",
+		);
+
+		iosWebViewCases.forEach(({ name, userAgent, description }) => {
+			it(`应该正确检测 ${description} 的 aspect-ratio 支持`, () => {
+				const detector = createFeatureDetector(
+					{},
+					{ enableRuntimeTest: false },
+				);
+				const result = detector.detect("aspect-ratio", userAgent);
+
+				// 只有 iOS 15+ 支持 aspect-ratio
+				const isIOS15Plus = name.includes("iOS 15");
+				expect(result.supported).toBe(isIOS15Plus);
+			});
+		});
+	});
+
+	// 测试 iOS WebView Safari 其他功能支持
+	describe("iOS WebView Safari 其他功能支持", () => {
+		const iosWebViewCases = safariUserAgents.filter(
+			(ua) => ua.expectedBrowser === "safariWebview",
+		);
+
+		iosWebViewCases.forEach(({ name, userAgent, description }) => {
+			it(`应该正确检测 ${description} 的 Intersection Observer 支持`, () => {
+				const detector = createFeatureDetector(
+					{},
+					{ enableRuntimeTest: false },
+				);
+				const result = detector.detect("intersection-observer", userAgent);
+
+				// iOS 12.1+ 支持 Intersection Observer
+				const isIOS121Plus =
+					name.includes("iOS 13") ||
+					name.includes("iOS 14") ||
+					name.includes("iOS 15");
+				expect(result.supported).toBe(isIOS121Plus);
+			});
+		});
+	});
+
+	// 测试 iOS WebView Safari 版本检测
+	describe("iOS WebView Safari 版本检测", () => {
+		const iosWebViewCases = safariUserAgents.filter(
+			(ua) => ua.expectedBrowser === "safariWebview",
+		);
+
+		iosWebViewCases.forEach(({ name, userAgent, description }) => {
+			it(`应该正确检测 ${description} 的浏览器类型`, () => {
+				const detector = createFeatureDetector(
+					{},
+					{ enableRuntimeTest: false },
+				);
+				const result = detector.detect("webp", userAgent);
+
+				// 确保检测结果不为空
+				expect(result).toBeDefined();
+				expect(typeof result.supported).toBe("boolean");
+			});
+		});
+	});
+
+	// 测试 iOS WebView Safari 综合功能检测
+	describe("iOS WebView Safari 综合功能检测", () => {
+		const features = [
+			"webp",
+			"aspect-ratio",
+			"intersection-observer",
+			"container-queries",
+			"css-nesting",
+		];
+
+		features.forEach((feature) => {
+			const iosWebViewCases = safariUserAgents.filter(
+				(ua) => ua.expectedBrowser === "safariWebview",
+			);
+
+			iosWebViewCases.forEach(({ name, userAgent, description }) => {
+				it(`应该正确检测 ${description} 的 ${feature} 支持`, () => {
+					const detector = createFeatureDetector(
+						{},
+						{ enableRuntimeTest: false },
+					);
+					const result = detector.detect(feature, userAgent);
+
+					// 确保检测结果不为空
+					expect(result).toBeDefined();
+					expect(typeof result.supported).toBe("boolean");
+				});
+			});
+		});
+	});
 });

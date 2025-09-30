@@ -1,9 +1,31 @@
 
 /**
  * 支持的浏览器名称
- * @description 包含主流浏览器和自定义浏览器名称
+ * @description 包含主流浏览器、WebView和特定厂商浏览器名称
  */
-export type BrowserName = 'chrome' | 'firefox' | 'safari' | 'edge' | 'opera' | 'samsung' | 'safariWebview' | 'chromeWebview' | string;
+export type BrowserName = 
+  // 主流浏览器
+  | 'chrome' 
+  | 'firefox' 
+  | 'safari' 
+  | 'edge' 
+  | 'opera' 
+  | 'samsung'
+  // WebView类型
+  | 'safariWebview' 
+  | 'chromeWebview'
+  // 特定厂商浏览器
+  | 'xiaomi'           // 小米浏览器
+  | 'harmony'          // 鸿蒙浏览器
+  | 'wechat'           // 微信内置浏览器
+  | 'alipay'           // 支付宝内置浏览器
+  | 'baidu'            // 百度内置浏览器
+  | 'bytedance'        // 字节跳动内置浏览器
+  | 'lark'             // 飞书内置浏览器
+  | 'didi'             // 滴滴内置浏览器
+  | 'cmcc'             // 中国移动内置浏览器
+  // 其他自定义浏览器
+  | string;
 
 /**
  * 浏览器版本支持配置
@@ -98,8 +120,8 @@ export interface BrowserInfo {
 export interface BrowserPattern {
   /** 浏览器名称 */
   name: BrowserName;
-  /** 匹配 User Agent 的正则表达式 */
-  pattern: RegExp;
+  /** 匹配 User Agent 的正则表达式数组 */
+  patterns: RegExp[];
   /** 版本号在匹配结果中的索引位置，默认为 1 */
   versionIndex?: number;
 }
@@ -113,6 +135,8 @@ export interface DetectorConfig {
   browserPatterns?: BrowserPattern[];
   /** 版本号提取配置 */
   versionExtraction?: VersionExtractionConfig;
+  /** WebView 浏览器列表 */
+  webViewBrowsers?: BrowserName[];
 }
 
 /**
