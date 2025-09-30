@@ -7,7 +7,7 @@ on:
   workflow_dispatch:  # 手动触发
     inputs:
       package:
-        description: 'Package to publish (memo, observer, image, or all)'
+        description: 'Package to publish (memo, observer, image, feature-detector, or all)'
         required: false
         default: 'all'
         type: choice
@@ -16,6 +16,7 @@ on:
           - memo
           - observer
           - image
+          - feature-detector
       version_type:
         description: 'Version increment type (patch, minor, major)'
         required: false
@@ -93,6 +94,15 @@ jobs:
             NEW_VERSION=$(node -p "require('./package.json').version")
             echo "更新 image 版本到: $NEW_VERSION"
             cd ../..
+          elif [[ "$SELECTED_PACKAGE" == "feature-detector" ]]; then
+            # 只更新 feature-detector 包版本
+            cd packages/feature-detector
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            echo "当前 feature-detector 版本: $CURRENT_VERSION"
+            npm version $VERSION_TYPE --no-git-tag-version
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "更新 feature-detector 版本到: $NEW_VERSION"
+            cd ../..
           else
             # 更新所有包版本
             echo "更新所有包版本..."
@@ -123,6 +133,15 @@ jobs:
             NEW_VERSION=$(node -p "require('./package.json').version")
             echo "更新 image 版本到: $NEW_VERSION"
             cd ../..
+            
+            # 更新 feature-detector 包版本
+            cd packages/feature-detector
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            echo "当前 feature-detector 版本: $CURRENT_VERSION"
+            npm version $VERSION_TYPE --no-git-tag-version
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "更新 feature-detector 版本到: $NEW_VERSION"
+            cd ../..
           fi
       
       - name: Update packages.yml
@@ -146,6 +165,7 @@ jobs:
           echo "  @fly4react/observer: $(node -p "require('./packages/observer/package.json').version")"
           echo "  @fly4react/memo: $(node -p "require('./packages/memo/package.json').version")"
           echo "  @fly4react/image: $(node -p "require('./packages/image/package.json').version")"
+          echo "  @fly4react/feature-detector: $(node -p "require('./packages/feature-detector/package.json').version")"
       
       - name: Publish @fly4react/observer
         if: |
@@ -230,7 +250,36 @@ jobs:
             echo "📦 递增版本到: $NEW_VERSION"
           fi
           
-                    npm publish --access public
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Publish @fly4react/feature-detector
+        if: |
+          github.event.inputs.package == 'feature-detector' ||
+          github.event.inputs.package == 'all' ||
+          github.event_name == 'push'
+        run: |
+          cd packages/feature-detector
+          echo "Publishing @fly4react/feature-detector..."
+          
+          # 显示当前版本信息
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "📦 当前 package.json 版本: $CURRENT_VERSION"
+          
+          # 检查 npm 上的最新版本
+          NPM_LATEST=$(npm view @fly4react/feature-detector version 2>/dev/null || echo "none")
+          echo "📦 npm 上最新版本: $NPM_LATEST"
+          
+          # 如果版本相同，说明需要递增版本
+          if [[ "$CURRENT_VERSION" == "$NPM_LATEST" ]]; then
+            echo "⚠️  版本相同，需要递增版本号"
+            npm version patch --no-git-tag-version
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "📦 递增版本到: $NEW_VERSION"
+          fi
+          
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
@@ -261,6 +310,14 @@ jobs:
           else
             echo "❌ @fly4react/image 发布失败"
           fi
+          
+          # 检查feature-detector包
+          if npm view @fly4react/feature-detector version > /dev/null 2>&1; then
+            FEATURE_DETECTOR_VERSION=$(npm view @fly4react/feature-detector version)
+            echo "✅ @fly4react/feature-detector 已发布，版本: $FEATURE_DETECTOR_VERSION"
+          else
+            echo "❌ @fly4react/feature-detector 发布失败"
+          fi
       
       - name: Commit version updates and create tag
         if: github.event_name == 'workflow_dispatch'
@@ -272,16 +329,19 @@ jobs:
           OBSERVER_VERSION=$(node -p "require('./packages/observer/package.json').version")
           MEMO_VERSION=$(node -p "require('./packages/memo/package.json').version")
           IMAGE_VERSION=$(node -p "require('./packages/image/package.json').version")
+          FEATURE_DETECTOR_VERSION=$(node -p "require('./packages/feature-detector/package.json').version")
           
           # 使用 sed 直接替换版本号 - 为每个包指定精确的替换
           sed -i "/@fly4react\/observer/,/latest_version:/ s/latest_version: \".*\"/latest_version: \"$OBSERVER_VERSION\"/" .github/packages.yml
           sed -i "/@fly4react\/memo/,/latest_version:/ s/latest_version: \".*\"/latest_version: \"$MEMO_VERSION\"/" .github/packages.yml
           sed -i "/@fly4react\/image/,/latest_version:/ s/latest_version: \".*\"/latest_version: \"$IMAGE_VERSION\"/" .github/packages.yml
+          sed -i "/@fly4react\/feature-detector/,/latest_version:/ s/latest_version: \".*\"/latest_version: \"$FEATURE_DETECTOR_VERSION\"/" .github/packages.yml
           
           echo "✅ packages.yml 已更新:"
           echo "  @fly4react/observer: $OBSERVER_VERSION"
           echo "  @fly4react/memo: $MEMO_VERSION"
           echo "  @fly4react/image: $IMAGE_VERSION"
+          echo "  @fly4react/feature-detector: $FEATURE_DETECTOR_VERSION"
           
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
@@ -302,17 +362,23 @@ jobs:
             NEW_VERSION=$(node -p "require('./packages/image/package.json').version")
             git tag "image-v$NEW_VERSION"
             echo "🏷️  创建标签: image-v$NEW_VERSION"
+          elif [[ "$SELECTED_PACKAGE" == "feature-detector" ]]; then
+            NEW_VERSION=$(node -p "require('./packages/feature-detector/package.json').version")
+            git tag "feature-detector-v$NEW_VERSION"
+            echo "🏷️  创建标签: feature-detector-v$NEW_VERSION"
           else
             # 更新所有包时，为每个包创建独立的标签
             OBSERVER_VERSION=$(node -p "require('./packages/observer/package.json').version")
             MEMO_VERSION=$(node -p "require('./packages/memo/package.json').version")
             IMAGE_VERSION=$(node -p "require('./packages/image/package.json').version")
+            FEATURE_DETECTOR_VERSION=$(node -p "require('./packages/feature-detector/package.json').version")
             
             git tag "observer-v$OBSERVER_VERSION"
             git tag "memo-v$MEMO_VERSION"
             git tag "image-v$IMAGE_VERSION"
+            git tag "feature-detector-v$FEATURE_DETECTOR_VERSION"
             
-            echo "🏷️  创建标签: observer-v$OBSERVER_VERSION, memo-v$MEMO_VERSION, image-v$IMAGE_VERSION"
+            echo "🏷️  创建标签: observer-v$OBSERVER_VERSION, memo-v$MEMO_VERSION, image-v$IMAGE_VERSION, feature-detector-v$FEATURE_DETECTOR_VERSION"
           fi
           
           git push origin ${{ github.ref }}
@@ -330,15 +396,20 @@ jobs:
           elif [[ "$SELECTED_PACKAGE" == "image" ]]; then
             NEW_VERSION=$(node -p "require('./packages/image/package.json').version")
             gh release create "image-v$NEW_VERSION" --title "Release @fly4react/image v$NEW_VERSION" --repo yyyyyyyyyunf/react-toolkit
+          elif [[ "$SELECTED_PACKAGE" == "feature-detector" ]]; then
+            NEW_VERSION=$(node -p "require('./packages/feature-detector/package.json').version")
+            gh release create "feature-detector-v$NEW_VERSION" --title "Release @fly4react/feature-detector v$NEW_VERSION" --repo yyyyyyyyyunf/react-toolkit
           else
             # 更新所有包时，为每个包创建独立的 Release
             OBSERVER_VERSION=$(node -p "require('./packages/observer/package.json').version")
             MEMO_VERSION=$(node -p "require('./packages/memo/package.json').version")
             IMAGE_VERSION=$(node -p "require('./packages/image/package.json').version")
+            FEATURE_DETECTOR_VERSION=$(node -p "require('./packages/feature-detector/package.json').version")
             
             gh release create "observer-v$OBSERVER_VERSION" --title "Release @fly4react/observer v$OBSERVER_VERSION" --repo yyyyyyyyyunf/react-toolkit
             gh release create "memo-v$MEMO_VERSION" --title "Release @fly4react/memo v$MEMO_VERSION" --repo yyyyyyyyyunf/react-toolkit
             gh release create "image-v$IMAGE_VERSION" --title "Release @fly4react/image v$IMAGE_VERSION" --repo yyyyyyyyyunf/react-toolkit
+            gh release create "feature-detector-v$FEATURE_DETECTOR_VERSION" --title "Release @fly4react/feature-detector v$FEATURE_DETECTOR_VERSION" --repo yyyyyyyyyunf/react-toolkit
           fi
       
       - name: Auto merge to main
@@ -378,12 +449,14 @@ jobs:
             npm install @fly4react/observer@latest
             npm install @fly4react/memo@latest
             npm install @fly4react/image@latest
+            npm install @fly4react/feature-detector@latest
             ```
             
             ### Packages Published
             - @fly4react/observer@$(node -p "require('./packages/observer/package.json').version")
             - @fly4react/memo@$(node -p "require('./packages/memo/package.json').version")
             - @fly4react/image@$(node -p "require('./packages/image/package.json').version")
+            - @fly4react/feature-detector@$(node -p "require('./packages/feature-detector/package.json').version")
             
             ### What's New
             - Enhanced intersection observer functionality
@@ -397,5 +470,6 @@ jobs:
             - observer-v* for @fly4react/observer releases
             - memo-v* for @fly4react/memo releases  
             - image-v* for @fly4react/image releases
+            - feature-detector-v* for @fly4react/feature-detector releases
           draft: false
           prerelease: false
