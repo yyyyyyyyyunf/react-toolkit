@@ -191,21 +191,6 @@ export const defaultFeatureConfigs: FeatureConfigMap = {
 			webkit: "612.1",
 			chromeWebview: "85",
 		},
-		runtimeTest: () => {
-			const canvas = document.createElement("canvas");
-      try{
-			  if (canvas.getContext?.("2d")) {
-          const data = canvas.toDataURL("image/avif");
-            if(data.indexOf("data:image/avif") === 0){
-            return true;
-          }
-        }
-        return false;
-      }
-      catch{
-        return false;
-      }
-    }
 	},
 
 	webgpu: {
