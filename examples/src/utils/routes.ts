@@ -80,6 +80,11 @@ const UseElementPositionRef = lazy(() =>
 		default: module.UseElementPositionRefExample,
 	})),
 );
+const UseLazyElementPositionRef = lazy(() =>
+	import("../hooks/use-lazy-element-position-ref-example").then((module) => ({
+		default: module.UseLazyElementPositionRefExample,
+	})),
+);
 
 const UseElementDetector = lazy(() =>
 	import("../hooks/use-element-detector-example").then((module) => ({
@@ -224,6 +229,12 @@ export const routes = [
 		name: "useElementPositionRef",
 		component: UseElementPositionRef,
 		description: "元素位置跟踪 (Ref 版本，不触发重新渲染)",
+	},
+	{
+		path: "/use-lazy-element-position-ref",
+		name: "useLazyElementPositionRef",
+		component: UseLazyElementPositionRef,
+		description: "延迟计算元素位置 (Lazy 版本，按需计算)",
 	},
 
 	{

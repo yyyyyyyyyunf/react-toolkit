@@ -92,6 +92,39 @@ A hook for tracking element position.
 const [ref, position] = useElementPosition(options);
 ```
 
+### useElementPositionRef
+
+A hook for tracking element position without triggering re-renders.
+
+```tsx
+const ref = useRef<HTMLDivElement>(null);
+const positionRef = useElementPositionRef(ref, options);
+
+// Access position data
+const handleClick = () => {
+  if (positionRef.current) {
+    console.log('Position:', positionRef.current.boundingClientRect);
+  }
+};
+```
+
+### useLazyElementPositionRef
+
+A lazy version of `useElementPositionRef` that only calculates position when explicitly requested.
+
+```tsx
+const ref = useRef<HTMLDivElement>(null);
+const getPosition = useLazyElementPositionRef(ref, options);
+
+// Get position on demand
+const handleClick = () => {
+  const position = getPosition();
+  if (position) {
+    console.log('Position:', position.boundingClientRect);
+  }
+};
+```
+
 ### useScrollDirection
 
 A hook for detecting scroll direction.
@@ -137,6 +170,32 @@ function ScrollIndicator() {
     <div>
       <div ref={ref}>Content</div>
       <div>Position: {position.ratio}</div>
+    </div>
+  );
+}
+```
+
+### Lazy Position Tracking
+
+```tsx
+import { useLazyElementPositionRef } from '@fly4react/observer';
+
+function LazyScrollIndicator() {
+  const ref = useRef<HTMLDivElement>(null);
+  const getPosition = useLazyElementPositionRef(ref);
+
+  const handleClick = () => {
+    const position = getPosition();
+    if (position) {
+      console.log('Current position:', position.boundingClientRect);
+      console.log('Intersection ratio:', position.intersectionRatio);
+    }
+  };
+
+  return (
+    <div>
+      <div ref={ref}>Content</div>
+      <button onClick={handleClick}>Get Position</button>
     </div>
   );
 }

@@ -16,18 +16,19 @@ import {
 import { useIsMounted } from "./useIsMounted";
 
 /**
- * 元素位置跟踪 Hook (Ref 版本)
+ * 延迟计算元素位置 Hook (Lazy 版本)
  *
- * 实时跟踪元素在视口中的位置变化，但不触发组件重新渲染。
- * 适用于需要实时获取元素位置但不想影响渲染性能的场景。
+ * 与 useElementPositionRef 类似，但不实时计算位置信息，而是返回一个 callback 函数。
+ * 只有当用户主动调用 callback 时，才会计算并返回当前的位置信息。
+ * 适用于需要按需获取元素位置信息的场景，可以进一步减少不必要的计算开销。
  * 
  * 浏览器兼容性：
  * - 支持 IntersectionObserver 的浏览器：使用原生 API，性能最佳
  * - 不支持 IntersectionObserver 的浏览器：使用标准的 intersection-observer polyfill
  * - 使用标准的 intersection-observer polyfill，确保在所有浏览器中都能正常工作
-
+ *
  * 核心特性：
- * - 使用 useRef 存储位置信息，不会触发组件重新渲染
+ * - 延迟计算：只在用户调用 callback 时才计算位置信息
  * - 支持基于 viewport 和自定义 root 的位置跟踪
  * - 内置节流机制，可控制更新频率
  * - 支持 step 和 threshold 两种配置方式
@@ -37,6 +38,7 @@ import { useIsMounted } from "./useIsMounted";
  * - 浏览器兼容性：使用标准 polyfill 支持所有浏览器
  *
  * 性能优化策略：
+ * - 按需计算：只在用户主动调用时才执行位置计算
  * - 智能计算策略：结合 Intersection Observer 和 scroll 事件
  * - 避免重复计算：元素部分可见时，依赖 Intersection Observer 自动触发
  * - 精确更新：元素完全可见/不可见时，使用 scroll 事件进行位置同步
@@ -45,31 +47,32 @@ import { useIsMounted } from "./useIsMounted";
  *
  * @param ref 要跟踪的元素的 ref
  * @param options 配置选项
- * @returns 包含位置信息的 ref 对象，可以通过 .current 访问最新的位置信息
+ * @returns 返回一个 callback 函数，调用时返回当前元素位置信息
  *
  * @example
  * ```tsx
  * const ref = useRef<HTMLDivElement>(null);
- * const positionRef = useElementPositionRef(ref, {
+ * const getPosition = useLazyElementPositionRef(ref, {
  *   step: 0.1, // 每 10% 触发一次
  *   throttle: 16, // 60fps
  *   forceCalibrate: true, // 启用强制校准
  *   calibrateInterval: 2500, // 校准间隔 2.5 秒
  * });
  *
- * // 在事件处理函数或其他地方获取位置信息
+ * // 在需要时获取位置信息
  * const handleClick = () => {
- *   if (positionRef.current) {
- *     console.log('元素位置:', positionRef.current.boundingClientRect);
- *     console.log('交叉比例:', positionRef.current.intersectionRatio);
- *     console.log('是否相交:', positionRef.current.isIntersecting);
- *     console.log('滚动位置:', { x: positionRef.current.scrollX, y: positionRef.current.scrollY });
- *     console.log('时间戳:', positionRef.current.time);
+ *   const position = getPosition();
+ *   if (position) {
+ *     console.log('元素位置:', position.boundingClientRect);
+ *     console.log('交叉比例:', position.intersectionRatio);
+ *     console.log('是否相交:', position.isIntersecting);
+ *     console.log('滚动位置:', { x: position.scrollX, y: position.scrollY });
+ *     console.log('时间戳:', position.time);
  *   }
  * };
  * ```
  */
-export const useElementPositionRef = (
+export const useLazyElementPositionRef = (
 	ref: React.RefObject<HTMLElement | null>,
 	options: Options = {},
 ) => {
@@ -102,7 +105,7 @@ export const useElementPositionRef = (
 	 * 根据配置的 step 或 threshold 生成用于 Intersection Observer 的阈值数组
 	 */
 	const finalThreshold = useMemo(() => {
-		return calculateFinalThreshold(options, "useElementPositionRef");
+		return calculateFinalThreshold(options, "useLazyElementPositionRef");
 	}, [options]);
 
 	/**
@@ -208,14 +211,13 @@ export const useElementPositionRef = (
 	/**
 	 * 节流的 scroll 事件处理函数
 	 *
-	 * 智能处理 scroll 事件，根据元素当前状态决定是否需要执行复杂计算：
-	 * - 元素部分可见时：依赖 Intersection Observer 自动触发，跳过计算
-	 * - 元素完全可见/不可见时：执行位置计算和校准检查
+	 * 在 lazy 版本中，scroll 事件主要用于校准 Intersection Observer，
+	 * 不进行位置计算，位置计算只在用户主动调用 callback 时进行。
 	 *
 	 * 性能优化：
-	 * - 使用节流机制避免过度计算
-	 * - 智能判断是否需要复杂计算
-	 * - 定期校准确保数据准确性
+	 * - 使用节流机制避免过度校准
+	 * - 只在必要时重新校准 Intersection Observer
+	 * - 不进行位置计算，保持 lazy 特性
 	 */
 	const throttledHandleScroll = useCallback(() => {
 		// 如果已经有待执行的 scroll 处理，直接返回
@@ -228,19 +230,20 @@ export const useElementPositionRef = (
 				return;
 			}
 
+			// 在 lazy 版本中，我们只进行校准，不计算位置
+			// 位置计算只在用户调用 callback 时进行
 			if (!positionRef.current) {
 				scrollTimeoutRef.current = null;
 				return;
 			}
 
 			// 智能判断当前状态下的处理策略
-			const { shouldCalibrate, shouldCalculateOnScroll } =
-				checkIfShouldSyncPosition(
-					positionRef.current || {},
-					forceCalibrate,
-					lastCalibrateTimeRef.current,
-					calibrateInterval,
-				);
+			const { shouldCalibrate } = checkIfShouldSyncPosition(
+				positionRef.current || {},
+				forceCalibrate,
+				lastCalibrateTimeRef.current,
+				calibrateInterval,
+			);
 
 			const now = Date.now();
 
@@ -253,31 +256,7 @@ export const useElementPositionRef = (
 					callback,
 					observerOptions,
 				);
-				// 清理 scroll 节流定时器
-				scrollTimeoutRef.current = null;
-				return;
 			}
-
-			// 跳过计算：元素部分可见时，依赖 Intersection Observer 自动触发
-			if (!shouldCalculateOnScroll) {
-				if (scrollTimeoutRef.current) {
-					clearTimeout(scrollTimeoutRef.current);
-					scrollTimeoutRef.current = null;
-				}
-				return;
-			}
-
-			// 执行复杂的位置计算：元素完全可见或完全不可见时
-			const currentScrollX = window.scrollX;
-			const currentScrollY = window.scrollY;
-			const newPosition = calculateScrollBasedPosition(
-				positionRef.current,
-				currentScrollX,
-				currentScrollY,
-				now,
-			);
-
-			throttledSetPositionRef.current(newPosition);
 
 			scrollTimeoutRef.current = null;
 		}, throttle); // 使用相同的节流时间
@@ -326,5 +305,50 @@ export const useElementPositionRef = (
 		};
 	}, [ref, callback, observerOptions, throttledHandleScroll]);
 
-	return positionRef;
+	/**
+	 * 延迟计算位置信息的 callback 函数
+	 * 只有在用户主动调用时才会计算并返回当前的位置信息
+	 *
+	 * @returns 当前元素位置信息，如果元素不存在或未挂载则返回 null
+	 */
+	const getPosition = useCallback(() => {
+		// 检查组件是否仍然挂载
+		if (!isMountedRef.current) return null;
+
+		// 检查元素是否存在
+		if (!ref.current) return null;
+
+		// 如果没有缓存的位置信息，直接返回 null（lazy 特性）
+		if (!positionRef.current) {
+			return null;
+		}
+
+		const now = Date.now();
+		const currentScrollX = window.scrollX;
+		const currentScrollY = window.scrollY;
+
+		// 检查滚动位置是否发生变化
+		if (
+			positionRef.current.scrollX === currentScrollX &&
+			positionRef.current.scrollY === currentScrollY
+		) {
+			// 滚动位置没有变化，只更新时间戳
+			positionRef.current.time = now;
+			return positionRef.current;
+		}
+
+		// 滚动位置发生变化，使用 calculateScrollBasedPosition 计算新位置
+		const newPosition = calculateScrollBasedPosition(
+			positionRef.current,
+			currentScrollX,
+			currentScrollY,
+			now,
+		);
+		
+		// 更新缓存
+		positionRef.current = newPosition;
+		return positionRef.current;
+	}, [isMountedRef, ref]);
+
+	return getPosition;
 };

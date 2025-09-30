@@ -425,6 +425,45 @@ function MyComponent() {
 
 > **注意**：`useElementPositionRef` 与 `useElementPosition` 功能相同，但使用 `useRef` 存储位置信息，不会触发组件重新渲染。适用于需要实时获取元素位置但不想影响渲染性能的场景。
 
+#### useLazyElementPositionRef
+
+延迟计算元素位置的 Hook，只在用户主动调用时才计算位置信息。
+
+```tsx
+import { useLazyElementPositionRef } from '@fly4react/observer';
+import { useRef } from 'react';
+
+function MyComponent() {
+  const ref = useRef<HTMLDivElement>(null);
+  const getPosition = useLazyElementPositionRef(ref, {
+    step: 0.1, // 每 10% 触发一次
+    throttle: 16, // 60fps
+    forceCalibrate: true, // 强制校准
+    calibrateInterval: 5000 // 每5秒校准一次
+  });
+
+  const handleClick = () => {
+    const position = getPosition();
+    if (position) {
+      console.log('元素位置:', position.boundingClientRect);
+      console.log('交叉比例:', position.intersectionRatio);
+      console.log('滚动位置:', { x: position.scrollX, y: position.scrollY });
+    } else {
+      console.log('位置信息尚未可用');
+    }
+  };
+
+  return (
+    <div>
+      <div ref={ref}>被跟踪的元素</div>
+      <button onClick={handleClick}>获取位置信息</button>
+    </div>
+  );
+}
+```
+
+> **注意**：`useLazyElementPositionRef` 是 `useElementPositionRef` 的 lazy 版本，不实时计算位置信息，而是返回一个 callback 函数。只有当用户主动调用 callback 时，才会计算并返回位置信息。适用于需要按需获取元素位置信息的场景，可以进一步减少计算开销。
+
 #### useBoundingClientRect
 
 ```tsx
@@ -653,6 +692,24 @@ function useElementPosition(
   ref: RefObject<HTMLElement | null>,
   options?: ElementPositionOptions
 ): ElementPosition | null
+```
+
+#### useElementPositionRef
+
+```tsx
+function useElementPositionRef(
+  ref: RefObject<HTMLElement | null>,
+  options?: ElementPositionOptions
+): RefObject<ElementPosition | null>
+```
+
+#### useLazyElementPositionRef
+
+```tsx
+function useLazyElementPositionRef(
+  ref: RefObject<HTMLElement | null>,
+  options?: ElementPositionOptions
+): () => ElementPosition | null
 ```
 
 #### useBoundingClientRect
