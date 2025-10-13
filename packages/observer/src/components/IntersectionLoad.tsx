@@ -108,7 +108,11 @@ const IntersectionLoad = (props: IntersectionLoadProps) => {
   }, [style]);
 
   if (!isSupportIntersectionObserver()) {
-    return <>{children}</>;
+    return (
+      <div ref={containerRef} style={containerStyle}>
+        {children}
+      </div>
+    );
   }
 
   return (
