@@ -18,7 +18,7 @@ packages:
     description: "React 图像优化和懒加载工具库"
     repository: "https://github.com/yyyyyyyyyunf/react-toolkit"
     registry: "https://registry.npmjs.org/"
-    latest_version: "1.12.0"
+    latest_version: "1.12.1"
     
   - name: "@fly4react/feature-detector"
     description: "一个纯 JavaScript 浏览器特性检测库"
