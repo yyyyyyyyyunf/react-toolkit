@@ -4,7 +4,7 @@ import { useImagePreload } from '../hooks/useImagePreload';
 import type { BackgroundImageProps } from '../types';
 
 const BackgroundImage = React.forwardRef<HTMLDivElement, BackgroundImageProps>(
-  ({ src, style, className, children, preloadConfig, transform }, ref) => {
+  ({ src, style, className, children, preloadConfig, transform, ...rest }, ref) => {
     // 转换图片 URL
     const transformedSrc = transform ? transform(src) : src;
 
@@ -31,7 +31,7 @@ const BackgroundImage = React.forwardRef<HTMLDivElement, BackgroundImageProps>(
       [transformedSrc, style]
     );
     return (
-      <div ref={ref} className={className} style={styles}>
+      <div ref={ref} className={className} style={styles} {...rest}>
         {children}
       </div>
     );
