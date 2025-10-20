@@ -8,7 +8,7 @@ const IntersectionLoad = (props: IntersectionLoadProps) => {
   const {
     children,
     placeholder,
-    threshold = 0.1,
+    threshold = 0.01,
     offset = 300,
     style,
     onChange,
