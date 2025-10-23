@@ -17,6 +17,7 @@ const IntersectionLoad = (props: IntersectionLoadProps) => {
 
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const prevVisibleRef = useRef<boolean | undefined>(undefined);
 
   // 根据传入的属性确定实际的行为
   const actualOnce = useMemo(() => {
@@ -83,8 +84,11 @@ const IntersectionLoad = (props: IntersectionLoadProps) => {
         if (visible) {
           setIsVisible(true);
         }
-        // 调用 onChange 回调
-        stableOnChange(visible);
+        // 只在可见性状态发生变化时调用 onChange 回调
+        if (visible !== prevVisibleRef.current) {
+          stableOnChange(visible);
+          prevVisibleRef.current = visible;
+        }
       },
       {
         threshold: finalThreshold,
