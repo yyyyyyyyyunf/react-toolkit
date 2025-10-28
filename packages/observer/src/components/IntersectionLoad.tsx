@@ -74,6 +74,13 @@ const IntersectionLoad = (props: IntersectionLoadProps) => {
   );
 
   useEffect(() => {
+    if (isSupportIntersectionObserver()) {
+      return;
+    }
+    stableOnChange(true);
+  }, []);
+
+  useEffect(() => {
     if (!actualActive) {
       return;
     }
