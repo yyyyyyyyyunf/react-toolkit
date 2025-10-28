@@ -88,11 +88,9 @@ const IntersectionLoad = (props: IntersectionLoadProps) => {
       containerRef.current,
       (entry: ObserverCallbackParamType) => {
         const visible = checkVisibility(entry, threshold);
-        if (visible) {
-          setIsVisible(true);
-        }
         // 只在可见性状态发生变化时调用 onChange 回调
         if (visible !== prevVisibleRef.current) {
+          setIsVisible(visible);
           stableOnChange(visible);
           prevVisibleRef.current = visible;
         }
