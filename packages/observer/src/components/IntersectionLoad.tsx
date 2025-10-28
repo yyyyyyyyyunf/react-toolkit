@@ -113,6 +113,7 @@ const IntersectionLoad = (props: IntersectionLoadProps) => {
   const containerStyle = useMemo(() => {
     return {
       minHeight: '1px',
+      minWidth: '1px',
       ...style,
     };
   }, [style]);
