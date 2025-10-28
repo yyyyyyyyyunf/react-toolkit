@@ -10,25 +10,27 @@ import type {
  * 检查浏览器是否支持 Intersection Observer API
  *
  * 在服务器端渲染环境中，window 对象不存在，需要特殊处理。
+ * 由于项目已引入 intersection-observer polyfill，此函数会检测到 polyfill 提供的支持。
  *
- * @returns 是否支持 Intersection Observer API
+ * @returns 是否支持 Intersection Observer API（包括原生支持和 polyfill 支持）
  *
  * @example
  * ```tsx
  * if (isSupportIntersectionObserver()) {
- *   // 使用 Intersection Observer
+ *   // 使用 Intersection Observer（原生或 polyfill）
  * } else {
- *   // 使用 polyfill
+ *   // 降级处理，直接渲染内容
  * }
  * ```
  */
 export const isSupportIntersectionObserver = () => {
-  return (
-    typeof window !== 'undefined' &&
-    'IntersectionObserver' in window &&
-    'IntersectionObserverEntry' in window &&
-    'intersectionRatio' in window.IntersectionObserverEntry.prototype
-  );
+  if (typeof window === 'undefined') return false;
+
+  try {
+    return 'IntersectionObserver' in window && typeof window.IntersectionObserver === 'function';
+  } catch {
+    return false;
+  }
 };
 
 /**
