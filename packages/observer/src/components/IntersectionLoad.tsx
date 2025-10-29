@@ -15,7 +15,7 @@ const IntersectionLoad = (props: IntersectionLoadProps) => {
     root = null,
   } = props;
 
-  const [isVisible, setIsVisible] = useState(false);
+  const [hasBeenVisible, setHasBeenVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const prevVisibleRef = useRef<boolean | undefined>(undefined);
 
@@ -88,9 +88,11 @@ const IntersectionLoad = (props: IntersectionLoadProps) => {
       containerRef.current,
       (entry: ObserverCallbackParamType) => {
         const visible = checkVisibility(entry, threshold);
+        if (visible) {
+          setHasBeenVisible(true);
+        }
         // 只在可见性状态发生变化时调用 onChange 回调
         if (visible !== prevVisibleRef.current) {
-          setIsVisible(visible);
           stableOnChange(visible);
           prevVisibleRef.current = visible;
         }
@@ -128,7 +130,7 @@ const IntersectionLoad = (props: IntersectionLoadProps) => {
 
   return (
     <div ref={containerRef} style={containerStyle}>
-      {isVisible ? children : placeholder}
+      {!hasBeenVisible && placeholder ? placeholder : children}
     </div>
   );
 };
