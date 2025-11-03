@@ -110,7 +110,16 @@ const IntersectionLoad = (props: IntersectionLoadProps) => {
         unsubscribe();
       }
     };
-  }, [offset, finalThreshold, actualActive, actualOnce, stableOnChange, root, threshold]);
+  }, [
+    containerRef.current,
+    offset,
+    finalThreshold,
+    actualActive,
+    actualOnce,
+    stableOnChange,
+    root,
+    threshold,
+  ]);
 
   const containerStyle = useMemo(() => {
     return {

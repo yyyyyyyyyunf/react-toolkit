@@ -117,7 +117,7 @@ export const useOneOffVisibility = (
         unSubscribe();
       }
     };
-  }, [ref, enable, observerOptions]);
+  }, [ref.current, enable, observerOptions]);
 
   return isVisible;
 };

@@ -115,5 +115,5 @@ export const useOneOffVisibilityEffect = (
         unSubscribe();
       }
     };
-  }, [ref, enable, observerOptions, isMountedRef]);
+  }, [ref.current, enable, observerOptions, isMountedRef]);
 };

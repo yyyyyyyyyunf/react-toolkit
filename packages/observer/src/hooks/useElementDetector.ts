@@ -109,7 +109,7 @@ export const useElementDetector = (
   // 解构配置选项，设置默认值
   const offset = options.offset ?? 0;
   const throttle = options.throttle ?? 16; // 默认 60fps
-  const forceCalibrate = options.forceCalibrate ?? true; // 元素完全不可见时跳过更新
+  const forceCalibrate = options.forceCalibrate ?? true; // 是否强制校准
   const calibrateInterval = options.calibrateInterval ?? 2500; // 校准间隔
 
   // 处理 root 选项
@@ -346,7 +346,7 @@ export const useElementDetector = (
         scrollTimeoutRef.current = null;
       }
     };
-  }, [ref, callback, observerOptions, throttledHandleScroll]);
+  }, [ref.current, callback, observerOptions, throttledHandleScroll]);
 
   return isConditionMet;
 };

@@ -89,5 +89,5 @@ export const useIntersectionObserver = (
         unSubscribe();
       }
     };
-  }, [ref]); // 只依赖 ref，不依赖 callback 和 options
+  }, [ref.current]); // 依赖 ref.current 以检测 ref 何时从 null 变为实际元素
 };

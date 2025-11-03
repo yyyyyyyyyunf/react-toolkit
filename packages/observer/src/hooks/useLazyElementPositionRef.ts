@@ -286,7 +286,7 @@ export const useLazyElementPositionRef = (
         scrollTimeoutRef.current = null;
       }
     };
-  }, [ref, callback, observerOptions, throttledHandleScroll]);
+  }, [ref.current, callback, observerOptions, throttledHandleScroll]);
 
   /**
    * 延迟计算位置信息的 callback 函数

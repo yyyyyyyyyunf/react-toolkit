@@ -306,7 +306,7 @@ export const useElementPositionRef = (
         scrollTimeoutRef.current = null;
       }
     };
-  }, [ref, callback, observerOptions, throttledHandleScroll]);
+  }, [ref.current, callback, observerOptions, throttledHandleScroll]);
 
   return positionRef;
 };

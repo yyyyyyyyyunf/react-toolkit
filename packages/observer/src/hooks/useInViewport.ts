@@ -66,7 +66,7 @@ export const useInViewport = (ref: React.RefObject<HTMLElement | null>): boolean
         unSubscribe();
       }
     };
-  }, [ref, isMountedRef]);
+  }, [ref.current, isMountedRef]);
 
   return isInViewport;
 };

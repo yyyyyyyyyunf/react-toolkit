@@ -98,7 +98,7 @@ export const useIntersectionRatio = (
         unsubscribe();
       }
     };
-  }, [ref, observerOptions, isMountedRef]);
+  }, [ref.current, observerOptions, isMountedRef]);
 
   return intersectionRatio;
 };
