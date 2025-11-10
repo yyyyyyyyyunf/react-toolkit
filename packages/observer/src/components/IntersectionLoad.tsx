@@ -46,6 +46,12 @@ const IntersectionLoad = (props: IntersectionLoadProps) => {
     return true;
   }, [props]);
 
+  useEffect(() => {
+    if (!actualActive) {
+      prevVisibleRef.current = undefined;
+    }
+  }, [actualActive]);
+
   // 计算实际的 threshold 值
   const finalThreshold = useMemo(() => {
     if (typeof threshold === 'number') {
