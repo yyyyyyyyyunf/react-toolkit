@@ -85,6 +85,11 @@ const UseLazyElementPositionRef = lazy(() =>
     default: module.UseLazyElementPositionRefExample,
   }))
 );
+const UseLazyElementPositionEffect = lazy(() =>
+  import('../hooks/use-lazy-element-position-effect-example').then(module => ({
+    default: module.UseLazyElementPositionEffectExample,
+  }))
+);
 
 const UseElementDetector = lazy(() =>
   import('../hooks/use-element-detector-example').then(module => ({
@@ -240,6 +245,12 @@ export const routes = [
     name: 'useLazyElementPositionRef',
     component: UseLazyElementPositionRef,
     description: '延迟计算元素位置 (Lazy 版本，按需计算)',
+  },
+  {
+    path: '/use-lazy-element-position-effect',
+    name: 'useLazyElementPositionEffect',
+    component: UseLazyElementPositionEffect,
+    description: '定时检测元素位置变化 (基于 useLazyElementPositionRef)',
   },
 
   {

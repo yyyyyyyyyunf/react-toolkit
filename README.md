@@ -109,14 +109,22 @@ import { useIntersectionObserver } from '@fly4react/observer';
 import createMemoComponent from '@fly4react/memo';
 import { ImageLoader, PreloadQueueProvider } from '@fly4react/image';
 import { createFeatureDetector } from '@fly4react/feature-detector';
+import { useRef, useState } from 'react';
 
 // Intersection Observer
 function MyComponent() {
-  const [ref, inView] = useIntersectionObserver({
-    threshold: 0.1
-  });
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
 
-  return <div ref={ref}>{inView ? 'Visible!' : 'Not visible'}</div>;
+  useIntersectionObserver(
+    ref,
+    (entry) => {
+      setIsVisible(entry.isIntersecting);
+    },
+    { threshold: 0.1 }
+  );
+
+  return <div ref={ref}>{isVisible ? 'Visible!' : 'Not visible'}</div>;
 }
 
 // Memoization

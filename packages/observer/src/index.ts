@@ -6,6 +6,7 @@ export { useBoundingClientRect } from './hooks/useBoundingClientRect';
 export { useElementPosition } from './hooks/useElementPosition';
 export { useElementPositionRef } from './hooks/useElementPositionRef';
 export { useLazyElementPositionRef } from './hooks/useLazyElementPositionRef';
+export { useLazyElementPositionEffect } from './hooks/useLazyElementPositionEffect';
 export { useElementDetector } from './hooks/useElementDetector';
 export { useIntersectionObserver } from './hooks/useIntersectionObserver';
 export { useIntersectionRatio } from './hooks/useIntersectionRatio';

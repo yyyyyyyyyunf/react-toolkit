@@ -537,7 +537,6 @@ function MyComponent() {
     compute: (rect) => rect.top <= 50 && rect.bottom >= 100,
     step: 0.1, // 每 10% 触发一次
     throttle: 16, // 60fps
-    skipWhenOffscreen: true,
     forceCalibrate: true, // 强制校准
     calibrateInterval: 3000 // 每3秒校准一次
   });
@@ -578,7 +577,7 @@ function MyComponent() {
 }
 ```
 
-> **注意**：`useElementDetector` 是一个灵活的通用检测器，支持自定义计算逻辑和细致的 threshold 配置。默认检测元素是否贴顶（top ≤ 0），支持 step、threshold、throttle、skipWhenOffscreen、offset 等配置选项。
+> **注意**：`useElementDetector` 是一个灵活的通用检测器，支持自定义计算逻辑和细致的 threshold 配置。默认检测元素是否贴顶（top ≤ 0），支持 step、threshold、throttle、offset 等配置选项。
 
 #### useIsMounted
 
@@ -620,7 +619,7 @@ function MyComponent() {
 |------|------|--------|------|
 | `children` | `ReactNode` | - | 要懒加载的内容 |
 | `placeholder` | `ReactNode` | - | 占位符内容 |
-| `threshold` | `number \| ThresholdType` | `0.1` | 触发阈值 |
+| `threshold` | `number \| ThresholdType` | `0.01` | 触发阈值 |
 | `offset` | `number` | `300` | 偏移量（像素） |
 | `style` | `CSSProperties` | - | 容器样式 |
 | `onChange` | `(isVisible: boolean) => void` | - | 可见性变化回调 |
@@ -680,8 +679,7 @@ function useScrollDirection(
 
 ```tsx
 function useInViewport(
-  ref: RefObject<HTMLElement | null>,
-  options?: ViewportElementPositionOptions
+  ref: RefObject<HTMLElement | null>
 ): boolean
 ```
 
@@ -710,6 +708,48 @@ function useLazyElementPositionRef(
   ref: RefObject<HTMLElement | null>,
   options?: ElementPositionOptions
 ): () => ElementPosition | null
+```
+
+#### useLazyElementPositionEffect
+
+```tsx
+function useLazyElementPositionEffect(
+  ref: RefObject<HTMLElement | null>,
+  options: UseLazyElementPositionEffectOptions
+): () => void
+```
+
+**参数说明：**
+- `options.interval`: 时间间隔（毫秒），默认 0（立即调用）
+- `options.count`: 执行次数，默认 1
+- `options.callback`: 回调函数，当位置变化时调用，接收 `ElementPosition | null`
+- 其他选项继承自 `useLazyElementPositionRef`
+
+**返回值说明：**
+- 返回一个函数，调用时才开始执行定时检测
+- 每隔 `interval` 时间检测一次元素位置
+- 如果位置发生变化，调用 `callback`
+- 执行 `count` 次后自动停止
+
+**使用示例：**
+```tsx
+const ref = useRef<HTMLDivElement>(null);
+const startDetection = useLazyElementPositionEffect(ref, {
+  interval: 100, // 每 100ms 检测一次
+  count: 10, // 执行 10 次
+  callback: (position) => {
+    if (position) {
+      console.log('位置变化:', position.boundingClientRect);
+    }
+  },
+  step: 0.1,
+  throttle: 16,
+});
+
+// 在需要时开始检测
+const handleClick = () => {
+  startDetection();
+};
 ```
 
 #### useBoundingClientRect
@@ -746,7 +786,6 @@ function useElementDetector(
 - `options.step`: 步长值（0-1之间），用于自动生成 threshold 数组
 - `options.threshold`: 手动指定的 threshold 数组
 - `options.throttle`: 节流时间（毫秒），控制更新频率
-- `options.skipWhenOffscreen`: 元素完全不可见时跳过更新
 - `options.offset`: 偏移量（像素）
 
 #### useIsMounted
@@ -811,7 +850,6 @@ interface ElementPositionOptions {
   threshold?: number | number[];
   step?: number;
   throttle?: number;
-  skipWhenOffscreen?: boolean;
   root?: RefObject<Element>;
   relativeToRoot?: boolean;
   forceCalibrate?: boolean; // 强制启用校准机制

@@ -72,16 +72,26 @@ import { BackgroundImage, ContentImage } from '@fly4react/image';
 ```tsx
 // @fly4react/observer - 元素可见性检测
 import { useIntersectionObserver } from '@fly4react/observer';
+import { useRef, useState } from 'react';
 
 function LazyComponent() {
-  const [ref, inView] = useIntersectionObserver({
-    threshold: 0.1,
-    triggerOnce: true
-  });
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useIntersectionObserver(
+    ref,
+    (entry) => {
+      setIsVisible(entry.isIntersecting);
+    },
+    {
+      threshold: 0.1,
+      once: true
+    }
+  );
 
   return (
     <div ref={ref}>
-      {inView ? 'Content loaded!' : 'Loading...'}
+      {isVisible ? 'Content loaded!' : 'Loading...'}
     </div>
   );
 }

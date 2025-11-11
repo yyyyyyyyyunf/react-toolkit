@@ -11,16 +11,11 @@
 ```tsx
 import { useInViewport } from '@fly4react/observer';
 
-const isInViewport = useInViewport(ref, options);
+const isInViewport = useInViewport(ref);
 ```
 
 **参数:**
 - `ref`: React ref 对象
-- `options`: 配置选项
-  - `threshold`: 阈值 (number | number[] | 'any' | 'top' | 'right' | 'bottom' | 'left')
-  - `root`: 根元素
-  - `rootMargin`: 根元素边距
-  - `skipWhenOffscreen`: 是否跳过离屏元素
 
 **返回值:**
 - `boolean`: 元素是否可见
@@ -42,9 +37,10 @@ const position = useElementPosition(ref, options);
   - `threshold`: 阈值 (number | number[])
   - `throttle`: 节流时间 (ms)
   - `root`: 根元素
-  - `skipWhenOffscreen`: 是否跳过离屏元素
   - `forceCalibrate`: 是否强制启用校准机制
   - `calibrateInterval`: 校准间隔时间 (ms)
+  - `offset`: 偏移量（像素）
+  - `relativeToRoot`: 是否计算相对于根元素的位置
 
 **返回值:**
 - `ElementPosition | null`: 位置信息对象
@@ -56,12 +52,18 @@ const position = useElementPosition(ref, options);
 ```tsx
 import { useOneOffVisibility } from '@fly4react/observer';
 
-const { isVisible, hasTriggered } = useOneOffVisibility(ref, options);
+const isVisible = useOneOffVisibility(ref, options);
 ```
 
+**参数:**
+- `ref`: React ref 对象
+- `options`: 配置选项（可选）
+  - `threshold`: 阈值
+  - `offset`: 偏移量
+  - `enable`: 是否启用检测
+
 **返回值:**
-- `isVisible`: 当前是否可见
-- `hasTriggered`: 是否已经触发过
+- `boolean`: 元素是否曾经可见过
 
 #### useScrollDirection
 
@@ -219,11 +221,10 @@ interface MemoOptions {
 ## 性能优化建议
 
 1. 使用 `throttle` 选项控制更新频率
-2. 启用 `skipWhenOffscreen` 跳过离屏元素
-3. 合理设置 `threshold` 值
-4. 使用 `useOneOffVisibility` 进行一次性检测
-5. 合理使用 `createMemoComponent` 避免不必要的重新渲染
-6. 启用 `forceCalibrate` 和设置合适的 `calibrateInterval` 确保位置准确性
+2. 合理设置 `threshold` 值
+3. 使用 `useOneOffVisibility` 进行一次性检测
+4. 合理使用 `createMemoComponent` 避免不必要的重新渲染
+5. 启用 `forceCalibrate` 和设置合适的 `calibrateInterval` 确保位置准确性
 
 ## @fly4react/image
 

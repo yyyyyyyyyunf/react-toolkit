@@ -377,6 +377,19 @@ export type OneOffVisibilityOptions = OptionsBasic & {
   enable?: boolean;
 };
 
+/**
+ * useLazyElementPositionEffect Hook 选项类型
+ * 扩展了基础的 Options 类型，增加了定时检测相关选项
+ */
+export type UseLazyElementPositionEffectOptions = Options & {
+  /** 时间间隔（毫秒），默认 0（立即调用） */
+  interval?: number;
+  /** 执行次数，默认 1 */
+  count?: number;
+  /** 回调函数，当位置变化时调用，接收 ElementPosition */
+  callback: (position: ElementPosition) => void;
+};
+
 export type CheckIfShouldSyncPositionResult = {
   shouldCalibrate: boolean;
   shouldCalculateOnScroll: boolean;

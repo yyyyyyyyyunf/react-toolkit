@@ -62,7 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **位置跟踪**: 实时跟踪元素在视口中的位置变化
 - **性能优化**: 
   - 节流控制（throttle）避免过频更新
-  - skipWhenOffscreen 选项跳过离屏元素更新
+  - skipWhenOffscreen 选项跳过离屏元素更新（注：此选项在后续版本中已移除）
   - 智能的观察器复用机制
 - **类型安全**: 完整的 TypeScript 类型定义和类型安全保证
 - **灵活配置**: 

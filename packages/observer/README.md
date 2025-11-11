@@ -42,16 +42,26 @@ pnpm add @fly4react/observer
 
 ```tsx
 import { useIntersectionObserver } from '@fly4react/observer';
+import { useRef, useState } from 'react';
 
 function MyComponent() {
-  const [ref, inView] = useIntersectionObserver({
-    threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px'
-  });
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useIntersectionObserver(
+    ref,
+    (entry) => {
+      setIsVisible(entry.isIntersecting);
+    },
+    {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    }
+  );
 
   return (
     <div ref={ref}>
-      {inView ? 'Element is visible!' : 'Element is not visible'}
+      {isVisible ? 'Element is visible!' : 'Element is not visible'}
     </div>
   );
 }
@@ -64,24 +74,28 @@ function MyComponent() {
 A hook for observing element intersection with viewport.
 
 ```tsx
-const [ref, inView, entry] = useIntersectionObserver(options, deps);
+useIntersectionObserver(
+  ref: RefObject<HTMLElement | null>,
+  callback: (entry: ObserverCallbackParamType) => void,
+  options: ObserverOptions
+): void
 ```
 
 **Parameters:**
+- `ref`: Ref to the target element
+- `callback`: Callback function that receives the intersection entry
 - `options`: IntersectionObserver options
-- `deps`: Dependency array for memoization
 
 **Returns:**
-- `ref`: Ref to attach to target element
-- `inView`: Boolean indicating if element is in view
-- `entry`: IntersectionObserverEntry object
+- `void` - This hook doesn't return anything, it calls the callback when intersection changes
 
 ### useInViewport
 
 A hook for detecting if element is in viewport.
 
 ```tsx
-const [ref, inView] = useInViewport(options);
+const ref = useRef<HTMLDivElement>(null);
+const isInViewport = useInViewport(ref);
 ```
 
 ### useElementPosition
@@ -89,7 +103,8 @@ const [ref, inView] = useInViewport(options);
 A hook for tracking element position.
 
 ```tsx
-const [ref, position] = useElementPosition(options);
+const ref = useRef<HTMLDivElement>(null);
+const position = useElementPosition(ref, options);
 ```
 
 ### useElementPositionRef
@@ -125,12 +140,49 @@ const handleClick = () => {
 };
 ```
 
+### useLazyElementPositionEffect
+
+A hook for periodic position detection with change callbacks. Based on `useLazyElementPositionRef`, it adds scheduled detection functionality.
+
+```tsx
+const ref = useRef<HTMLDivElement>(null);
+const startDetection = useLazyElementPositionEffect(ref, {
+  interval: 100, // Check every 100ms
+  count: 10, // Execute 10 times
+  callback: (position) => {
+    if (position) {
+      console.log('Position changed:', position.boundingClientRect);
+    }
+  },
+  step: 0.1,
+  throttle: 16,
+});
+
+// Start detection when needed
+const handleClick = () => {
+  startDetection();
+};
+```
+
+**Parameters:**
+- `options.interval`: Time interval in milliseconds, default 0 (immediate call)
+- `options.count`: Number of executions, default 1
+- `options.callback`: Callback function called when position changes, receives `ElementPosition | null`
+- Other options inherit from `useLazyElementPositionRef`
+
+**Returns:**
+- A function that starts periodic detection when called
+- Detects element position every `interval` milliseconds
+- Calls `callback` if position has changed
+- Automatically stops after `count` executions
+
 ### useScrollDirection
 
 A hook for detecting scroll direction.
 
 ```tsx
-const scrollDirection = useScrollDirection();
+const ref = useRef<HTMLDivElement>(null);
+const { scrollDirection, isScrolling } = useScrollDirection(ref, options);
 ```
 
 ## Examples
@@ -139,12 +191,22 @@ const scrollDirection = useScrollDirection();
 
 ```tsx
 import { useIntersectionObserver } from '@fly4react/observer';
+import { useRef, useState } from 'react';
 
 function LazyImage({ src, alt }) {
-  const [ref, inView] = useIntersectionObserver({
-    threshold: 0.1,
-    triggerOnce: true
-  });
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+
+  useIntersectionObserver(
+    ref,
+    (entry) => {
+      setInView(entry.isIntersecting);
+    },
+    {
+      threshold: 0.1,
+      once: true
+    }
+  );
 
   return (
     <div ref={ref}>
@@ -162,14 +224,18 @@ function LazyImage({ src, alt }) {
 
 ```tsx
 import { useElementPosition } from '@fly4react/observer';
+import { useRef } from 'react';
 
 function ScrollIndicator() {
-  const [ref, position] = useElementPosition();
+  const ref = useRef<HTMLDivElement>(null);
+  const position = useElementPosition(ref);
 
   return (
     <div>
       <div ref={ref}>Content</div>
-      <div>Position: {position.ratio}</div>
+      {position && (
+        <div>Position: {position.intersectionRatio}</div>
+      )}
     </div>
   );
 }
@@ -205,11 +271,21 @@ function LazyScrollIndicator() {
 
 ```tsx
 import { useIntersectionObserver } from '@fly4react/observer';
+import { useRef, useState } from 'react';
 
 function AnimatedElement() {
-  const [ref, inView] = useIntersectionObserver({
-    threshold: 0.5
-  });
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+
+  useIntersectionObserver(
+    ref,
+    (entry) => {
+      setInView(entry.isIntersecting);
+    },
+    {
+      threshold: 0.5
+    }
+  );
 
   return (
     <div 
