@@ -315,7 +315,7 @@ export const checkIfShouldSyncPosition = (
 
   /** 如果元素正在部分可见，则不需要同步位置，IntersectionObserver会自动触发回调 */
   if (isIntersecting && intersectionRatio !== 1) {
-    return { shouldCalibrate: false, shouldCalculateOnScroll: false };
+    return { shouldCalibrate: false, shouldCalculateOnScroll: true };
   }
 
   /** 如果不需要强制校准，则需要计算位置 */

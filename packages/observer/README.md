@@ -140,42 +140,6 @@ const handleClick = () => {
 };
 ```
 
-### useLazyElementPositionEffect
-
-A hook for periodic position detection with change callbacks. Based on `useLazyElementPositionRef`, it adds scheduled detection functionality.
-
-```tsx
-const ref = useRef<HTMLDivElement>(null);
-const startDetection = useLazyElementPositionEffect(ref, {
-  interval: 100, // Check every 100ms
-  count: 10, // Execute 10 times
-  callback: (position) => {
-    if (position) {
-      console.log('Position changed:', position.boundingClientRect);
-    }
-  },
-  step: 0.1,
-  throttle: 16,
-});
-
-// Start detection when needed
-const handleClick = () => {
-  startDetection();
-};
-```
-
-**Parameters:**
-- `options.interval`: Time interval in milliseconds, default 0 (immediate call)
-- `options.count`: Number of executions, default 1
-- `options.callback`: Callback function called when position changes, receives `ElementPosition | null`
-- Other options inherit from `useLazyElementPositionRef`
-
-**Returns:**
-- A function that starts periodic detection when called
-- Detects element position every `interval` milliseconds
-- Calls `callback` if position has changed
-- Automatically stops after `count` executions
-
 ### useScrollDirection
 
 A hook for detecting scroll direction.

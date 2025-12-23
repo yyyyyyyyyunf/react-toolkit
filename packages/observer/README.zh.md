@@ -710,48 +710,6 @@ function useLazyElementPositionRef(
 ): () => ElementPosition | null
 ```
 
-#### useLazyElementPositionEffect
-
-```tsx
-function useLazyElementPositionEffect(
-  ref: RefObject<HTMLElement | null>,
-  options: UseLazyElementPositionEffectOptions
-): () => void
-```
-
-**参数说明：**
-- `options.interval`: 时间间隔（毫秒），默认 0（立即调用）
-- `options.count`: 执行次数，默认 1
-- `options.callback`: 回调函数，当位置变化时调用，接收 `ElementPosition | null`
-- 其他选项继承自 `useLazyElementPositionRef`
-
-**返回值说明：**
-- 返回一个函数，调用时才开始执行定时检测
-- 每隔 `interval` 时间检测一次元素位置
-- 如果位置发生变化，调用 `callback`
-- 执行 `count` 次后自动停止
-
-**使用示例：**
-```tsx
-const ref = useRef<HTMLDivElement>(null);
-const startDetection = useLazyElementPositionEffect(ref, {
-  interval: 100, // 每 100ms 检测一次
-  count: 10, // 执行 10 次
-  callback: (position) => {
-    if (position) {
-      console.log('位置变化:', position.boundingClientRect);
-    }
-  },
-  step: 0.1,
-  throttle: 16,
-});
-
-// 在需要时开始检测
-const handleClick = () => {
-  startDetection();
-};
-```
-
 #### useBoundingClientRect
 
 ```tsx
